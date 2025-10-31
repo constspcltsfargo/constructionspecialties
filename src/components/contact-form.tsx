@@ -48,7 +48,7 @@ export function ContactForm() {
   }, [state, toast]);
 
   return (
-    <Card className="shadow-lg text-white textured-background rounded-lg border-0">
+    <Card className="shadow-lg text-white bg-blue-900/50 rounded-lg border-0">
       {state.message.startsWith("Success") && state.data ? (
         <CardContent className="pt-6">
           <div className="flex flex-col items-center text-center p-4 rounded-lg bg-green-50/90 border border-green-200 text-green-900">
