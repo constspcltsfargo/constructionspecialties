@@ -1,14 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth, useFirestore } from '@/firebase';
+import { useAuth, useFirestore, errorEmitter } from '@/firebase';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInAnonymously,
   AuthError,
 } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc }from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,6 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -28,19 +29,36 @@ export default function LoginPage() {
   const handleAuth = async (isSignUp: boolean) => {
     setError(null);
     if (!auth || !firestore) {
-        setError("Authentication services are not available.");
-        return;
+      setError('Authentication services are not available.');
+      return;
     }
     try {
+      const userCredential = isSignUp
+        ? await createUserWithEmailAndPassword(auth, email, password)
+        : await signInWithEmailAndPassword(auth, email, password);
+
       if (isSignUp) {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         const adminRoleRef = doc(firestore, 'roles_admin', user.uid);
-        await setDoc(adminRoleRef, { role: 'admin' });
-      } else {
-        await signInWithEmailAndPassword(auth, email, password);
+        const roleData = { role: 'admin' };
+        
+        // Non-blocking write with custom error handling
+        setDoc(adminRoleRef, roleData)
+          .catch((serverError) => {
+            const permissionError = new FirestorePermissionError({
+              path: adminRoleRef.path,
+              operation: 'create',
+              requestResourceData: roleData,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+            // We can also set a user-facing error if needed, but the listener will throw for dev
+            setError('Failed to set admin role due to permissions.');
+          });
       }
+      
+      // Optimistically navigate
       router.push('/admin');
+
     } catch (e) {
       const authError = e as AuthError;
       setError(authError.message);
@@ -51,15 +69,29 @@ export default function LoginPage() {
   const handleAnonymousAuth = async () => {
     setError(null);
     if (!auth || !firestore) {
-      setError("Authentication services are not available.");
+      setError('Authentication services are not available.');
       return;
     }
     try {
       const userCredential = await signInAnonymously(auth);
       const user = userCredential.user;
       const adminRoleRef = doc(firestore, 'roles_admin', user.uid);
-      await setDoc(adminRoleRef, { role: 'admin' });
+      const roleData = { role: 'admin' };
+      
+      // Non-blocking write with custom error handling
+      setDoc(adminRoleRef, roleData)
+        .catch((serverError) => {
+          const permissionError = new FirestorePermissionError({
+            path: adminRoleref.path,
+            operation: 'create',
+            requestResourceData: roleData,
+          });
+          errorEmitter.emit('permission-error', permissionError);
+          setError('Failed to set admin role due to permissions.');
+        });
+        
       router.push('/admin');
+
     } catch (e) {
       const authError = e as AuthError;
       setError(authError.message);
