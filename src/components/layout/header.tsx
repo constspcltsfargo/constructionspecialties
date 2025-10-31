@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Menu } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Logo } from "@/components/icons/logo";
 
 const navLinks = [
@@ -29,12 +29,12 @@ export function Header() {
   }, []);
 
   return (
-    <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${isScrolled ? 'bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-md' : 'bg-white/30 backdrop-blur-md'}`}>
+    <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${isScrolled ? 'bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-md' : 'bg-transparent'}`}>
       <div className="container flex h-20 items-center">
         <div className="mr-4 flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            <Logo className={`h-8 w-8 transition-colors text-primary`} />
-            <span className={`font-bold text-lg transition-colors sm:inline-block text-foreground`}>
+            <Logo className={`h-8 w-8 transition-colors ${isScrolled ? 'text-primary' : 'text-primary'}`} />
+            <span className={`font-bold text-lg transition-colors sm:inline-block ${isScrolled ? 'text-foreground' : 'text-foreground'}`}>
               Company Name
             </span>
           </Link>
@@ -45,7 +45,7 @@ export function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className={`transition-colors hover:text-primary ${isScrolled ? 'text-foreground/80' : 'text-foreground/80 hover:text-foreground'}`}
+              className={`transition-colors hover:text-primary ${isScrolled ? 'text-foreground/80' : 'text-white/80 hover:text-white'}`}
             >
               {link.label}
             </Link>
@@ -55,7 +55,7 @@ export function Header() {
         <div className="flex flex-1 items-center justify-end space-x-4">
            <Button
             asChild
-            className={`hidden lg:inline-flex rounded-full transition-colors ${isScrolled ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground'}`}
+            className={`hidden lg:inline-flex rounded-full transition-colors ${isScrolled ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'bg-transparent border-2 border-white text-white hover:bg-white hover:text-foreground'}`}
           >
             <Link href="#contact">Free Estimate</Link>
           </Button>
@@ -64,14 +64,17 @@ export function Header() {
             <SheetTrigger asChild>
               <Button
                 variant="ghost"
-                className={`lg:hidden px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-foreground`}
+                className={`lg:hidden px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 ${isScrolled ? 'text-foreground' : 'text-white'}`}
               >
                 <Menu className="h-6 w-6" />
                 <span className="sr-only">Toggle Menu</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="pr-0 bg-background">
-              <Link href="/" className="mr-6 flex items-center space-x-2" onClick={() => setOpen(false)}>
+              <SheetHeader className="sr-only">
+                <SheetTitle>Mobile Menu</SheetTitle>
+              </SheetHeader>
+              <Link href="/" className="mr-6 flex items-center space-x-2 pl-6 pt-1" onClick={() => setOpen(false)}>
                 <Logo className="h-6 w-6 text-primary" />
                 <span className="font-bold">Company Name</span>
               </Link>
