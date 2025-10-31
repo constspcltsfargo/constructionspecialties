@@ -3,33 +3,33 @@ import { Mail, Phone, MapPin } from "lucide-react";
 
 export function Contact() {
   return (
-    <section id="contact" className="py-12 md:py-24">
+    <section id="contact" className="py-12 md:py-24 bg-secondary">
       <div className="container">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold font-headline">Get In Touch</h2>
+          <h2 className="text-3xl md:text-4xl font-bold">Contact Us</h2>
           <p className="text-lg text-muted-foreground mt-2 max-w-2xl mx-auto">
-            Have a question or need a quote? Reach out to us. We're here to help.
+            We're ready to help with your next project. Reach out to us today!
           </p>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          <div className="space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+          <div className="space-y-8 bg-background p-8 rounded-lg shadow-lg">
             <div>
-              <h3 className="text-2xl font-semibold mb-4">Contact Information</h3>
+              <h3 className="text-2xl font-semibold mb-4">Get In Touch</h3>
               <p className="text-muted-foreground mb-6">
-                Fill out the form and our team will get back to you within 24 hours.
+                Use the form to send us a message, or contact us directly using the information below. We look forward to hearing from you.
               </p>
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
                   <Phone className="h-5 w-5 text-primary" />
-                  <span className="text-muted-foreground">(123) 456-7890</span>
+                  <a href="tel:1234567890" className="text-muted-foreground hover:text-primary">(123) 456-7890</a>
                 </div>
                 <div className="flex items-center gap-4">
                   <Mail className="h-5 w-5 text-primary" />
-                  <span className="text-muted-foreground">contact@constructionspec.com</span>
+                  <a href="mailto:info@company.com" className="text-muted-foreground hover:text-primary">info@company.com</a>
                 </div>
-                <div className="flex items-center gap-4">
-                  <MapPin className="h-5 w-5 text-primary" />
-                  <span className="text-muted-foreground">123 Construction Ave, Buildtown, USA</span>
+                <div className="flex items-start gap-4">
+                  <MapPin className="h-5 w-5 text-primary mt-1" />
+                  <span className="text-muted-foreground">123 Main Street<br/>Anytown, USA 12345</span>
                 </div>
               </div>
             </div>

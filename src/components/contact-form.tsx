@@ -18,9 +18,9 @@ const initialState: FormState = {
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" className="w-full" disabled={pending}>
+    <Button type="submit" className="w-full rounded-full" disabled={pending}>
       {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-      {pending ? "Analyzing..." : "Send Message"}
+      {pending ? "Submitting..." : "Submit Request"}
     </Button>
   );
 }
@@ -45,12 +45,12 @@ export function ContactForm() {
   }, [state, toast]);
 
   return (
-    <Card>
+    <Card className="shadow-lg">
       {state.message.startsWith("Success") && state.data ? (
         <CardContent className="pt-6">
           <div className="flex flex-col items-center text-center p-4 rounded-lg bg-green-50 border border-green-200">
             <CheckCircle className="h-12 w-12 text-green-500 mb-4" />
-            <h3 className="text-lg font-semibold text-green-800">Message Sent & Analyzed!</h3>
+            <h3 className="text-lg font-semibold text-green-800">Request Sent & Analyzed!</h3>
             <p className="text-sm text-green-700 mt-2">
               {state.data.summary}
             </p>
@@ -65,25 +65,25 @@ export function ContactForm() {
       ) : (
         <form ref={formRef} action={formAction}>
           <CardHeader>
-            <CardTitle>Send us a message</CardTitle>
-            <CardDescription>We'll get back to you as soon as possible.</CardDescription>
+            <CardTitle>Request a Free Estimate</CardTitle>
+            <CardDescription>Fill out the form below and we'll be in touch shortly.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>
-              <Input id="name" name="name" placeholder="Your Name" defaultValue={state.fields?.name} />
+              <Input id="name" name="name" placeholder="Your Full Name" defaultValue={state.fields?.name} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" type="email" placeholder="your@email.com" defaultValue={state.fields?.email} />
+              <Input id="email" name="email" type="email" placeholder="your.email@example.com" defaultValue={state.fields?.email} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="location">Location (Optional)</Label>
-              <Input id="location" name="location" placeholder="Your City, State" defaultValue={state.fields?.location} />
+              <Label htmlFor="location">Project Address</Label>
+              <Input id="location" name="location" placeholder="123 Project St, City" defaultValue={state.fields?.location} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="message">Message</Label>
-              <Textarea id="message" name="message" placeholder="How can we help you today?" className="min-h-[120px]" defaultValue={state.fields?.message} />
+              <Label htmlFor="message">How can we help?</Label>
+              <Textarea id="message" name="message" placeholder="Tell us about your project..." className="min-h-[120px]" defaultValue={state.fields?.message} />
             </div>
           </CardContent>
           <CardFooter className="flex flex-col items-start">

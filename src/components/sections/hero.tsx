@@ -2,12 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { Star } from "lucide-react";
 
 export function Hero() {
   const heroImage = PlaceHolderImages.find((img) => img.id === "hero-image");
 
   return (
-    <section className="relative h-[60vh] min-h-[400px] sm:h-[70vh] md:h-screen flex items-center justify-center">
+    <section className="relative h-[85vh] min-h-[500px] md:h-screen flex items-center">
       {heroImage && (
         <Image
           src={heroImage.imageUrl}
@@ -18,21 +19,29 @@ export function Hero() {
           data-ai-hint={heroImage.imageHint}
         />
       )}
-      <div className="absolute inset-0 bg-black/50" />
-      <div className="relative z-10 text-center text-white px-4">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight drop-shadow-md font-headline">
-          Your Trusted Partner in Construction
-        </h1>
-        <p className="mt-4 max-w-2xl mx-auto text-lg sm:text-xl md:text-2xl text-white/90 drop-shadow">
-          Quality roofing and construction services you can rely on. Built to last, designed to impress.
-        </p>
-        <div className="mt-8 flex justify-center gap-4">
-          <Button size="lg" asChild>
-            <Link href="#contact">Get a Free Quote</Link>
-          </Button>
-          <Button size="lg" variant="secondary" asChild>
-            <Link href="#services">Our Services</Link>
-          </Button>
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
+      <div className="relative z-10 container text-white px-4">
+        <div className="max-w-3xl">
+          <div className="flex items-center gap-1 mb-4">
+            {[...Array(5)].map((_, i) => (
+              <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+            ))}
+            <span className="text-sm ml-2">Trusted by hundreds of homeowners</span>
+          </div>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight drop-shadow-md">
+            Expert Roofing & Construction Services
+          </h1>
+          <p className="mt-6 max-w-2xl text-lg sm:text-xl md:text-2xl text-white/90 drop-shadow">
+            Delivering top-quality craftsmanship and unparalleled customer service for all your home exterior needs.
+          </p>
+          <div className="mt-8 flex flex-col sm:flex-row justify-start gap-4">
+            <Button size="lg" asChild className="rounded-full">
+              <Link href="#contact">Get Your Free Estimate</Link>
+            </Button>
+            <Button size="lg" variant="outline" asChild className="rounded-full border-2 border-white bg-transparent text-white hover:bg-white hover:text-foreground">
+              <Link href="#services">Explore Our Services</Link>
+            </Button>
+          </div>
         </div>
       </div>
     </section>

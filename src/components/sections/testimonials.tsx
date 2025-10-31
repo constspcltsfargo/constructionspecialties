@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Carousel,
@@ -16,30 +15,36 @@ const testimonials = [
     name: "Sarah L.",
     location: "Springfield",
     avatarId: "testimonial-avatar-1",
-    quote: "The team at Construction Specialties was fantastic. They replaced our roof ahead of schedule and the quality is outstanding. Highly recommended for jejich professionalism and efficiency!",
+    quote: "The team was professional, efficient, and the results are fantastic. Our new roof looks amazing and we couldn't be happier with the service provided. Highly recommend!",
   },
   {
     name: "Michael B.",
     location: "Rivertown",
     avatarId: "testimonial-avatar-2",
-    quote: "I was impressed with their attention to detail. They took the time to explain everything and the final result exceeded our expectations. Our new siding looks amazing.",
+    quote: "From the initial consultation to the final cleanup, their attention to detail was impeccable. They addressed all our concerns and delivered a flawless project on time.",
   },
   {
     name: "Jessica P.",
     location: "Oakville",
     avatarId: "testimonial-avatar-3",
-    quote: "From the initial quote to the final cleanup, the entire process was smooth and professional. It's rare to find a company that truly cares about their customers.",
+    quote: "I was so impressed with the professionalism and craftsmanship. They transformed our home's exterior. It's refreshing to work with a company that genuinely cares.",
+  },
+  {
+    name: "David H.",
+    location: "Maple Creek",
+    avatarId: "testimonial-avatar-1",
+    quote: "Exceptional service and quality work. They handled our complex commercial roofing project with ease and expertise. We will definitely be using them again for future needs.",
   },
 ];
 
 export function Testimonials() {
   return (
-    <section id="testimonials" className="py-12 md:py-24 bg-secondary">
+    <section id="testimonials" className="py-12 md:py-24 bg-background">
       <div className="container">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold font-headline">What Our Clients Say</h2>
+          <h2 className="text-3xl md:text-4xl font-bold">What Our Customers Say</h2>
           <p className="text-lg text-muted-foreground mt-2 max-w-2xl mx-auto">
-            Real stories from homeowners who trusted us with their projects.
+            Honest feedback from homeowners and businesses we've had the pleasure to work with.
           </p>
         </div>
 
@@ -48,24 +53,24 @@ export function Testimonials() {
             align: "start",
             loop: true,
           }}
-          className="w-full max-w-4xl mx-auto"
+          className="w-full max-w-6xl mx-auto"
         >
           <CarouselContent>
             {testimonials.map((testimonial, index) => {
               const avatar = PlaceHolderImages.find((img) => img.id === testimonial.avatarId);
               return (
                 <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                  <div className="p-1 h-full">
-                    <Card className="flex flex-col justify-between h-full">
-                      <CardContent className="pt-6">
-                        <div className="flex mb-2">
+                  <div className="p-4 h-full">
+                    <Card className="flex flex-col justify-between h-full p-6 shadow-lg">
+                      <CardContent className="p-0">
+                        <div className="flex mb-4">
                           {[...Array(5)].map((_, i) => (
                             <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
                           ))}
                         </div>
-                        <p className="text-muted-foreground italic">"{testimonial.quote}"</p>
+                        <p className="text-muted-foreground italic mb-6">"{testimonial.quote}"</p>
                       </CardContent>
-                      <div className="flex items-center p-6 bg-muted/50">
+                      <div className="flex items-center">
                         <Avatar className="h-12 w-12 mr-4">
                           {avatar && <AvatarImage src={avatar.imageUrl} alt={testimonial.name} data-ai-hint={avatar.imageHint} />}
                           <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>

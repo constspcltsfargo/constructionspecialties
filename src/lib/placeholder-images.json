@@ -2,9 +2,9 @@
   "placeholderImages": [
     {
       "id": "hero-image",
-      "description": "A modern house under construction with a clear blue sky.",
-      "imageUrl": "https://images.unsplash.com/photo-1638009512305-ccdd23ec4c4d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtb2Rlcm4lMjBob3VzZSUyMGNvbnN0cnVjdGlvbnxlbnwwfHx8fDE3NjE5MjQyNjJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "modern house construction"
+      "description": "A beautiful modern house with a perfectly installed roof.",
+      "imageUrl": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtb2Rlcm4lMjBob3VzZXxlbnwwfHx8fDE3NjE5MjQwMDR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "modern house"
     },
     {
       "id": "testimonial-avatar-1",
@@ -25,22 +25,40 @@
       "imageHint": "person portrait"
     },
     {
-      "id": "blog-post-1",
+      "id": "gallery-1",
       "description": "A close-up of a newly installed roof.",
       "imageUrl": "https://images.unsplash.com/photo-1538297735744-31a51e62e521?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxuZXclMjByb29mfGVufDB8fHx8MTc2MTkyNDI2Mnww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "new roof"
     },
     {
-      "id": "blog-post-2",
+      "id": "gallery-2",
       "description": "A construction worker inspecting a roof.",
       "imageUrl": "https://images.unsplash.com/photo-1722876720000-f39b65b7d4a1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxyb29mJTIwaW5zcGVjdGlvbnxlbnwwfHx8fDE3NjE5MjQyNjJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "roof inspection"
     },
     {
-      "id": "blog-post-3",
+      "id": "gallery-3",
       "description": "Rain gutters on a residential house.",
       "imageUrl": "https://images.unsplash.com/photo-1574359411659-15573a27fd0c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxob3VzZSUyMGd1dHRlcnN8ZW58MHx8fHwxNzYxOTI0MjYyfDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "house gutters"
+    },
+    {
+      "id": "gallery-4",
+      "description": "Close up of new vinyl siding on a house.",
+      "imageUrl": "https://images.unsplash.com/photo-1617855156933-e29ef31a8087?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "house siding"
+    },
+    {
+      "id": "gallery-5",
+      "description": "Roofer installing new shingles on a roof.",
+      "imageUrl": "https://images.unsplash.com/photo-1564536343511-6644552441c4?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "roof installation"
+    },
+    {
+      "id": "gallery-6",
+      "description": "Modern home with large windows.",
+      "imageUrl": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "modern windows"
     }
   ]
 }

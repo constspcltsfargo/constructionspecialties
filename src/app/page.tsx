@@ -4,9 +4,10 @@ import { Hero } from "@/components/sections/hero";
 import { Services } from "@/components/sections/services";
 import { WhyUs } from "@/components/sections/why-us";
 import { Testimonials } from "@/components/sections/testimonials";
-import { Blog } from "@/components/sections/blog";
 import { Cta } from "@/components/sections/cta";
 import { Contact } from "@/components/sections/contact";
+import { Faq } from "@/components/sections/faq";
+import { Gallery } from "@/components/sections/gallery";
 
 export default function Home() {
   return (
@@ -16,8 +17,9 @@ export default function Home() {
         <Hero />
         <Services />
         <WhyUs />
+        <Gallery />
         <Testimonials />
-        <Blog />
+        <Faq />
         <Cta />
         <Contact />
       </main>

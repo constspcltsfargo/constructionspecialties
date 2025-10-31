@@ -3,16 +3,16 @@ import { Button } from "@/components/ui/button";
 
 export function Cta() {
   return (
-    <section className="bg-accent text-accent-foreground py-12 md:py-20">
+    <section className="bg-primary text-primary-foreground py-12 md:py-20">
       <div className="container text-center">
-        <h2 className="text-3xl md:text-4xl font-bold font-headline mb-4">
-          Ready for a Stronger, Safer Roof?
+        <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          Ready to Start Your Project?
         </h2>
-        <p className="text-lg md:text-xl max-w-3xl mx-auto mb-8">
-          Don't wait for a small problem to become a major expense. Schedule your free, no-obligation roof inspection with our experts today.
+        <p className="text-lg md:text-xl max-w-3xl mx-auto mb-8 text-primary-foreground/90">
+          Contact us today for a free, no-obligation estimate and let's turn your vision into reality.
         </p>
-        <Button size="lg" variant="secondary" asChild>
-          <Link href="#contact">Schedule Free Inspection</Link>
+        <Button size="lg" variant="secondary" asChild className="rounded-full">
+          <Link href="#contact">Get Your Free Estimate</Link>
         </Button>
       </div>
     </section>
