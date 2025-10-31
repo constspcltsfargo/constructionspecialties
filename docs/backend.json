@@ -1,0 +1,201 @@
+{
+  "entities": {
+    "Page": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Page",
+      "type": "object",
+      "description": "Represents a page on the website, allowing for CMS-style editing.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Page entity."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the page."
+        },
+        "slug": {
+          "type": "string",
+          "description": "The URL-friendly slug for the page (e.g., 'about-us')."
+        },
+        "content": {
+          "type": "string",
+          "description": "The HTML or JSON content of the page."
+        },
+        "lastUpdated": {
+          "type": "string",
+          "description": "The date and time the page was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "slug",
+        "content",
+        "lastUpdated"
+      ]
+    },
+    "Media": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Media",
+      "type": "object",
+      "description": "Represents a media file stored in the storage bucket.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Media entity."
+        },
+        "filename": {
+          "type": "string",
+          "description": "The original filename of the media file."
+        },
+        "url": {
+          "type": "string",
+          "description": "The URL where the media file can be accessed.",
+          "format": "uri"
+        },
+        "mimeType": {
+          "type": "string",
+          "description": "The MIME type of the media file (e.g., 'image/jpeg')."
+        },
+        "size": {
+          "type": "number",
+          "description": "The size of the media file in bytes."
+        },
+        "uploadDate": {
+          "type": "string",
+          "description": "The date and time the media file was uploaded.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "filename",
+        "url",
+        "mimeType",
+        "size",
+        "uploadDate"
+      ]
+    },
+    "PageElement": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "PageElement",
+      "type": "object",
+      "description": "Represents a reusable element that can be dragged and dropped onto a page.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the PageElement entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the element (e.g., 'Hero Section', 'Contact Form')."
+        },
+        "type": {
+          "type": "string",
+          "description": "The type of element (e.g., 'text', 'image', 'video', 'form')."
+        },
+        "content": {
+          "type": "string",
+          "description": "The content of the element, which could be HTML or JSON data."
+        },
+        "pageId": {
+          "type": "string",
+          "description": "Reference to Page. (Relationship: Page 1:N PageElement)"
+        },
+        "order": {
+          "type": "number",
+          "description": "The order in which the element appears on the page."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "type",
+        "content",
+        "pageId",
+        "order"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/pages/{pageId}",
+        "definition": {
+          "entityName": "Page",
+          "schema": {
+            "$ref": "#/backend/entities/Page"
+          },
+          "description": "Stores page content for the website. Accessible and editable only by admins (users with a document in /roles_admin/{uid}).",
+          "params": [
+            {
+              "name": "pageId",
+              "description": "The unique identifier for the page."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/pages/{pageId}/pageElements/{pageElementId}",
+        "definition": {
+          "entityName": "PageElement",
+          "schema": {
+            "$ref": "#/backend/entities/PageElement"
+          },
+          "description": "Stores reusable elements associated with a specific page. Includes denormalized `pageId` to allow easy access to the page content. Accessible and editable only by admins (users with a document in /roles_admin/{uid}).",
+          "params": [
+            {
+              "name": "pageId",
+              "description": "The unique identifier for the page."
+            },
+            {
+              "name": "pageElementId",
+              "description": "The unique identifier for the page element."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/media/{mediaId}",
+        "definition": {
+          "entityName": "Media",
+          "schema": {
+            "$ref": "#/backend/entities/Media"
+          },
+          "description": "Stores media files uploaded to the storage bucket.  Accessible and editable only by admins (users with a document in /roles_admin/{uid}).",
+          "params": [
+            {
+              "name": "mediaId",
+              "description": "The unique identifier for the media file."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles_admin/{userId}",
+        "definition": {
+          "entityName": "roles_admin",
+          "schema": {
+            "$ref": "#/backend/entities/roles_admin"
+          },
+          "description": "Marks the user as an administrator. Existence of a document in this collection grants admin privileges. Authorization based on Existence over Content.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "This design prioritizes security and scalability for the Construction Specialties application. The structure is designed around the principle of Authorization Independence, achieved by denormalizing authorization data where necessary to avoid using `get()` calls in Firestore rules. This ensures atomic operations and simplifies debugging. Structural Segregation is applied by separating content based on access needs (e.g., global CMS content managed by admins). The design incorporates explicit state modeling using dedicated status fields. QAPs are supported by structuring content by access requirements, enabling secure `list` operations.\n\nSpecifically, the `pages` collection is globally accessible to admins, managed via existence in the `/roles_admin/{uid}` collection. The `pageElements` are stored as a subcollection of `pages` and include the `pageId` to correctly associate elements to their parent page."
+  }
+}
