@@ -1,8 +1,8 @@
 
 "use client";
 
-import { useFormStatus } from "react-dom";
 import { useActionState, useEffect, useRef } from "react";
+import { useFormStatus } from "react-dom";
 import { handleContactFormSubmission, type FormState } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -101,8 +101,8 @@ export function ContactForm() {
               <Textarea id="project" name="project" placeholder="" className="min-h-[100px] bg-white/90 text-gray-800 placeholder:text-gray-500 rounded-lg" defaultValue={state.fields?.project} />
             </div>
             <div className="space-y-2">
-                <Label htmlFor="howDidYouHear" className="text-white/80">How Did You Hear About Us?*</Label>
-                <Select name="howDidYouHear">
+                <Label htmlFor="howDidYouHear" className="text-white/80">How Did You Hear About Us?</Label>
+                <Select name="howDidYouHear" defaultValue={state.fields?.howDidYouHear}>
                     <SelectTrigger className="w-full bg-white/90 text-gray-800 rounded-lg">
                         <SelectValue placeholder="" />
                     </SelectTrigger>
