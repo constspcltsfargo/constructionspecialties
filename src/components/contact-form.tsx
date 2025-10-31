@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import Link from "next/link";
 
 const initialState: FormState = {
   message: "",
@@ -115,7 +116,7 @@ export function ContactForm() {
                 </Select>
             </div>
             <p className="text-xs text-white/70">
-              By submitting this form, you agree to receive automated texts or calls from Houston Roofing & Construction. Msg & data rates may apply. Reply STOP to cancel. You also agree to the Terms of Service and Privacy Policy. Consent is not a condition of purchase.
+              By submitting this form, you agree to receive automated texts or calls from Houston Roofing & Construction. Msg & data rates may apply. Reply STOP to cancel. You also agree to the <Link href="#" className="underline">Terms of Service</Link> and <Link href="#" className="underline">Privacy Policy</Link>. Consent is not a condition of purchase.
             </p>
           </CardContent>
           <CardFooter className="flex flex-col items-start">
