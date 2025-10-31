@@ -4,10 +4,13 @@ import { z } from "zod";
 import { analyzeContactForm } from "@/ai/flows/contact-form-analyzer";
 
 const contactFormSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
+  firstName: z.string().min(1, { message: "First name is required." }),
+  lastName: z.string().min(1, { message: "Last name is required." }),
   email: z.string().email({ message: "Please enter a valid email." }),
-  message: z.string().min(10, { message: "Message must be at least 10 characters." }),
-  location: z.string().optional(),
+  phone: z.string().min(1, { message: "Phone number is required." }),
+  zip: z.string().min(5, { message: "Please enter a valid zip code." }),
+  project: z.string().min(10, { message: "Message must be at least 10 characters." }),
+  howDidYouHear: z.string().optional(),
 });
 
 export type FormState = {
@@ -29,21 +32,30 @@ export async function handleContactFormSubmission(
   const validatedFields = contactFormSchema.safeParse(rawData);
 
   if (!validatedFields.success) {
-    const_errors = validatedFields.error.flatten().fieldErrors;
     return {
       message: "Error: Please check the fields.",
       fields: {
-        name: rawData.name as string,
+        firstName: rawData.firstName as string,
+        lastName: rawData.lastName as string,
         email: rawData.email as string,
-        message: rawData.message as string,
-        location: rawData.location as string,
+        phone: rawData.phone as string,
+        zip: rawData.zip as string,
+        project: rawData.project as string,
+        howDidYouHear: rawData.howDidYouHear as string,
       },
       issues: validatedFields.error.issues.map((issue) => issue.message),
     };
   }
 
   try {
-    const result = await analyzeContactForm(validatedFields.data);
+    const result = await analyzeContactForm({
+      name: `${validatedFields.data.firstName} ${validatedFields.data.lastName}`,
+      email: validatedFields.data.email,
+      message: validatedFields.data.project,
+      location: validatedFields.data.zip,
+      phone: validatedFields.data.phone,
+      howDidYouHear: validatedFields.data.howDidYouHear,
+    });
     return {
       message: "Success! Your message has been analyzed.",
       data: result,

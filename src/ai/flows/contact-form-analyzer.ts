@@ -15,8 +15,10 @@ import {z} from 'genkit';
 const ContactFormInputSchema = z.object({
   name: z.string().describe('The name of the person submitting the form.'),
   email: z.string().email().describe('The email address of the person submitting the form.'),
+  phone: z.string().optional().describe('The phone number of the person submitting the form (optional).'),
   message: z.string().describe('The message from the contact form.'),
-  location: z.string().optional().describe('The location of the person submitting the form (optional).'),
+  location: z.string().optional().describe('The zip code of the person submitting the form (optional).'),
+  howDidYouHear: z.string().optional().describe('How the person heard about the company (optional).'),
 });
 export type ContactFormInput = z.infer<typeof ContactFormInputSchema>;
 
@@ -42,11 +44,13 @@ const analyzeContactFormPrompt = ai.definePrompt({
 
   Name: {{{name}}}
   Email: {{{email}}}
+  Phone: {{{phone}}}
   Message: {{{message}}}
-  Location: {{{location}}}
+  Zip Code: {{{location}}}
+  How They Heard: {{{howDidYouHear}}}
 
   Based on the message, determine the appropriate team to route the request to (e.g., Sales, Support, etc.).
-  If a location is provided, suggest nearby branches (e.g., ["Branch A", "Branch B"]).  If no location is provided, return an empty array for nearbyBranches.
+  If a location (zip code) is provided, suggest nearby branches (e.g., ["Branch A", "Branch B"]).  If no location is provided, return an empty array for nearbyBranches.
   Provide a brief summary of the contact form submission.
 
   Ensure the output is in JSON format.

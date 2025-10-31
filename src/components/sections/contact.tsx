@@ -34,7 +34,7 @@ export function Contact() {
               </div>
             </div>
           </div>
-          <div>
+          <div className="flex items-center">
             <ContactForm />
           </div>
         </div>
