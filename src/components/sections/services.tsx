@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Wrench, Home, Shield, HardHat, Building, CheckCircle } from "lucide-react";
+import { Wrench, Home, Shield, HardHat, Building, CheckCircle, Wind } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -7,32 +7,32 @@ const services = [
   {
     icon: <Home className="h-10 w-10 text-primary" />,
     title: "Residential Roofing",
-    description: "High-quality roofing systems to protect your home and enhance its curb appeal.",
+    description: "Protect your home and family with our expert residential roofing services.",
   },
   {
     icon: <Building className="h-10 w-10 text-primary" />,
     title: "Commercial Roofing",
-    description: "Durable and efficient roofing solutions for commercial and industrial properties.",
+    description: "We provide quality commercial roofing services to protect your business.",
   },
   {
-    icon: <Wrench className="h-10 w-10 text-primary" />,
-    title: "Roof Repair",
-    description: "Prompt and reliable repairs for leaks, storm damage, and wear to extend your roof's lifespan.",
+    icon: <Wind className="h-10 w-10 text-primary" />,
+    title: "Storm Damage",
+    description: "Our team is ready to help you with your storm damage needs.",
   },
   {
     icon: <HardHat className="h-10 w-10 text-primary" />,
-    title: "Siding",
-    description: "Upgrade your home's exterior with our beautiful and long-lasting siding options.",
+    title: "Roof Repair",
+    description: "We can repair your roof to prevent further damage to your home.",
   },
   {
-    icon: <Shield className="h-10 w-10 text-primary" />,
-    title: "Gutters",
-    description: "Protect your property from water damage with our seamless gutter installations and repairs.",
+    icon: <Building className="h-10 w-10 text-primary" />,
+    title: "Multi-Family Roofing",
+    description: "We offer roofing services for multi-family homes and apartment complexes.",
   },
   {
     icon: <CheckCircle className="h-10 w-10 text-primary" />,
-    title: "Inspections",
-    description: "Comprehensive roof inspections to identify potential issues before they become costly problems.",
+    title: "Financing",
+    description: "We offer financing options to help you get the roof you need.",
   },
 ];
 

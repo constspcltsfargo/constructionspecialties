@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -19,16 +19,11 @@ export function Header() {
         { href: "/", label: "Home" },
         { href: "#services", label: "Services" },
         { href: "#gallery", label: "Gallery" },
+        { href: "#", label: "Financing" },
         { href: "#contact", label: "Contact" },
         { href: "#why-us", label: "About Us" },
     ];
     
-    const clientLogo1 = PlaceHolderImages.find(img => img.id === 'client-logo-1');
-    const clientLogo2 = PlaceHolderImages.find(img => img.id === 'client-logo-2');
-    const clientLogo3 = PlaceHolderImages.find(img => img.id === 'client-logo-3');
-    const clientLogo4 = PlaceHolderImages.find(img => img.id === 'client-logo-4');
-
-
     return (
         <>
             <div aria-hidden={true} onClick={() => {
@@ -36,23 +31,23 @@ export function Header() {
             }} className={
                 `fixed bg-gray-800/40 inset-0 z-30 ${navIsOpened ? "lg:hidden" : "hidden lg:hidden"}`
             } />
-            <div className="mx-auto lg:max-w-7xl w-full px-5 sm:px-10 md:px-12 lg:px-5">
+             <div className="mx-auto lg:max-w-7xl w-full px-5 sm:px-10 md:px-12 lg:px-5">
                 <div className="w-full flex justify-between h-14 items-center">
                     <div className="h-full flex items-center gap-x-4 text-gray-700 dark:text-gray-300">
-                        <a href="tel:(123) 456-7890" className="flex gap-1 text-sm" rel='noreferrer'>
+                        <a href="tel:(407) 380-0132" className="flex gap-1 text-sm" rel='noreferrer'>
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M14.414 7l3.293-3.293a1 1 0 00-1.414-1.414L13 5.586V4a1 1 0 10-2 0v4.003a.996.996 0 00.617.921A.997.997 0 0012 9h4a1 1 0 100-2h-1.586z" />
                                 <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                             </svg>
-                            <span className="hidden sm:flex">(123) 456-7890</span>
+                            <span className="hidden sm:flex">(407) 380-0132</span>
                         </a>
-                        <a href="mailto:info@company.com" className="flex gap-1 items-center" rel='noreferrer'>
+                        <a href="mailto:info@csroof.com" className="flex gap-1 items-center" rel='noreferrer'>
                             <span>
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
                                     <path fillRule="evenodd" d="M2.106 6.447A2 2 0 001 8.237V16a2 2 0 002 2h14a2 2 0 002-2V8.236a2 2 0 00-1.106-1.789l-7-3.5a2 2 0 00-1.788 0l-7 3.5zm1.48 4.007a.75.75 0 00-.671 1.342l5.855 2.928a2.75 2.75 0 002.46 0l5.852-2.926a.75.75 0 10-.67-1.342l-5.853 2.926a1.25 1.25 0 01-1.118 0l-5.856-2.928z" clipRule="evenodd" />
                                 </svg>
                             </span>
-                            <span className="hidden sm:flex">info@company.com</span>
+                            <span className="hidden sm:flex">info@csroof.com</span>
                         </a>
                     </div>
                     <div className="flex items-center gap-x-2.5 -mx-2 text-gray-700 dark:text-gray-300 children:p-2 children:border children:border-x-gray-200 dark:children:border-gray-800 children:bg-gray-100 dark:children:bg-gray-900 children:rounded-md">
@@ -87,7 +82,7 @@ export function Header() {
                                 <span className="w-3 h-6 rounded-l-full flex bg-red-500" />
                                 <span className="w-3 h-6 rounded-r-full flex bg-pink-700 mt-2" />
                             </span>
-                            <span className="text-lg text-gray-700 dark:text-gray-300">Construction</span>
+                            <span className="text-lg text-gray-700 dark:text-gray-300">Construction Specialties & Roofing</span>
                         </Link>
                     </div>
                     <div className={`
@@ -105,7 +100,7 @@ export function Header() {
                         </ul>
                         <div className="flex sm:items-center lg:min-w-max mt-10 lg:mt-0">
                             <Link href="#contact" className="px-6 items-center h-12 rounded-3xl text-pink-700 border border-gray-100 dark:border-gray-800 dark:text-white bg-gray-100 dark:bg-gray-900 duration-300 ease-linear flex justify-center w-full sm:w-auto">
-                                Free Estimate
+                                Get a Free Estimate
                             </Link>
                         </div>
                     </div>
@@ -124,9 +119,23 @@ export function Header() {
                         </button>
                     </div>
                 </nav>
+                 <Sheet open={navIsOpened} onOpenChange={setNavIsOpened}>
+                    <SheetContent side="left" className="w-[--sidebar-width-mobile] bg-white dark:bg-gray-950 p-4">
+                        <SheetHeader>
+                        <SheetTitle className="text-lg font-bold">Menu</SheetTitle>
+                        </SheetHeader>
+                        <ul className="flex flex-col gap-4 mt-6">
+                            {navLinks.map(link => (
+                                <li key={link.href}>
+                                    <Link href={link.href} onClick={closeNavbar} className="text-gray-700 dark:text-gray-300 hover:text-pink-600 text-lg">
+                                        {link.label}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </SheetContent>
+                </Sheet>
             </header>
         </>
     );
 }
-
-    

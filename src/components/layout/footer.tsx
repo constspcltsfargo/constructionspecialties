@@ -11,7 +11,7 @@ export function Footer() {
               <div className="flex items-center gap-2 mb-4">
                 <Logo className="h-8 w-8 text-primary" />
                 <p className="text-xl font-bold text-white">
-                  Company Name
+                  Construction Specialties & Roofing
                 </p>
               </div>
               <p className="text-sm text-muted-foreground">Quality you can trust, service you can count on.</p>
@@ -46,24 +46,24 @@ export function Footer() {
             <div>
               <h4 className="font-semibold text-white mb-4">Our Services</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link href="#" className="text-muted-foreground hover:text-primary">Roofing</Link></li>
-                <li><Link href="#" className="text-muted-foreground hover:text-primary">Siding</Link></li>
-                <li><Link href="#" className="text-muted-foreground hover:text-primary">Gutters</Link></li>
-                <li><Link href="#" className="text-muted-foreground hover:text-primary">Windows</Link></li>
+                <li><Link href="#" className="text-muted-foreground hover:text-primary">Residential Roofing</Link></li>
+                <li><Link href="#" className="text-muted-foreground hover:text-primary">Commercial Roofing</Link></li>
+                <li><Link href="#" className="text-muted-foreground hover:text-primary">Storm Damage</Link></li>
+                <li><Link href="#" className="text-muted-foreground hover:text-primary">Multi-Family Roofing</Link></li>
                 <li><Link href="#" className="text-muted-foreground hover:text-primary">Repairs</Link></li>
               </ul>
             </div>
              <div>
               <h4 className="font-semibold text-white mb-4">Contact Info</h4>
                <ul className="space-y-2 text-sm text-muted-foreground">
-                 <li>123 Main Street, City, State 12345</li>
-                 <li>(123) 456-7890</li>
-                 <li>info@company.com</li>
+                 <li>123 Main Street, Orlando, FL 12345</li>
+                 <li>(407) 380-0132</li>
+                 <li>info@csroof.com</li>
                </ul>
             </div>
         </div>
         <div className="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} Company Name. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Construction Specialties & Roofing. All rights reserved.</p>
         </div>
       </div>
     </footer>

@@ -5,12 +5,12 @@ import { CheckCircle } from "lucide-react";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 const features = [
+  "20+ Years of Experience",
+  "Licensed & Insured",
+  "Financing Available",
   "Locally Owned & Operated",
-  "Fully Licensed & Insured",
-  "Certified Roofing Experts",
-  "Financing Options Available",
-  "Lifetime Warranties",
-  "Exceptional Customer Service",
+  "Certified Installers",
+  "Quality Materials",
 ];
 
 export function WhyUs() {
@@ -22,7 +22,7 @@ export function WhyUs() {
             <div>
                 <h2 className="text-3xl md:text-4xl font-bold mb-6">Why Choose Us for Your Next Project?</h2>
                 <p className="text-lg text-muted-foreground mb-8">
-                    We are dedicated to providing the highest quality of workmanship and customer service. Our team of experts is here to ensure your project is a success from start to finish.
+                    We are a local, family-owned roofing company that has been serving Central Florida since 2003. We are dedicated to providing our customers with the best roofing services possible.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
                     {features.map((feature, index) => (
