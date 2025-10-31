@@ -14,7 +14,6 @@ const navLinks = [
   { href: "#gallery", label: "Gallery" },
   { href: "#testimonials", label: "Testimonials" },
   { href: "#faq", label: "FAQ" },
-  { href: "#contact", label: "Contact Us" },
 ];
 
 export function Header() {
@@ -46,7 +45,7 @@ export function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className={`transition-colors hover:text-primary ${isScrolled ? 'text-foreground/80 hover:text-primary' : 'text-white/80 hover:text-white'}`}
+              className={`transition-colors hover:text-primary ${isScrolled ? 'text-foreground/80' : 'text-white/80 hover:text-white'}`}
             >
               {link.label}
             </Link>
@@ -54,10 +53,9 @@ export function Header() {
         </nav>
 
         <div className="flex flex-1 items-center justify-end space-x-4">
-           <Button 
-            asChild 
-            className={`hidden lg:inline-flex rounded-full ${isScrolled ? '' : 'bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary'}`}
-            variant={isScrolled ? 'default' : 'outline'}
+           <Button
+            asChild
+            className={`hidden lg:inline-flex rounded-full transition-colors ${isScrolled ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary'}`}
           >
             <Link href="#contact">Free Estimate</Link>
           </Button>
@@ -89,6 +87,13 @@ export function Header() {
                       {link.label}
                     </Link>
                   ))}
+                   <Link
+                      href={"#contact"}
+                      onClick={() => setOpen(false)}
+                      className="text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      Contact Us
+                    </Link>
                 </div>
               </div>
                <div className="pl-6">
