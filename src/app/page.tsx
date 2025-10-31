@@ -5,7 +5,6 @@ import { Services } from "@/components/sections/services";
 import { WhyUs } from "@/components/sections/why-us";
 import { Testimonials } from "@/components/sections/testimonials";
 import { Cta } from "@/components/sections/cta";
-import { Contact } from "@/components/sections/contact";
 import { Faq } from "@/components/sections/faq";
 import { Gallery } from "@/components/sections/gallery";
 
