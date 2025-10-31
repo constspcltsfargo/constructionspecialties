@@ -94,10 +94,11 @@ service cloud.firestore {
     }
 
     /**
-     * @description Grants create access to the /roles_admin/{userId} document to the user themselves, and read/write access only to admins.  The existence of a document grants admin privileges.
+     * @description Grants create access to the /roles_admin/{userId} document only to admins.
+     *              The existence of a document grants admin privileges.
      * @path /roles_admin/{userId}
-     * @allow (create) User creates their own admin role document.
-     * @deny (create) User attempts to create another user's admin role document.
+     * @allow (create) Admin creates an admin role document for another user.
+     * @deny (create) Non-admin attempts to create an admin role document.
      * @allow (get) Admin retrieves an admin role document.
      * @deny (get) Non-admin attempts to retrieve an admin role document.
      * @allow (list) Admin lists all admin role documents.
@@ -106,12 +107,12 @@ service cloud.firestore {
      * @deny (update) Non-admin attempts to update an admin role document.
      * @allow (delete) Admin deletes an admin role document.
      * @deny (delete) Non-admin attempts to delete an admin role document.
-     * @principle  Allows self-creation of admin role and enforces role-based access control.
+     * @principle  Allows only admins to manage admin roles.
      */
     match /roles_admin/{userId} {
       allow get: if isAdmin();
       allow list: if isAdmin();
-      allow create: if request.auth.uid == userId;
+      allow create: if isAdmin();
       allow update: if isAdmin() && resource != null;
       allow delete: if isAdmin() && resource != null;
     }

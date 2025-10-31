@@ -186,7 +186,7 @@
           "schema": {
             "$ref": "#/backend/entities/roles_admin"
           },
-          "description": "Marks the user as an administrator. Existence of a document in this collection grants admin privileges. Authorization based on Existence over Content.",
+          "description": "Marks a user as an administrator. Only an existing admin can create a document in this collection to grant another user admin privileges. Authorization is based on the existence of a document, not its content.",
           "params": [
             {
               "name": "userId",
