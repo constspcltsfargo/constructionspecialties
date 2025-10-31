@@ -1,5 +1,6 @@
 import { ContactForm } from "@/components/contact-form";
 import { Mail, Phone, MapPin } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 export function Contact() {
   return (
@@ -33,9 +34,9 @@ export function Contact() {
               </div>
           </div>
           <div className="lg:col-span-3">
-             <div className="bg-blue-900/50 p-8 rounded-lg text-white">
+             <Card className="bg-blue-900/50 p-4 md:p-8 rounded-lg text-white shadow-2xl">
                 <ContactForm />
-             </div>
+             </Card>
           </div>
         </div>
       </div>

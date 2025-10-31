@@ -14,7 +14,7 @@ const features = [
 ];
 
 export function WhyUs() {
-    const whyUsImage = PlaceHolderImages.find((img) => img.id === "blog-post-2"); // Using a blog image as placeholder
+    const whyUsImage = PlaceHolderImages.find((img) => img.id === "why-us-image");
   return (
     <section id="why-us" className="py-12 md:py-24 bg-secondary">
       <div className="container">
@@ -43,7 +43,7 @@ export function WhyUs() {
                     alt="Team of construction workers"
                     fill
                     className="object-cover"
-                    data-ai-hint="construction workers"
+                    data-ai-hint={whyUsImage.imageHint}
                 />
              )}
             </div>

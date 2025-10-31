@@ -2,7 +2,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { ContactForm } from '@/components/contact-form';
 
 export function Hero() {
     const heroImage1 = PlaceHolderImages.find(img => img.id === 'hero-image-1');
@@ -11,26 +10,49 @@ export function Hero() {
     const clientLogo2 = PlaceHolderImages.find(img => img.id === 'client-logo-2');
     const clientLogo3 = PlaceHolderImages.find(img => img.id === 'client-logo-3');
     const clientLogo4 = PlaceHolderImages.find(img => img.id === 'client-logo-4');
+    
+    const clientLogos = [clientLogo1, clientLogo2, clientLogo3, clientLogo4];
 
     return (
-        <section className="relative pt-16 pb-24 md:pt-24 md:pb-32 bg-cover bg-center" style={{ backgroundImage: "url('/hero-bg.jpg')" }}>
-            <div className="absolute inset-0 bg-black/50 z-0"></div>
-            <div className="relative mx-auto lg:max-w-7xl w-full px-5 sm:px-10 md:px-12 lg:px-5 grid lg:grid-cols-2 lg:items-center gap-10 z-10">
+        <section className="py-4 mt-14 sm:mt16 lg:mt-0">
+            <div className="mx-auto lg:max-w-7xl w-full px-5 sm:px-10 md:px-12 lg:px-5 grid lg:grid-cols-2 lg:items-center gap-10">
                 <div className="flex flex-col space-y-8 sm:space-y-10 text-center lg:text-left">
-                    <h1 className="font-semibold leading-tight text-white text-4xl sm:text-5xl lg:text-6xl">
-                        Your Trusted Orlando Roofing Company
+                    <h1 className="font-semibold leading-tight text-teal-950 dark:text-white text-4xl sm:text-5xl lg:text-6xl">
+                        Your Trusted Orlando <span className="text-transparent bg-clip-text bg-gradient-to-tr from-pink-700 to-orange-800">Roofing Company.</span>
                     </h1>
-                    <p className="text-gray-200 tracking-tight md:font-normal max-w-xl mx-auto lg:max-w-none">
-                        Providing quality roof services to Central Florida homeowners and businesses since 2003.
+                    <p className="flex text-gray-700 dark:text-gray-300 tracking-tight md:font-normal max-w-xl mx-auto lg:max-w-none">
+                        Providing quality roof services to Central Florida homeowners and businesses since 2003. We are a local, family-owned roofing company dedicated to providing our customers with the best roofing services possible.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 w-full">
-                        <Link href="#contact" className="px-8 py-3 items-center h-12 rounded-md bg-red-600 text-white duration-300 ease-linear flex justify-center w-full sm:w-auto text-lg font-bold">
-                            GET A FREE ESTIMATE
+                        <Link href="#contact" className="px-6 items-center h-12 rounded-3xl bg-pink-600 text-white duration-300 ease-linear flex justify-center w-full sm:w-auto">
+                            Get a Free Estimate
+                        </Link>
+                        <Link href="#contact" className="px-6 items-center h-12 rounded-3xl text-pink-700 border border-gray-100 dark:border-gray-800 dark:text-white bg-gray-100 dark:bg-gray-900 duration-300 ease-linear flex justify-center w-full sm:w-auto">
+                            Schedule Inspection
                         </Link>
                     </div>
+                     <div className="mt-5 flex items-center justify-center flex-wrap gap-4 lg:justify-start w-full">
+                        {clientLogos.map((logo, index) => (
+                           logo && <a href="#" key={index} target="_blank" rel='noreferrer'>
+                                <span className="sr-only">Client Logo</span>
+                                <Image 
+                                    width={140} 
+                                    height={50} 
+                                    src={logo.imageUrl} 
+                                    alt={logo.description} 
+                                    data-ai-hint={logo.imageHint}
+                                    className="h-10 w-auto dark:grayscale" />
+                            </a>
+                        ))}
+                    </div>
                 </div>
-                <div className="flex items-center justify-center">
-                    <ContactForm />
+                <div className="flex aspect-square lg:aspect-auto lg:h-[35rem] relative">
+                    <div className="w-3/5 h-[80%] rounded-3xl overflow-clip border-8 border-gray-200 dark:border-gray-950 z-30">
+                        {heroImage1 && <Image src={heroImage1.imageUrl} alt={heroImage1.description} data-ai-hint={heroImage1.imageHint} width={1300} height={1300} className="w-full h-full object-cover z-30" />}
+                    </div>
+                    <div className="absolute right-0 bottom-0 h-[calc(100%-50px)] w-4/5 rounded-3xl overflow-clip border-4 border-gray-200 dark:border-gray-800 z-10">
+                        {heroImage2 && <Image src={heroImage2.imageUrl} alt={heroImage2.description} data-ai-hint={heroImage2.imageHint} height={1300} width={1300} className="z-10 w-full h-full object-cover" />}
+                    </div>
                 </div>
             </div>
         </section>
