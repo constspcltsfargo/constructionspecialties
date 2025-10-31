@@ -1,3 +1,46 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-image",
+      "description": "A modern house under construction with a clear blue sky.",
+      "imageUrl": "https://images.unsplash.com/photo-1638009512305-ccdd23ec4c4d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtb2Rlcm4lMjBob3VzZSUyMGNvbnN0cnVjdGlvbnxlbnwwfHx8fDE3NjE5MjQyNjJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "modern house construction"
+    },
+    {
+      "id": "testimonial-avatar-1",
+      "description": "Portrait of a smiling man.",
+      "imageUrl": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjE4ODIwMzV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "testimonial-avatar-2",
+      "description": "Portrait of a smiling woman.",
+      "imageUrl": "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2MTkwOTQyNXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman portrait"
+    },
+    {
+      "id": "testimonial-avatar-3",
+      "description": "Portrait of a person.",
+      "imageUrl": "https://images.unsplash.com/photo-1600180758890-6b94519a8ba6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjE4ODIwMzV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "blog-post-1",
+      "description": "A close-up of a newly installed roof.",
+      "imageUrl": "https://images.unsplash.com/photo-1538297735744-31a51e62e521?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxuZXclMjByb29mfGVufDB8fHx8MTc2MTkyNDI2Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "new roof"
+    },
+    {
+      "id": "blog-post-2",
+      "description": "A construction worker inspecting a roof.",
+      "imageUrl": "https://images.unsplash.com/photo-1722876720000-f39b65b7d4a1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxyb29mJTIwaW5zcGVjdGlvbnxlbnwwfHx8fDE3NjE5MjQyNjJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "roof inspection"
+    },
+    {
+      "id": "blog-post-3",
+      "description": "Rain gutters on a residential house.",
+      "imageUrl": "https://images.unsplash.com/photo-1574359411659-15573a27fd0c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxob3VzZSUyMGd1dHRlcnN8ZW58MHx8fHwxNzYxOTI0MjYyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "house gutters"
+    }
+  ]
 }
