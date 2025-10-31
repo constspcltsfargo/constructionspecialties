@@ -13,6 +13,7 @@
  * - Admin privileges are determined by the existence of a document in the `/roles_admin/{userId}` collection.
  * - Only admins can create, update, or delete pages, page elements, and media.
  * - Public read access is not granted to any collections.
+ * - The first user can self-assign the admin role. Subsequent admin roles can only be granted by existing admins.
  *
  * Denormalization for Authorization:
  * - Admin status is checked via document existence in `/roles_admin/{userId}`, avoiding data reads during page/media access.
@@ -40,11 +41,7 @@ service cloud.firestore {
      * @principle Enforces role-based access control, granting admin privileges.
      */
     match /pages/{pageId} {
-      allow get: if isAdmin();
-      allow list: if isAdmin();
-      allow create: if isAdmin();
-      allow update: if isAdmin() && resource != null;
-      allow delete: if isAdmin() && resource != null;
+      allow read, write: if isAdmin();
     }
 
     /**
@@ -63,11 +60,7 @@ service cloud.firestore {
      * @principle Enforces role-based access control, granting admin privileges.
      */
     match /pages/{pageId}/pageElements/{pageElementId} {
-      allow get: if isAdmin();
-      allow list: if isAdmin();
-      allow create: if isAdmin();
-      allow update: if isAdmin() && resource != null;
-      allow delete: if isAdmin() && resource != null;
+      allow read, write: if isAdmin();
     }
 
     /**
@@ -86,35 +79,22 @@ service cloud.firestore {
      * @principle Enforces role-based access control, granting admin privileges.
      */
     match /media/{mediaId} {
-      allow get: if isAdmin();
-      allow list: if isAdmin();
-      allow create: if isAdmin();
-      allow update: if isAdmin() && resource != null;
-      allow delete: if isAdmin() && resource != null;
+      allow read, write: if isAdmin();
     }
 
     /**
-     * @description Grants create access to the /roles_admin/{userId} document only to admins.
-     *              The existence of a document grants admin privileges.
+     * @description Allows the first user to become an admin, and allows existing admins to grant roles.
      * @path /roles_admin/{userId}
-     * @allow (create) Admin creates an admin role document for another user.
-     * @deny (create) Non-admin attempts to create an admin role document.
-     * @allow (get) Admin retrieves an admin role document.
-     * @deny (get) Non-admin attempts to retrieve an admin role document.
-     * @allow (list) Admin lists all admin role documents.
-     * @deny (list) Non-admin attempts to list admin role documents.
-     * @allow (update) Admin updates an admin role document.
-     * @deny (update) Non-admin attempts to update an admin role document.
-     * @allow (delete) Admin deletes an admin role document.
-     * @deny (delete) Non-admin attempts to delete an admin role document.
-     * @principle  Allows only admins to manage admin roles.
+     * @allow (create) The first user creates their own admin role.
+     * @allow (create) An existing admin creates an admin role for another user.
+     * @deny (create) A non-admin attempts to create an admin role when admins already exist.
+     * @allow (read, write) Admin can manage admin role documents.
+     * @deny (read, write) Non-admin attempts to manage admin role documents.
+     * @principle Secures admin role management while enabling initial setup.
      */
     match /roles_admin/{userId} {
-      allow get: if isAdmin();
-      allow list: if isAdmin();
-      allow create: if isAdmin();
-      allow update: if isAdmin() && resource != null;
-      allow delete: if isAdmin() && resource != null;
+      allow read, write: if isAdmin();
+      allow create: if (isFirstAdmin() && request.auth.uid == userId) || isAdmin();
     }
 
     // ---- Helper functions ----
@@ -125,6 +105,14 @@ service cloud.firestore {
      */
     function isAdmin() {
       return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+    }
+
+    /**
+     * @description Checks if there are no admin documents in the roles_admin collection.
+     * @return {boolean} True if the collection is empty, false otherwise.
+     */
+    function isFirstAdmin() {
+      return !exists(/databases/$(database)/documents/roles_admin);
     }
   }
 }

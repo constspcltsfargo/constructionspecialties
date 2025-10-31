@@ -186,7 +186,7 @@
           "schema": {
             "$ref": "#/backend/entities/roles_admin"
           },
-          "description": "Marks a user as an administrator. Only an existing admin can create a document in this collection to grant another user admin privileges. Authorization is based on the existence of a document, not its content.",
+          "description": "Marks a user as an administrator. The first user to sign up can create their own admin document. Subsequent admin roles can only be granted by an existing admin. Authorization is based on the existence of a document, not its content.",
           "params": [
             {
               "name": "userId",

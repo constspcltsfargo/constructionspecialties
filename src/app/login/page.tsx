@@ -1,12 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth } from '@/firebase';
+import { useAuth, useFirestore } from '@/firebase';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   AuthError,
 } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,17 +20,23 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const auth = useAuth();
+  const firestore = useFirestore();
   const router = useRouter();
 
   const handleAuth = async (isSignUp: boolean) => {
     setError(null);
-    if (!auth) {
-        setError("Auth service is not available.");
+    if (!auth || !firestore) {
+        setError("Authentication services are not available.");
         return;
     }
     try {
       if (isSignUp) {
-        await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        // Attempt to create an admin role document for the new user.
+        // This will only succeed if they are the first user, per security rules.
+        const adminRoleRef = doc(firestore, 'roles_admin', user.uid);
+        await setDoc(adminRoleRef, { role: 'admin' });
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
@@ -37,6 +44,7 @@ export default function LoginPage() {
     } catch (e) {
       const authError = e as AuthError;
       setError(authError.message);
+      console.error(e); // Also log the full error for debugging
     }
   };
 
