@@ -29,12 +29,12 @@ export function Header() {
   }, []);
 
   return (
-    <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${isScrolled ? 'bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-md' : 'bg-transparent'}`}>
+    <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${isScrolled ? 'bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-md' : 'bg-white/30 backdrop-blur-md'}`}>
       <div className="container flex h-20 items-center">
         <div className="mr-4 flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            <Logo className={`h-8 w-8 transition-colors ${isScrolled ? 'text-primary' : 'text-white'}`} />
-            <span className={`font-bold text-lg transition-colors sm:inline-block ${isScrolled ? 'text-foreground' : 'text-white'}`}>
+            <Logo className={`h-8 w-8 transition-colors text-primary`} />
+            <span className={`font-bold text-lg transition-colors sm:inline-block text-foreground`}>
               Company Name
             </span>
           </Link>
@@ -45,7 +45,7 @@ export function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className={`transition-colors hover:text-primary ${isScrolled ? 'text-foreground/80' : 'text-white/80 hover:text-white'}`}
+              className={`transition-colors hover:text-primary ${isScrolled ? 'text-foreground/80' : 'text-foreground/80 hover:text-foreground'}`}
             >
               {link.label}
             </Link>
@@ -55,7 +55,7 @@ export function Header() {
         <div className="flex flex-1 items-center justify-end space-x-4">
            <Button
             asChild
-            className={`hidden lg:inline-flex rounded-full transition-colors ${isScrolled ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary'}`}
+            className={`hidden lg:inline-flex rounded-full transition-colors ${isScrolled ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground'}`}
           >
             <Link href="#contact">Free Estimate</Link>
           </Button>
@@ -64,7 +64,7 @@ export function Header() {
             <SheetTrigger asChild>
               <Button
                 variant="ghost"
-                className={`lg:hidden px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 ${isScrolled ? 'text-foreground' : 'text-white'}`}
+                className={`lg:hidden px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-foreground`}
               >
                 <Menu className="h-6 w-6" />
                 <span className="sr-only">Toggle Menu</span>
