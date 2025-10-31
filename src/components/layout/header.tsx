@@ -46,7 +46,7 @@ export function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className={`transition-colors hover:text-primary ${isScrolled ? 'text-foreground/80' : 'text-white/80'}`}
+              className={`transition-colors hover:text-primary ${isScrolled ? 'text-foreground/80 hover:text-primary' : 'text-white/80 hover:text-white'}`}
             >
               {link.label}
             </Link>
