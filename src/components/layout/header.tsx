@@ -1,14 +1,10 @@
-"use client";
+"use client"
+import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 
-const navLinks = [
-  { href: "#services", label: "Our Services" },
-  { href: "#why-us", label: "Why Choose Us" },
-  { href: "#gallery", label: "Gallery" },
-  { href: "#testimonials", label: "Testimonials" },
-  { href: "#faq", label: "FAQ" },
-];
 
 export function Header() {
     const [navIsOpened, setNavIsOpened] = useState(false);
@@ -18,6 +14,21 @@ export function Header() {
     const toggleNavbar = () => {
         setNavIsOpened(navIsOpened => !navIsOpened);
     };
+
+    const navLinks = [
+        { href: "/", label: "Home" },
+        { href: "#services", label: "Services" },
+        { href: "#gallery", label: "Gallery" },
+        { href: "#contact", label: "Contact" },
+        { href: "#why-us", label: "About Us" },
+    ];
+    
+    const clientLogo1 = PlaceHolderImages.find(img => img.id === 'client-logo-1');
+    const clientLogo2 = PlaceHolderImages.find(img => img.id === 'client-logo-2');
+    const clientLogo3 = PlaceHolderImages.find(img => img.id === 'client-logo-3');
+    const clientLogo4 = PlaceHolderImages.find(img => img.id === 'client-logo-4');
+
+
     return (
         <>
             <div aria-hidden={true} onClick={() => {
@@ -68,7 +79,7 @@ export function Header() {
                     </div>
                 </div>
             </div>
-            <header className="sticky left-0 top-0 w-full flex items-center h-20 border-b border-b-gray-100 dark:border-b-gray-900 z-40 bg-white dark:bg-gray-950 bg-opacity-80 backdrop-filter backdrop-blur-xl">
+            <header className="sticky left-0 top-0 w-full flex items-center h-20 border-b border-b-gray-100 dark:border-b-gray-900 z-40 bg-white/80 dark:bg-gray-950/80 backdrop-filter backdrop-blur-xl">
                 <nav className="relative mx-auto lg:max-w-7xl w-full px-5 sm:px-10 md:px-12 lg:px-5 flex gap-x-5 justify-between items-center">
                     <div className="flex items-center min-w-max">
                         <Link href="#" className="text-xl font-semibold flex items-center gap-x-2">
@@ -83,7 +94,7 @@ export function Header() {
                         absolute top-full left-0 bg-white dark:bg-gray-950 lg:bg-transparent border-b border-gray-200 dark:border-gray-800 py-8 lg:py-0 px-5 sm:px-10 md:px-12 lg:px-0 lg:border-none w-full lg:top-0 lg:relative lg:flex lg:justify-between duration-300 ease-linear
                         ${navIsOpened ? "translate-y-0 opacity-100 visible" : "translate-y-10 opacity-0 invisible lg:visible lg:translate-y-0 lg:opacity-100"}
                     `}>
-                        <ul className="flex flex-col lg:flex-row gap-6 lg:items-center text-gray-700 dark:text-gray-300 lg:w-full lg:justify-center">
+                         <ul className="flex flex-col lg:flex-row gap-6 lg:items-center text-gray-700 dark:text-gray-300 lg:w-full lg:justify-center">
                             {navLinks.map(link => (
                                 <li key={link.href}>
                                     <Link href={link.href} className="relative py-2.5 duration-300 ease-linear hover:text-pink-600 after:absolute after:w-full after:left-0 after:bottom-0 after:h-px after:rounded-md after:origin-left after:ease-linear after:duration-300 after:scale-x-0 hover:after:scale-100 after:bg-pink-600">
@@ -117,3 +128,5 @@ export function Header() {
         </>
     );
 }
+
+    
