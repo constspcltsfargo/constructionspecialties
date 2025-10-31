@@ -41,15 +41,14 @@ export function ContactForm() {
           description: state.issues ? state.issues.join(", ") : "An unexpected error occurred.",
           variant: "destructive",
         });
-      } else {
+      } else if (state.message.startsWith("Success")) {
         formRef.current?.reset();
       }
     }
   }, [state, toast]);
 
-  return (
-    <Card className="shadow-lg text-white bg-blue-900/50 rounded-lg border-0">
-      {state.message.startsWith("Success") && state.data ? (
+  if (state.message.startsWith("Success") && state.data) {
+    return (
         <CardContent className="pt-6">
           <div className="flex flex-col items-center text-center p-4 rounded-lg bg-green-50/90 border border-green-200 text-green-900">
             <CheckCircle className="h-12 w-12 text-green-500 mb-4" />
@@ -65,7 +64,10 @@ export function ContactForm() {
             </div>
           </div>
         </CardContent>
-      ) : (
+    )
+  }
+  
+  return (
         <form ref={formRef} action={formAction}>
           <CardHeader className="text-center">
             <CardTitle className="text-4xl font-bold">
@@ -129,7 +131,5 @@ export function ContactForm() {
             )}
           </CardFooter>
         </form>
-      )}
-    </Card>
   );
 }

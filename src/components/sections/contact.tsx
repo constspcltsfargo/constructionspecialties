@@ -11,7 +11,7 @@ export function Contact() {
             We're ready to help with your next project. Reach out to us today for a free estimate!
           </p>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 max-w-6xl mx-auto">
           <div className="lg:col-span-2 bg-gray-100 p-8 rounded-lg shadow-lg">
               <h3 className="text-2xl font-semibold mb-4">Our Information</h3>
               <p className="text-muted-foreground mb-6">
@@ -31,6 +31,11 @@ export function Contact() {
                   <span className="text-muted-foreground">123 Main Street<br/>Orlando, FL 12345</span>
                 </div>
               </div>
+          </div>
+          <div className="lg:col-span-3">
+             <div className="bg-blue-900/50 p-8 rounded-lg text-white">
+                <ContactForm />
+             </div>
           </div>
         </div>
       </div>

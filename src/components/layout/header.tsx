@@ -92,7 +92,7 @@ export function Header() {
                          <ul className="flex flex-col lg:flex-row gap-6 lg:items-center text-gray-700 dark:text-gray-300 lg:w-full lg:justify-center">
                             {navLinks.map(link => (
                                 <li key={link.href}>
-                                    <Link href={link.href} className="relative py-2.5 duration-300 ease-linear hover:text-pink-600 after:absolute after:w-full after:left-0 after:bottom-0 after:h-px after:rounded-md after:origin-left after:ease-linear after:duration-300 after:scale-x-0 hover:after:scale-100 after:bg-pink-600">
+                                    <Link href={link.href} onClick={closeNavbar} className="relative py-2.5 duration-300 ease-linear hover:text-pink-600 after:absolute after:w-full after:left-0 after:bottom-0 after:h-px after:rounded-md after:origin-left after:ease-linear after:duration-300 after:scale-x-0 hover:after:scale-100 after:bg-pink-600">
                                         {link.label}
                                     </Link>
                                 </li>
@@ -122,7 +122,7 @@ export function Header() {
                  <Sheet open={navIsOpened} onOpenChange={setNavIsOpened}>
                     <SheetContent side="left" className="w-[--sidebar-width-mobile] bg-white dark:bg-gray-950 p-4">
                         <SheetHeader>
-                        <SheetTitle className="text-lg font-bold">Menu</SheetTitle>
+                            <SheetTitle className="sr-only">Menu</SheetTitle>
                         </SheetHeader>
                         <ul className="flex flex-col gap-4 mt-6">
                             {navLinks.map(link => (
