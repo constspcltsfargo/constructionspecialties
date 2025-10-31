@@ -54,7 +54,11 @@ export function Header() {
         </nav>
 
         <div className="flex flex-1 items-center justify-end space-x-4">
-          <Button asChild className="hidden lg:inline-flex rounded-full">
+           <Button 
+            asChild 
+            className={`hidden lg:inline-flex rounded-full ${isScrolled ? '' : 'bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary'}`}
+            variant={isScrolled ? 'default' : 'outline'}
+          >
             <Link href="#contact">Free Estimate</Link>
           </Button>
 
