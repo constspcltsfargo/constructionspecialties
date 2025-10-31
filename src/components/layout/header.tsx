@@ -84,11 +84,8 @@ export function Header() {
                             <span className="text-lg text-gray-700 dark:text-gray-300">Construction Specialties & Roofing</span>
                         </Link>
                     </div>
-                    <div className={`
-                        absolute top-full left-0 bg-white dark:bg-gray-950 lg:bg-transparent border-b border-gray-200 dark:border-gray-800 py-8 lg:py-0 px-5 sm:px-10 md:px-12 lg:px-0 lg:border-none w-full lg:top-0 lg:relative lg:flex lg:justify-between duration-300 ease-linear
-                        ${navIsOpened ? "translate-y-0 opacity-100 visible" : "translate-y-10 opacity-0 invisible lg:visible lg:translate-y-0 lg:opacity-100"}
-                    `}>
-                         <ul className="flex flex-col lg:flex-row gap-6 lg:items-center text-gray-700 dark:text-gray-300 lg:w-full lg:justify-center">
+                    <div className="hidden lg:flex lg:flex-1 lg:justify-center">
+                         <ul className="flex flex-col lg:flex-row gap-6 lg:items-center text-gray-700 dark:text-gray-300">
                             {navLinks.map(link => (
                                 <li key={link.href}>
                                     <Link href={link.href} onClick={closeNavbar} className="relative py-2.5 duration-300 ease-linear hover:text-pink-600 after:absolute after:w-full after:left-0 after:bottom-0 after:h-px after:rounded-md after:origin-left after:ease-linear after:duration-300 after:scale-x-0 hover:after:scale-100 after:bg-pink-600">
@@ -97,16 +94,14 @@ export function Header() {
                                 </li>
                             ))}
                         </ul>
-                        <div className="flex sm:items-center lg:min-w-max mt-10 lg:mt-0">
-                            <Link href="#contact" className="px-6 items-center h-12 rounded-3xl text-pink-700 border border-gray-100 dark:border-gray-800 dark:text-white bg-gray-100 dark:bg-gray-900 duration-300 ease-linear flex justify-center w-full sm:w-auto">
-                                Get a Free Estimate
-                            </Link>
-                        </div>
+                    </div>
+                    <div className="hidden lg:flex lg:items-center lg:min-w-max">
+                        <Link href="#contact" className="px-6 items-center h-12 rounded-3xl text-pink-700 border border-gray-100 dark:border-gray-800 dark:text-white bg-gray-100 dark:bg-gray-900 duration-300 ease-linear flex justify-center w-full sm:w-auto">
+                            Get a Free Estimate
+                        </Link>
                     </div>
                     <div aria-hidden="true" className="flex items-center lg:hidden">
-                        <button onClick={() => {
-                            toggleNavbar();
-                        }} aria-label='toggle navbar' className="outline-none border-l border-l-indigo-100 dark:border-l-gray-800 pl-3 relative py-3">
+                        <button onClick={toggleNavbar} aria-label='toggle navbar' className="outline-none border-l border-l-indigo-100 dark:border-l-gray-800 pl-3 relative py-3">
                             <span aria-hidden={true} className={`
                                 flex h-0.5 w-6 rounded bg-gray-800 dark:bg-gray-300 transition duration-300
                                 ${navIsOpened ? "rotate-45 translate-y-[.324rem]" : ""}
@@ -118,12 +113,12 @@ export function Header() {
                         </button>
                     </div>
                 </nav>
-                 <Sheet open={navIsOpened} onOpenChange={setNavIsOpened}>
+                <Sheet open={navIsOpened} onOpenChange={setNavIsOpened}>
                     <SheetContent side="left" className="w-[--sidebar-width-mobile] bg-white dark:bg-gray-950 p-4">
                         <SheetHeader>
                             <SheetTitle className="sr-only">Menu</SheetTitle>
                         </SheetHeader>
-                        <ul className="flex flex-col gap-4 mt-6">
+                         <ul className="flex flex-col gap-4 mt-10">
                             {navLinks.map(link => (
                                 <li key={link.href}>
                                     <Link href={link.href} onClick={closeNavbar} className="text-gray-700 dark:text-gray-300 hover:text-pink-600 text-lg">
@@ -132,9 +127,16 @@ export function Header() {
                                 </li>
                             ))}
                         </ul>
+                        <div className="flex sm:items-center mt-10">
+                            <Link href="#contact" onClick={closeNavbar} className="px-6 items-center h-12 rounded-3xl text-white bg-pink-600 duration-300 ease-linear flex justify-center w-full sm:w-auto">
+                                Get a Free Estimate
+                            </Link>
+                        </div>
                     </SheetContent>
                 </Sheet>
             </header>
         </>
     );
 }
+
+    
