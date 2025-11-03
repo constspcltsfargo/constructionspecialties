@@ -19,17 +19,21 @@ export function Contact() {
                 Use the form to send us a message, or contact us directly using the information below. We look forward to hearing from you.
               </p>
               <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <Phone className="h-5 w-5 text-primary" />
-                  <a href="tel:4073800132" className="text-muted-foreground hover:text-primary">(407) 380-0132</a>
+                 <div className="flex items-start gap-4">
+                  <MapPin className="h-5 w-5 text-primary mt-1" />
+                  <span className="text-muted-foreground">405 11th Ave NW<br/>West Fargo, ND 58078</span>
                 </div>
                 <div className="flex items-center gap-4">
                   <Mail className="h-5 w-5 text-primary" />
-                  <a href="mailto:info@csroof.com" className="text-muted-foreground hover:text-primary">info@csroof.com</a>
+                  <a href="mailto:constspcltsfargo@gmail.com" className="text-muted-foreground hover:text-primary">constspcltsfargo@gmail.com</a>
                 </div>
-                <div className="flex items-start gap-4">
-                  <MapPin className="h-5 w-5 text-primary mt-1" />
-                  <span className="text-muted-foreground">123 Main Street<br/>Orlando, FL 12345</span>
+                 <div className="flex items-center gap-4">
+                  <Phone className="h-5 w-5 text-primary" />
+                  <a href="tel:701-277-1633" className="text-muted-foreground hover:text-primary">Fargo: 701-277-1633</a>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Phone className="h-5 w-5 text-primary" />
+                  <a href="tel:701-852-1633" className="text-muted-foreground hover:text-primary">Minot: 701-852-1633</a>
                 </div>
               </div>
           </div>
