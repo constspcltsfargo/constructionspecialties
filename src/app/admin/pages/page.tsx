@@ -7,7 +7,7 @@ import { collection, deleteDoc, doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { PlusCircle, Trash2 } from 'lucide-react';
+import { PlusCircle, Trash2, Edit } from 'lucide-react';
 import Link from 'next/link';
 import {
   AlertDialog,
@@ -21,6 +21,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
+import { Separator } from '@/components/ui/separator';
 
 interface Page {
     id: string;
@@ -62,8 +63,10 @@ export default function PageManagementPage() {
     }
   };
 
-  // Filter out the special 'home' page from the list
-  const filteredPages = pages?.filter(page => page.id !== 'home');
+  // Separate the homepage from other pages
+  const otherPages = pages?.filter(page => page.id !== 'home');
+  const homePage = pages?.find(page => page.id === 'home');
+
 
   return (
     <Card>
@@ -81,7 +84,27 @@ export default function PageManagementPage() {
       <CardContent>
         {isLoading && <p>Loading pages...</p>}
         {error && <p className="text-red-500">Error: {error.message}</p>}
-        {filteredPages && (
+
+        {homePage && (
+            <div className="mb-8">
+                <h3 className="text-lg font-semibold mb-2">Homepage</h3>
+                <div className="p-4 border rounded-lg flex justify-between items-center bg-secondary">
+                    <div>
+                        <p className="font-medium">{homePage.title}</p>
+                        <p className="text-sm text-muted-foreground">Last updated: {homePage.lastUpdated ? new Date(homePage.lastUpdated).toLocaleDateString() : 'N/A'}</p>
+                    </div>
+                    <Button asChild>
+                        <Link href="/admin/pages/home">
+                            <Edit className="mr-2 h-4 w-4" />
+                            Edit Homepage Sections
+                        </Link>
+                    </Button>
+                </div>
+                 <Separator className="my-8" />
+            </div>
+        )}
+
+        {otherPages && (
           <Table>
             <TableHeader>
               <TableRow>
@@ -92,7 +115,7 @@ export default function PageManagementPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredPages.map(page => (
+              {otherPages.map(page => (
                 <TableRow key={page.id}>
                   <TableCell>{page.title}</TableCell>
                   <TableCell>/{page.slug}</TableCell>
@@ -131,9 +154,9 @@ export default function PageManagementPage() {
             </TableBody>
           </Table>
         )}
-        {filteredPages && filteredPages.length === 0 && !isLoading && (
+        {otherPages && otherPages.length === 0 && !isLoading && (
             <div className="text-center py-12">
-                <h3 className="text-lg font-semibold">No pages found</h3>
+                <h3 className="text-lg font-semibold">No other pages found</h3>
                 <p className="text-muted-foreground mt-2">Get started by creating a new page.</p>
             </div>
         )}
