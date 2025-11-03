@@ -1,12 +1,12 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, writeBatch, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,79 +15,139 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
-import { PlusCircle, Trash2 } from 'lucide-react';
+import { GripVertical } from 'lucide-react';
 
-const homepageContentSchema = z.object({
-    hero: z.object({
-        title: z.string().min(1, 'Title is required'),
-        subtitle: z.string().min(1, 'Subtitle is required'),
-    }),
-    whyUs: z.object({
-        title: z.string().min(1, 'Title is required'),
-        subtitle: z.string().min(1, 'Subtitle is required'),
-        features: z.array(z.string().min(1, "Feature cannot be empty")).min(1, "At least one feature is required"),
-    }),
+// Defines the schema for a single page element's content
+const heroSchema = z.object({
+    title: z.string().min(1, 'Title is required'),
+    subtitle: z.string().min(1, 'Subtitle is required'),
 });
 
-type HomepageContentFormValues = z.infer<typeof homepageContentSchema>;
+const whyUsSchema = z.object({
+    title: z.string().min(1, 'Title is required'),
+    subtitle: z.string().min(1, 'Subtitle is required'),
+    features: z.array(z.string().min(1, "Feature cannot be empty")).min(1, "At least one feature is required"),
+});
 
-const defaultValues: HomepageContentFormValues = {
-    hero: {
-      title: "Your Trusted Orlando <span class=\"text-transparent bg-clip-text bg-gradient-to-tr from-pink-700 to-orange-800\">Roofing Company.</span>",
-      subtitle: "Providing quality roof services to Central Florida homeowners and businesses since 2003. We are a local, family-owned roofing company dedicated to providing our customers with the best roofing services possible."
-    },
-    whyUs: {
-        title: "Why Choose Us for Your Next Project?",
-        subtitle: "We are a local, family-owned roofing company that has been serving Central Florida since 2003. We are dedicated to providing our customers with the best roofing services possible.",
-        features: [
-            "20+ Years of Experience",
-            "Licensed & Insured",
-            "Financing Available",
-            "Locally Owned & Operated",
-            "Certified Installers",
-            "Quality Materials",
-        ]
-    }
-};
+// A "discriminated union" to validate content based on the element type
+const elementContentSchema = z.discriminatedUnion("type", [
+  z.object({ type: z.literal('hero'), content: heroSchema }),
+  z.object({ type: z.literal('why-us'), content: whyUsSchema }),
+  z.object({ type: z.literal('services'), content: z.object({}) }),
+  z.object({ type: z.literal('gallery'), content: z.object({}) }),
+  z.object({ type: z.literal('testimonials'), content: z.object({}) }),
+  z.object({ type: z.literal('faq'), content: z.object({}) }),
+  z.object({ type: z.literal('cta'), content: z.object({}) }),
+  z.object({ type: z.literal('contact'), content: z.object({}) }),
+]);
+
+// Main form schema for an array of page elements
+const pageElementsSchema = z.object({
+  elements: z.array(z.object({
+    id: z.string(),
+    type: z.string(),
+    order: z.number(),
+    content: z.any(), // Use 'any' for the array, but validate individuals with the union
+  })),
+});
+
+type PageElementsFormValues = z.infer<typeof pageElementsSchema>;
+
+// Default content for seeding the database
+const defaultElements = [
+    { id: 'hero', type: 'hero', order: 1, content: { title: "Your Trusted Orlando <span class=\"text-transparent bg-clip-text bg-gradient-to-tr from-pink-700 to-orange-800\">Roofing Company.</span>", subtitle: "Providing quality roof services to Central Florida homeowners and businesses since 2003. We are a local, family-owned roofing company dedicated to providing our customers with the best roofing services possible." }},
+    { id: 'services', type: 'services', order: 2, content: {} },
+    { id: 'why-us', type: 'why-us', order: 3, content: { title: "Why Choose Us for Your Next Project?", subtitle: "We are a local, family-owned roofing company that has been serving Central Florida since 2003. We are dedicated to providing our customers with the best roofing services possible.", features: ["20+ Years of Experience", "Licensed & Insured", "Financing Available", "Locally Owned & Operated", "Certified Installers", "Quality Materials"] }},
+    { id: 'gallery', type: 'gallery', order: 4, content: {} },
+    { id: 'testimonials', type: 'testimonials', order: 5, content: {} },
+    { id: 'faq', type: 'faq', order: 6, content: {} },
+    { id: 'cta', type: 'cta', order: 7, content: {} },
+    { id: 'contact', type: 'contact', order: 8, content: {} },
+];
 
 export default function EditHomepage() {
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  const homepageRef = useMemoFirebase(() => {
+  const elementsRef = useMemoFirebase(() => {
     if (!firestore) return null;
-    return doc(firestore, 'pages', 'home');
+    return collection(firestore, 'pages', 'home', 'pageElements');
   }, [firestore]);
 
-  const { data: pageData, isLoading: isPageLoading } = useDoc<HomepageContentFormValues>(homepageRef);
+  const { data: pageElements, isLoading: isElementsLoading } = useCollection<any>(elementsRef);
 
-  const form = useForm<HomepageContentFormValues>({
-    resolver: zodResolver(homepageContentSchema),
-    defaultValues: defaultValues,
+  const form = useForm<PageElementsFormValues>({
+    // No Zod resolver here, we validate on submit
+    defaultValues: { elements: [] },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, move } = useFieldArray({
     control: form.control,
-    name: "whyUs.features",
+    name: "elements",
   });
-
 
   useEffect(() => {
-    if (pageData) {
-      form.reset(pageData);
-    } else if (!isPageLoading && homepageRef) {
-      // Seed the database with default content if it doesn't exist
-      setDoc(homepageRef, { ...defaultValues, lastUpdated: serverTimestamp() });
-    }
-  }, [pageData, isPageLoading, form, homepageRef]);
+    const seedDatabase = async () => {
+        if (!firestore) return;
+        const batch = writeBatch(firestore);
+        const pageRef = doc(firestore, 'pages', 'home');
+        batch.set(pageRef, { title: "Homepage", lastUpdated: serverTimestamp() }, { merge: true });
 
-  const onSubmit = async (values: HomepageContentFormValues) => {
-    if (!homepageRef) return;
+        defaultElements.forEach(element => {
+            const elementRef = doc(firestore, 'pages', 'home', 'pageElements', element.id);
+            batch.set(elementRef, {
+                type: element.type,
+                order: element.order,
+                content: element.content
+            });
+        });
+        await batch.commit();
+        toast({ title: "Homepage seeded!", description: "Default content has been created." });
+    };
+
+    if (!isElementsLoading && (!pageElements || pageElements.length === 0)) {
+        seedDatabase();
+    }
+    
+    if (pageElements) {
+      const sortedElements = [...pageElements].sort((a, b) => a.order - b.order);
+      form.reset({ elements: sortedElements });
+    }
+  }, [pageElements, isElementsLoading, firestore, form, toast]);
+
+
+  const onSubmit = async (values: PageElementsFormValues) => {
+    if (!firestore) return;
+    const batch = writeBatch(firestore);
+
+    for (let i = 0; i < values.elements.length; i++) {
+        const element = values.elements[i];
+        
+        // Validate each element's content
+        const validationInput = { type: element.type, content: element.content };
+        const result = elementContentSchema.safeParse(validationInput);
+
+        if (!result.success) {
+            const issues = result.error.issues.map(issue => `Section '${element.type}': ${issue.path.slice(1).join('.')} - ${issue.message}`);
+            toast({
+                variant: 'destructive',
+                title: 'Validation Error',
+                description: issues.join('\n'),
+            });
+            return; // Stop submission
+        }
+
+        const elementRef = doc(firestore, 'pages', 'home', 'pageElements', element.id);
+        batch.update(elementRef, { 
+            content: element.content,
+            order: i + 1 // Re-assign order based on current array index
+        });
+    }
+
     try {
-      await setDoc(homepageRef, {
-        ...values,
-        lastUpdated: serverTimestamp(),
-      }, { merge: true });
+      await batch.commit();
+      // Update the main page's timestamp
+      await setDoc(doc(firestore, 'pages', 'home'), { lastUpdated: serverTimestamp() }, { merge: true });
       toast({
         title: 'Success!',
         description: 'Homepage content updated successfully.',
@@ -101,7 +161,40 @@ export default function EditHomepage() {
     }
   };
 
-  if (isPageLoading || !form.formState.isDirty && !pageData) {
+  const renderElementForm = (element: Record<"id", string>, index: number) => {
+    switch (element.type) {
+      case 'hero':
+        return (
+          <>
+            <FormField control={form.control} name={`elements.${index}.content.title`} render={({ field }) => (
+              <FormItem><FormLabel>Title (HTML)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+            )}/>
+            <FormField control={form.control} name={`elements.${index}.content.subtitle`} render={({ field }) => (
+              <FormItem><FormLabel>Subtitle</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
+            )}/>
+          </>
+        );
+      case 'why-us':
+         const { fields: featureFields, append, remove } = useFieldArray({
+            control: form.control,
+            name: `elements.${index}.content.features`
+        });
+        return (
+          <>
+            <FormField control={form.control} name={`elements.${index}.content.title`} render={({ field }) => (
+              <FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+            )}/>
+            <FormField control={form.control} name={`elements.${index}.content.subtitle`} render={({ field }) => (
+              <FormItem><FormLabel>Subtitle</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
+            )}/>
+          </>
+        );
+      default:
+        return <p className="text-sm text-muted-foreground">This section has no editable content fields.</p>;
+    }
+  };
+
+  if (isElementsLoading || fields.length === 0) {
     return (
         <Card>
             <CardHeader>
@@ -109,133 +202,41 @@ export default function EditHomepage() {
                 <Skeleton className="h-4 w-1/3" />
             </CardHeader>
             <CardContent className="space-y-8 mt-6">
-                <div className="space-y-4">
-                    <Skeleton className="h-6 w-1/4" />
-                    <Skeleton className="h-10 w-full" />
-                    <Skeleton className="h-20 w-full" />
-                </div>
-                 <div className="space-y-4">
-                    <Skeleton className="h-6 w-1/4" />
-                    <Skeleton className="h-10 w-full" />
-                    <Skeleton className="h-20 w-full" />
-                </div>
+                <Skeleton className="h-40 w-full" />
+                <Skeleton className="h-40 w-full" />
                 <Skeleton className="h-12 w-32" />
             </CardContent>
         </Card>
-    )
+    );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Edit Homepage Content</CardTitle>
-        <CardDescription>Make changes to your homepage sections here. Click save when you're done.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-12">
-            
-            {/* Hero Section */}
-            <div className="space-y-4">
-                <h3 className="text-xl font-semibold border-b pb-2">Hero Section</h3>
-                <FormField
-                control={form.control}
-                name="hero.title"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Title (HTML enabled)</FormLabel>
-                    <FormControl>
-                        <Input placeholder="Enter hero title" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <FormField
-                control={form.control}
-                name="hero.subtitle"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Subtitle</FormLabel>
-                    <FormControl>
-                        <Textarea placeholder="Enter hero subtitle" {...field} className="min-h-[100px]" />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-            </div>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <Card>
+            <CardHeader>
+                <CardTitle>Edit Homepage Sections</CardTitle>
+                <CardDescription>Edit content for each section of your homepage. Drag to reorder.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+            {fields.map((field, index) => (
+                <Card key={field.id} className="p-4">
+                    <div className="flex items-start gap-4">
+                        <GripVertical className="h-8 w-8 text-muted-foreground mt-4 cursor-grab" />
+                        <div className="flex-1 space-y-4">
+                             <h3 className="text-lg font-semibold capitalize">{field.type.replace('-', ' ')}</h3>
+                            {renderElementForm(field, index)}
+                        </div>
+                    </div>
+                </Card>
+            ))}
+            </CardContent>
+        </Card>
 
-            {/* Why Us Section */}
-            <div className="space-y-4">
-                <h3 className="text-xl font-semibold border-b pb-2">Why Us Section</h3>
-                <FormField
-                control={form.control}
-                name="whyUs.title"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                        <Input placeholder="Enter Why Us title" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <FormField
-                control={form.control}
-                name="whyUs.subtitle"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Subtitle</FormLabel>
-                    <FormControl>
-                        <Textarea placeholder="Enter Why Us subtitle" {...field} className="min-h-[100px]" />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <div className="space-y-2">
-                    <FormLabel>Features</FormLabel>
-                    {fields.map((field, index) => (
-                        <FormField
-                        key={field.id}
-                        control={form.control}
-                        name={`whyUs.features.${index}`}
-                        render={({ field }) => (
-                            <FormItem>
-                                <div className="flex items-center gap-2">
-                                     <FormControl>
-                                        <Input {...field} />
-                                    </FormControl>
-                                    <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
-                                        <Trash2 className="h-4 w-4 text-destructive" />
-                                    </Button>
-                                </div>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                        />
-                    ))}
-                     <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => append("")}
-                        className="mt-2"
-                    >
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Add Feature
-                    </Button>
-                </div>
-            </div>
-
-            <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Saving..." : "Save Changes"}
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+        <Button type="submit" disabled={form.formState.isSubmitting}>
+            {form.formState.isSubmitting ? "Saving..." : "Save Changes"}
+        </Button>
+      </form>
+    </Form>
   );
 }

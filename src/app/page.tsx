@@ -10,64 +10,69 @@ import { Cta } from "@/components/sections/cta";
 import { Faq } from "@/components/sections/faq";
 import { Gallery } from "@/components/sections/gallery";
 import { Contact } from "@/components/sections/contact";
-import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
-import { doc } from 'firebase/firestore';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, query, orderBy } from 'firebase/firestore';
 import { Skeleton } from "@/components/ui/skeleton";
+import { useMemo } from "react";
 
-export interface HomepageContent {
-  hero: {
-    title: string;
-    subtitle: string;
-  };
-  whyUs: {
-    title: string;
-    subtitle: string;
-    features: string[];
-  };
-}
+// Define a map for component rendering
+const componentMap: { [key: string]: React.ComponentType<any> } = {
+  hero: Hero,
+  services: Services,
+  'why-us': WhyUs,
+  gallery: Gallery,
+  testimonials: Testimonials,
+  faq: Faq,
+  cta: Cta,
+  contact: Contact,
+};
 
 export default function Home() {
   const firestore = useFirestore();
-  const homePageRef = useMemoFirebase(() => {
+  
+  const elementsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
-    return doc(firestore, 'pages', 'home');
+    return query(collection(firestore, 'pages', 'home', 'pageElements'), orderBy('order'));
   }, [firestore]);
 
-  const { data: pageData, isLoading } = useDoc<HomepageContent>(homePageRef);
+  const { data: pageElements, isLoading } = useCollection<any>(elementsQuery);
 
-  const defaultContent: HomepageContent = {
-    hero: {
-      title: "Your Trusted Orlando <span class=\"text-transparent bg-clip-text bg-gradient-to-tr from-pink-700 to-orange-800\">Roofing Company.</span>",
-      subtitle: "Providing quality roof services to Central Florida homeowners and businesses since 2003. We are a local, family-owned roofing company dedicated to providing our customers with the best roofing services possible."
-    },
-    whyUs: {
-        title: "Why Choose Us for Your Next Project?",
-        subtitle: "We are a local, family-owned roofing company that has been serving Central Florida since 2003. We are dedicated to providing our customers with the best roofing services possible.",
-        features: [
-            "20+ Years of Experience",
-            "Licensed & Insured",
-            "Financing Available",
-            "Locally Owned & Operated",
-            "Certified Installers",
-            "Quality Materials",
-        ]
-    }
-  };
+  const contentBySection = useMemo(() => {
+    if (!pageElements) return {};
+    return pageElements.reduce((acc, el) => {
+      acc[el.type] = el.content;
+      return acc;
+    }, {} as { [key: string]: any });
+  }, [pageElements]);
 
-  const content = pageData || defaultContent;
+
+  if (isLoading || !pageElements || pageElements.length === 0) {
+    return (
+        <div className="flex flex-col min-h-screen">
+            <Header />
+            <main className="flex-1">
+                <Skeleton className="h-[500px] w-full" />
+                <Skeleton className="h-[500px] w-full mt-4" />
+                <Skeleton className="h-[500px] w-full mt-4" />
+            </main>
+            <Footer />
+        </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-1">
-        {isLoading ? <Skeleton className="h-[500px] w-full" /> : <Hero content={content.hero} />}
-        <Services />
-        {isLoading ? <Skeleton className="h-[500px] w-full" /> : <WhyUs content={content.whyUs} />}
-        <Gallery />
-        <Testimonials />
-        <Faq />
-        <Cta />
-        <Contact />
+        {pageElements.map(element => {
+          const Component = componentMap[element.type];
+          if (!Component) {
+            return <div key={element.id}>Unknown section type: {element.type}</div>;
+          }
+          // Pass content to components that need it
+          const props = contentBySection[element.type] ? { content: contentBySection[element.type] } : {};
+          return <Component key={element.id} {...props} />;
+        })}
       </main>
       <Footer />
     </div>
