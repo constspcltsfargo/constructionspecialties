@@ -1,9 +1,15 @@
+
 "use client";
 import Image from 'next/image';
 import Link from 'next/link';
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 
-export function Hero() {
+interface HeroContent {
+    title: string;
+    subtitle: string;
+}
+
+export function Hero({ content }: { content: HeroContent }) {
     const heroImage1 = PlaceHolderImages.find(img => img.id === 'hero-image-1');
     const heroImage2 = PlaceHolderImages.find(img => img.id === 'hero-image-2');
 
@@ -11,11 +17,12 @@ export function Hero() {
         <section className="py-4 mt-14 sm:mt16 lg:mt-0">
             <div className="mx-auto lg:max-w-7xl w-full px-5 sm:px-10 md:px-12 lg:px-5 grid lg:grid-cols-2 lg:items-center gap-10">
                 <div className="flex flex-col space-y-8 sm:space-y-10 text-center lg:text-left">
-                    <h1 className="font-semibold leading-tight text-teal-950 dark:text-white text-4xl sm:text-5xl lg:text-6xl">
-                        Your Trusted Orlando <span className="text-transparent bg-clip-text bg-gradient-to-tr from-pink-700 to-orange-800">Roofing Company.</span>
-                    </h1>
+                    <h1 
+                        className="font-semibold leading-tight text-teal-950 dark:text-white text-4xl sm:text-5xl lg:text-6xl"
+                        dangerouslySetInnerHTML={{ __html: content.title }}
+                    />
                     <p className="flex text-gray-700 dark:text-gray-300 tracking-tight md:font-normal max-w-xl mx-auto lg:max-w-none">
-                        Providing quality roof services to Central Florida homeowners and businesses since 2003. We are a local, family-owned roofing company dedicated to providing our customers with the best roofing services possible.
+                        {content.subtitle}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 w-full">
                         <Link href="#contact" className="px-6 items-center h-12 rounded-3xl bg-pink-600 text-white duration-300 ease-linear flex justify-center w-full sm:w-auto">

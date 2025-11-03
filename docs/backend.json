@@ -29,18 +29,17 @@
       "required": ["displayName", "email"]
     },
     "Page": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Page",
       "type": "object",
-      "description": "Represents a page on the website, allowing for CMS-style editing.",
+      "description": "Represents a page on the website, allowing for CMS-style editing. Can be a simple page with a slug and HTML content, or a structured page like the homepage.",
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the Page entity."
+          "description": "Unique identifier for the Page entity. For the homepage, this is 'home'."
         },
         "title": {
           "type": "string",
-          "description": "The title of the page."
+          "description": "The title of the page (for simple pages)."
         },
         "slug": {
           "type": "string",
@@ -48,7 +47,7 @@
         },
         "content": {
           "type": "string",
-          "description": "The HTML or JSON content of the page."
+          "description": "The HTML or JSON content of the page. For the homepage, this will be a JSON object with structured content."
         },
         "lastUpdated": {
           "type": "string",
@@ -58,9 +57,6 @@
       },
       "required": [
         "id",
-        "title",
-        "slug",
-        "content",
         "lastUpdated"
       ]
     },
