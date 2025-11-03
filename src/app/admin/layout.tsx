@@ -12,7 +12,7 @@ import {
   SidebarTrigger,
   SidebarInset,
 } from '@/components/ui/sidebar';
-import { Home, Users } from 'lucide-react';
+import { Home, Users, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -44,6 +44,14 @@ export default function AdminLayout({
                            <Link href="/admin/users">
                                 <Users />
                                 <span>Users</span>
+                           </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/pages')}>
+                           <Link href="/admin/pages">
+                                <FileText />
+                                <span>Pages</span>
                            </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>

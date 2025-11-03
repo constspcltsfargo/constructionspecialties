@@ -20,8 +20,25 @@ service cloud.firestore {
     // Rules for admin roles
     match /roles_admin/{userId} {
       allow read: if true;
-      allow create: if request.auth != null && size(/databases/$(database)/documents/roles_admin) == 0 && isOwner(userId);
+      allow create: if request.auth != null && size(get(/databases/$(database)/documents/roles_admin).data) == 0 && isOwner(userId);
       allow write: if isAdmin();
+    }
+    
+    // Rules for pages and page elements
+    match /pages/{pageId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /pages/{pageId}/pageElements/{pageElementId} {
+        allow read: if true;
+        allow write: if isAdmin();
+    }
+
+    // Rules for media
+    match /media/{mediaId} {
+        allow read: if true;
+        allow write: if isAdmin();
     }
   }
 }
