@@ -82,7 +82,7 @@ export default function LoginPage() {
       setDoc(adminRoleRef, roleData)
         .catch((serverError) => {
           const permissionError = new FirestorePermissionError({
-            path: adminRoleref.path,
+            path: adminRoleRef.path,
             operation: 'create',
             requestResourceData: roleData,
           });
