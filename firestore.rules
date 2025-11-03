@@ -94,7 +94,7 @@ service cloud.firestore {
      */
     match /roles_admin/{userId} {
       allow read, write: if isAdmin();
-      allow create: if (isFirstAdmin() && request.auth.uid == userId) || isAdmin();
+      allow create: if (isFirstUser() && request.auth.uid == userId) || isAdmin();
     }
 
     // ---- Helper functions ----
@@ -111,7 +111,7 @@ service cloud.firestore {
      * @description Checks if there are no admin documents in the roles_admin collection.
      * @return {boolean} True if the collection is empty, false otherwise.
      */
-    function isFirstAdmin() {
+    function isFirstUser() {
       return get(/databases/$(database)/documents/roles_admin/$(request.auth.uid)) == null && !exists(/databases/$(database)/documents/roles_admin);
     }
   }
