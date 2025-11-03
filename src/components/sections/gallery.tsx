@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
@@ -48,10 +49,12 @@ export function Gallery() {
         </div>
         <div className="text-center mt-12">
             <Button variant="outline" size="lg" asChild className="rounded-full">
-                <Link href="#">View Full Gallery <ArrowRight className="ml-2"/></Link>
+                <Link href="/gallery">View Full Gallery <ArrowRight className="ml-2"/></Link>
             </Button>
         </div>
       </div>
     </section>
   );
 }
+
+    

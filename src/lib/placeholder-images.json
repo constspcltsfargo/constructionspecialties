@@ -91,6 +91,42 @@
       "imageHint": "modern windows"
     },
     {
+      "id": "gallery-7",
+      "description": "Close-up of residential siding.",
+      "imageUrl": "https://images.unsplash.com/photo-1759015395326-6e877ae6cb7c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxyZXNpZGVudGlhbCUyMHNpZGluZ3xlbnwwfHx8fDE3NjIxOTQ0MDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "residential siding"
+    },
+    {
+      "id": "gallery-8",
+      "description": "Kitchen renovation.",
+      "imageUrl": "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxraXRjaGVuJTIwcmVub3ZhdGlvbnxlbnwwfHx8fDE3NjIxNTQwMDd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "kitchen renovation"
+    },
+    {
+      "id": "gallery-9",
+      "description": "Bathroom remodeling project.",
+      "imageUrl": "https://images.unsplash.com/photo-1564540579594-0930edb6de43?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxiYXRocm9vbSUyMHJlbW9kZWxpbmd8ZW58MHx8fHwxNzYyMTk0NDAzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "bathroom remodeling"
+    },
+    {
+      "id": "gallery-10",
+      "description": "Commercial building exterior.",
+      "imageUrl": "https://images.unsplash.com/photo-1634316039737-8a0f1474e54c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjb21tZXJjaWFsJTIwZXh0ZXJpb3J8ZW58MHx8fHwxNzYyMTk0NDAzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "commercial exterior"
+    },
+    {
+      "id": "gallery-11",
+      "description": "New window installation.",
+      "imageUrl": "https://images.unsplash.com/photo-1728206813685-bdaff3a6bf91?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx3aW5kb3clMjBpbnN0YWxsYXRpb258ZW58MHx8fHwxNzYyMTk0NDAzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "window installation"
+    },
+    {
+      "id": "gallery-12",
+      "description": "Deck construction.",
+      "imageUrl": "https://images.unsplash.com/photo-1595844730289-b248c919d6f9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxkZWNrJTIwY29uc3RydWN0aW9ufGVufDB8fHx8MTc2MjE5NDQwM3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "deck construction"
+    },
+    {
       "id": "why-us-image",
       "description": "Team of construction workers discussing a project.",
       "imageUrl": "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjb25zdHJ1Y3Rpb24lMjB3b3JrZXJzfGVufDB8fHx8MTc2MTkyOTQ4MHww&ixlib=rb-4.1.0&q=80&w=1080",
