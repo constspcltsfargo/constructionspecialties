@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, Control } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
@@ -15,7 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
-import { GripVertical } from 'lucide-react';
+import { GripVertical, PlusCircle, Trash2 } from 'lucide-react';
 
 // Defines the schema for a single page element's content
 const heroSchema = z.object({
@@ -64,6 +64,64 @@ const defaultElements = [
     { id: 'cta', type: 'cta', order: 7, content: {} },
     { id: 'contact', type: 'contact', order: 8, content: {} },
 ];
+
+
+const HeroForm = ({ index, control }: { index: number, control: Control<PageElementsFormValues> }) => (
+    <>
+        <FormField control={control} name={`elements.${index}.content.title`} render={({ field }) => (
+            <FormItem><FormLabel>Title (HTML)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+        )} />
+        <FormField control={control} name={`elements.${index}.content.subtitle`} render={({ field }) => (
+            <FormItem><FormLabel>Subtitle</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
+        )} />
+    </>
+);
+
+const WhyUsForm = ({ index, control }: { index: number, control: Control<PageElementsFormValues> }) => {
+    const { fields: featureFields, append, remove } = useFieldArray({
+        control: control,
+        name: `elements.${index}.content.features`
+    });
+
+    return (
+        <>
+            <FormField control={control} name={`elements.${index}.content.title`} render={({ field }) => (
+                <FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+            )} />
+            <FormField control={control} name={`elements.${index}.content.subtitle`} render={({ field }) => (
+                <FormItem><FormLabel>Subtitle</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
+            )} />
+            <div>
+                <FormLabel>Features</FormLabel>
+                <div className="space-y-2 mt-2">
+                    {featureFields.map((field, featureIndex) => (
+                        <div key={field.id} className="flex items-center gap-2">
+                             <FormField
+                                control={control}
+                                name={`elements.${index}.content.features.${featureIndex}`}
+                                render={({ field }) => (
+                                    <FormItem className="flex-1">
+                                        <FormControl>
+                                            <Input {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <Button type="button" variant="ghost" size="icon" onClick={() => remove(featureIndex)}>
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    ))}
+                </div>
+                 <Button type="button" variant="outline" size="sm" className="mt-2" onClick={() => append("")}>
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Add Feature
+                </Button>
+            </div>
+        </>
+    );
+};
 
 export default function EditHomepage() {
   const firestore = useFirestore();
@@ -164,31 +222,9 @@ export default function EditHomepage() {
   const renderElementForm = (element: Record<"id", string>, index: number) => {
     switch (element.type) {
       case 'hero':
-        return (
-          <>
-            <FormField control={form.control} name={`elements.${index}.content.title`} render={({ field }) => (
-              <FormItem><FormLabel>Title (HTML)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-            )}/>
-            <FormField control={form.control} name={`elements.${index}.content.subtitle`} render={({ field }) => (
-              <FormItem><FormLabel>Subtitle</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
-            )}/>
-          </>
-        );
+        return <HeroForm index={index} control={form.control} />;
       case 'why-us':
-         const { fields: featureFields, append, remove } = useFieldArray({
-            control: form.control,
-            name: `elements.${index}.content.features`
-        });
-        return (
-          <>
-            <FormField control={form.control} name={`elements.${index}.content.title`} render={({ field }) => (
-              <FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-            )}/>
-            <FormField control={form.control} name={`elements.${index}.content.subtitle`} render={({ field }) => (
-              <FormItem><FormLabel>Subtitle</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
-            )}/>
-          </>
-        );
+        return <WhyUsForm index={index} control={form.control} />;
       default:
         return <p className="text-sm text-muted-foreground">This section has no editable content fields.</p>;
     }
