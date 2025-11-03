@@ -1,5 +1,33 @@
+
 {
   "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Represents a user's public profile information.",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "description": "The user's display name."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "The user's email address."
+        },
+        "photoURL": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the user's profile picture."
+        },
+        "role": {
+          "type": "string",
+          "description": "The user's role (e.g., 'admin', 'user').",
+          "enum": ["admin", "user"]
+        }
+      },
+      "required": ["displayName", "email"]
+    },
     "Page": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Page",
@@ -127,6 +155,22 @@
   },
   "firestore": {
     "structure": [
+        {
+            "path": "/users/{userId}",
+            "definition": {
+              "entityName": "UserProfile",
+              "schema": {
+                "$ref": "#/backend/entities/UserProfile"
+              },
+              "description": "Stores public user profile information. Users can read all profiles but can only write to their own.",
+              "params": [
+                {
+                  "name": "userId",
+                  "description": "The unique identifier for the user, corresponding to their Firebase Auth UID."
+                }
+              ]
+            }
+        },
       {
         "path": "/pages/{pageId}",
         "definition": {
@@ -186,7 +230,7 @@
           "schema": {
             "$ref": "#/backend/entities/roles_admin"
           },
-          "description": "Marks a user as an administrator. The first user to sign up can create their own admin document. Subsequent admin roles can only be granted by an existing admin. Authorization is based on the existence of a document, not its content.",
+          "description": "Marks a user as an administrator. The first authenticated user can create their own admin document if the collection is empty. Subsequent admin roles can only be granted by an existing admin.",
           "params": [
             {
               "name": "userId",
