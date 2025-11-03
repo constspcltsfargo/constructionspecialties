@@ -6,12 +6,6 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 export function Hero() {
     const heroImage1 = PlaceHolderImages.find(img => img.id === 'hero-image-1');
     const heroImage2 = PlaceHolderImages.find(img => img.id === 'hero-image-2');
-    const clientLogo1 = PlaceHolderImages.find(img => img.id === 'client-logo-1');
-    const clientLogo2 = PlaceHolderImages.find(img => img.id === 'client-logo-2');
-    const clientLogo3 = PlaceHolderImages.find(img => img.id === 'client-logo-3');
-    const clientLogo4 = PlaceHolderImages.find(img => img.id === 'client-logo-4');
-    
-    const clientLogos = [clientLogo1, clientLogo2, clientLogo3, clientLogo4];
 
     return (
         <section className="py-4 mt-14 sm:mt16 lg:mt-0">
@@ -30,20 +24,6 @@ export function Hero() {
                         <Link href="#contact" className="px-6 items-center h-12 rounded-3xl text-pink-700 border border-gray-100 dark:border-gray-800 dark:text-white bg-gray-100 dark:bg-gray-900 duration-300 ease-linear flex justify-center w-full sm:w-auto">
                             Schedule Inspection
                         </Link>
-                    </div>
-                     <div className="mt-5 flex items-center justify-center flex-wrap gap-4 lg:justify-start w-full">
-                        {clientLogos.map((logo, index) => (
-                           logo && <a href="#" key={index} target="_blank" rel='noreferrer'>
-                                <span className="sr-only">Client Logo</span>
-                                <Image 
-                                    width={140} 
-                                    height={50} 
-                                    src={logo.imageUrl} 
-                                    alt={logo.description} 
-                                    data-ai-hint={logo.imageHint}
-                                    className="h-10 w-auto dark:grayscale" />
-                            </a>
-                        ))}
                     </div>
                 </div>
                 <div className="flex aspect-square lg:aspect-auto lg:h-[35rem] relative">
