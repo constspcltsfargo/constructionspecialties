@@ -86,12 +86,18 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
 
             // Create or update user profile in Firestore
             const userRef = doc(firestore, 'users', firebaseUser.uid);
+            
             const userProfile = {
-              displayName: firebaseUser.displayName || firebaseUser.email?.split('@')[0],
-              email: firebaseUser.email,
+              displayName: firebaseUser.isAnonymous 
+                ? 'Anonymous User' 
+                : firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User',
+              email: firebaseUser.isAnonymous 
+                ? `anonymous-${firebaseUser.uid}@example.com` 
+                : firebaseUser.email,
               photoURL: firebaseUser.photoURL,
               role: 'user' // default role
             };
+
             // Use setDoc with merge to avoid overwriting existing data
             setDoc(userRef, userProfile, { merge: true }).catch(console.error);
 
