@@ -20,7 +20,7 @@ export function Header() {
         { href: "#gallery", label: "Gallery" },
         { href: "/financing", label: "Financing" },
         { href: "#contact", label: "Contact" },
-        { href: "#why-us", label: "About Us" },
+        { href: "/about", label: "About Us" },
     ];
     
     return (
@@ -120,3 +120,5 @@ export function Header() {
         </>
     );
 }
+
+    
