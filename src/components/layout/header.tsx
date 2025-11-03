@@ -1,3 +1,4 @@
+
 "use client";
 import Image from 'next/image';
 import Link from 'next/link';
@@ -17,7 +18,7 @@ export function Header() {
         { href: "/", label: "Home" },
         { href: "#services", label: "Services" },
         { href: "#gallery", label: "Gallery" },
-        { href: "#", label: "Financing" },
+        { href: "/financing", label: "Financing" },
         { href: "#contact", label: "Contact" },
         { href: "#why-us", label: "About Us" },
     ];
