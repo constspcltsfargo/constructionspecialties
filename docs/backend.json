@@ -48,16 +48,10 @@
         "content": {
           "type": "string",
           "description": "The HTML or JSON content of the page. For the homepage, this will be a JSON object with structured content."
-        },
-        "lastUpdated": {
-          "type": "string",
-          "description": "The date and time the page was last updated.",
-          "format": "date-time"
         }
       },
       "required": [
-        "id",
-        "lastUpdated"
+        "id"
       ]
     },
     "Media": {

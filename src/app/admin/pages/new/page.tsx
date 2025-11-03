@@ -48,7 +48,6 @@ export default function NewPage() {
       await addDoc(pagesCollection, {
         ...values,
         content: '', // Default empty content
-        lastUpdated: serverTimestamp(),
       });
 
       toast({

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useForm, useFieldArray, Control } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -151,7 +151,7 @@ export default function EditHomepage() {
         if (!firestore) return;
         const batch = writeBatch(firestore);
         const pageRef = doc(firestore, 'pages', 'home');
-        batch.set(pageRef, { title: "Homepage", lastUpdated: serverTimestamp() }, { merge: true });
+        batch.set(pageRef, { title: "Homepage" }, { merge: true });
 
         defaultElements.forEach(element => {
             const elementRef = doc(firestore, 'pages', 'home', 'pageElements', element.id);
@@ -207,7 +207,7 @@ export default function EditHomepage() {
     try {
       await batch.commit();
       // Update the main page's timestamp
-      await setDoc(doc(firestore, 'pages', 'home'), { lastUpdated: serverTimestamp() }, { merge: true });
+      await setDoc(doc(firestore, 'pages', 'home'), { }, { merge: true });
       toast({
         title: 'Success!',
         description: 'Homepage content updated successfully.',

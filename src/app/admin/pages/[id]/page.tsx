@@ -61,7 +61,6 @@ export default function EditPage() {
     try {
       await updateDoc(pageRef, {
         ...values,
-        lastUpdated: serverTimestamp(),
       });
       toast({
         title: 'Success!',

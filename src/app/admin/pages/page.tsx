@@ -26,7 +26,6 @@ interface Page {
     id: string;
     title: string;
     slug: string;
-    lastUpdated: string;
 }
 
 export default function PageManagementPage() {
@@ -85,7 +84,6 @@ export default function PageManagementPage() {
               <TableRow>
                 <TableHead>Title</TableHead>
                 <TableHead>Slug</TableHead>
-                <TableHead>Last Updated</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -94,7 +92,6 @@ export default function PageManagementPage() {
                 <TableRow key={page.id}>
                   <TableCell>{page.title}</TableCell>
                   <TableCell>/{page.slug || (page.id === 'home' ? '' : page.id)}</TableCell>
-                  <TableCell>{page.lastUpdated ? new Date(page.lastUpdated).toLocaleDateString() : 'N/A'}</TableCell>
                   <TableCell className="text-right space-x-2">
                     {page.id === 'home' && (
                         <Button variant="outline" size="sm" asChild>
