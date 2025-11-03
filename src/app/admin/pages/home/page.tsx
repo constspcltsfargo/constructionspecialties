@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useForm, useFieldArray, Control } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -126,6 +126,8 @@ const WhyUsForm = ({ index, control }: { index: number, control: Control<PageEle
 export default function EditHomepage() {
   const firestore = useFirestore();
   const { toast } = useToast();
+  const dragItem = useRef<number | null>(null);
+  const dragOverItem = useRef<number | null>(null);
 
   const elementsRef = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -229,6 +231,15 @@ export default function EditHomepage() {
         return <p className="text-sm text-muted-foreground">This section has no editable content fields.</p>;
     }
   };
+  
+  const handleDragEnd = () => {
+    if (dragItem.current !== null && dragOverItem.current !== null) {
+      move(dragItem.current, dragOverItem.current);
+    }
+    dragItem.current = null;
+    dragOverItem.current = null;
+  };
+
 
   if (isElementsLoading || fields.length === 0) {
     return (
@@ -256,7 +267,15 @@ export default function EditHomepage() {
             </CardHeader>
             <CardContent className="space-y-6">
             {fields.map((field, index) => (
-                <Card key={field.id} className="p-4">
+                <Card 
+                  key={field.id} 
+                  className="p-4"
+                  draggable
+                  onDragStart={() => (dragItem.current = index)}
+                  onDragEnter={() => (dragOverItem.current = index)}
+                  onDragEnd={handleDragEnd}
+                  onDragOver={(e) => e.preventDefault()}
+                >
                     <div className="flex items-start gap-4">
                         <GripVertical className="h-8 w-8 text-muted-foreground mt-4 cursor-grab" />
                         <div className="flex-1 space-y-4">
