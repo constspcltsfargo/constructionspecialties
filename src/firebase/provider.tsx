@@ -2,7 +2,7 @@
 
 import React, { DependencyList, createContext, useContext, ReactNode, useMemo, useState, useEffect } from 'react';
 import { FirebaseApp } from 'firebase/app';
-import { Firestore } from 'firebase/firestore';
+import { Firestore, doc, setDoc } from 'firebase/firestore';
 import { Auth, User, onAuthStateChanged } from 'firebase/auth';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener'
 
@@ -69,8 +69,8 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
 
   // Effect to subscribe to Firebase auth state changes
   useEffect(() => {
-    if (!auth) { // If no Auth service instance, cannot determine user state
-      setUserAuthState({ user: null, isUserLoading: false, userError: new Error("Auth service not provided.") });
+    if (!auth || !firestore) { // If no Auth service instance, cannot determine user state
+      setUserAuthState({ user: null, isUserLoading: false, userError: new Error("Auth or Firestore service not provided.") });
       return;
     }
 
@@ -83,6 +83,18 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
         if (firebaseUser) {
             const token = await firebaseUser.getIdToken();
             document.cookie = `firebaseIdToken=${token}; path=/; max-age=3600`; // Set cookie for 1 hour
+
+            // Create or update user profile in Firestore
+            const userRef = doc(firestore, 'users', firebaseUser.uid);
+            const userProfile = {
+              displayName: firebaseUser.displayName || firebaseUser.email?.split('@')[0],
+              email: firebaseUser.email,
+              photoURL: firebaseUser.photoURL,
+              role: 'user' // default role
+            };
+            // Use setDoc with merge to avoid overwriting existing data
+            setDoc(userRef, userProfile, { merge: true }).catch(console.error);
+
         } else {
             document.cookie = 'firebaseIdToken=; path=/; max-age=-1'; // Expire cookie
         }
@@ -94,7 +106,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
       }
     );
     return () => unsubscribe(); // Cleanup
-  }, [auth]); // Depends on the auth instance
+  }, [auth, firestore]); // Depends on the auth instance
 
   // Memoize the context value
   const contextValue = useMemo((): FirebaseContextState => {
