@@ -1,5 +1,6 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Wrench, Home, Shield, HardHat, Building, CheckCircle, Wind } from "lucide-react";
+import { Home, Building, Wind } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -18,21 +19,6 @@ const services = [
     icon: <Wind className="h-10 w-10 text-primary" />,
     title: "Storm Damage",
     description: "Our team is ready to help you with your storm damage needs.",
-  },
-  {
-    icon: <HardHat className="h-10 w-10 text-primary" />,
-    title: "Roof Repair",
-    description: "We can repair your roof to prevent further damage to your home.",
-  },
-  {
-    icon: <Building className="h-10 w-10 text-primary" />,
-    title: "Multi-Family Roofing",
-    description: "We offer roofing services for multi-family homes and apartment complexes.",
-  },
-  {
-    icon: <CheckCircle className="h-10 w-10 text-primary" />,
-    title: "Financing",
-    description: "We offer financing options to help you get the roof you need.",
   },
 ];
 
