@@ -11,7 +11,7 @@ export function Footer() {
             <div>
               <div className="flex items-center gap-2 mb-4">
                  <Image 
-                    src="https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/CS%20LLC%20New%20logo%202.png?alt=media&token=587016e6-9e7f-4622-a454-7088936b0642"
+                    src="https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.appspot.com/o/CS%20LLC%20New%20logo%20PNG.png?alt=media&token=df164bc4-8a88-4ce1-a7f2-3c1f50858551"
                     alt="Construction Specialties, LLC Logo"
                     width={150}
                     height={50}
