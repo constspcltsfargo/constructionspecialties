@@ -86,9 +86,9 @@ export function Header() {
                            <Image 
                                 src="https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/CS%20LLC%20New%20logo%20PNG.png?alt=media&token=c1de30c8-b019-4f96-bcbc-14371b3c3dd2"
                                 alt="Construction Specialties, LLC Logo"
-                                width={120}
-                                height={40}
-                                className="h-10 w-auto"
+                                width={150}
+                                height={50}
+                                className="h-12 w-auto"
                            />
                         </Link>
                     </div>
@@ -128,6 +128,8 @@ export function Header() {
         </>
     );
 }
+
+    
 
     
 
