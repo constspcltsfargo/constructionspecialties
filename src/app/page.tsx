@@ -5,7 +5,6 @@ import { Footer } from "@/components/layout/footer";
 import { Hero } from "@/components/sections/hero";
 import { Services } from "@/components/sections/services";
 import { Cta } from "@/components/sections/cta";
-import { Faq } from "@/components/sections/faq";
 import { Gallery } from "@/components/sections/gallery";
 import { Contact } from "@/components/sections/contact";
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
@@ -18,7 +17,6 @@ const componentMap: { [key: string]: React.ComponentType<any> } = {
   hero: Hero,
   services: Services,
   gallery: Gallery,
-  faq: Faq,
   cta: Cta,
   contact: Contact,
 };

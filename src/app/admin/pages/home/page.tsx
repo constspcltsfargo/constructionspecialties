@@ -28,7 +28,6 @@ const elementContentSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal('hero'), content: heroSchema }),
   z.object({ type: z.literal('services'), content: z.object({}) }),
   z.object({ type: z.literal('gallery'), content: z.object({}) }),
-  z.object({ type: z.literal('faq'), content: z.object({}) }),
   z.object({ type: z.literal('cta'), content: z.object({}) }),
   z.object({ type: z.literal('contact'), content: z.object({}) }),
 ]);
@@ -50,9 +49,8 @@ const defaultElements = [
     { id: 'hero', type: 'hero', order: 1, content: { title: "Your Trusted Orlando <span class=\"text-transparent bg-clip-text bg-gradient-to-tr from-pink-700 to-orange-800\">Roofing Company.</span>", subtitle: "Providing quality roof services to Central Florida homeowners and businesses since 2003. We are a local, family-owned roofing company dedicated to providing our customers with the best roofing services possible." }},
     { id: 'services', type: 'services', order: 2, content: {} },
     { id: 'gallery', type: 'gallery', order: 3, content: {} },
-    { id: 'faq', type: 'faq', order: 4, content: {} },
-    { id: 'cta', type: 'cta', order: 5, content: {} },
-    { id: 'contact', type: 'contact', order: 6, content: {} },
+    { id: 'cta', type: 'cta', order: 4, content: {} },
+    { id: 'contact', type: 'contact', order: 5, content: {} },
 ];
 
 
