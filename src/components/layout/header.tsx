@@ -18,8 +18,8 @@ export function Header() {
         { href: "/", label: "Home" },
         { href: "#gallery", label: "Gallery" },
         { href: "/financing", label: "Financing" },
-        { href: "#contact", label: "Contact" },
         { href: "/about", label: "About" },
+        { href: "#contact", label: "Contact" },
     ];
     
     return (
@@ -82,24 +82,14 @@ export function Header() {
             <header className="sticky left-0 top-0 w-full flex items-center h-20 border-b z-40 bg-background/80 backdrop-filter backdrop-blur-xl">
                 <nav className="relative mx-auto lg:max-w-7xl w-full px-5 sm:px-10 md:px-12 lg:px-5 flex gap-x-5 justify-between items-center">
                     <div className="flex items-center min-w-max">
-                        <Link href="#" className="text-xl font-semibold flex items-center gap-x-2">
-                            <span className="flex">
-                               <svg
-                                  className="w-8 h-8 text-red-600"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path
-                                    d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                  />
-                                </svg>
-                            </span>
-                            <span className="text-lg text-foreground">Construction Specialties & Roofing</span>
+                        <Link href="/" className="text-xl font-semibold flex items-center gap-x-2">
+                           <Image 
+                                src="https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/CS%20LLC%20New%20logo%202.png?alt=media&token=587016e6-9e7f-4622-a454-7088936b0642"
+                                alt="Construction Specialties, LLC Logo"
+                                width={120}
+                                height={40}
+                                className="h-10 w-auto"
+                           />
                         </Link>
                     </div>
                      <div className={`
@@ -138,3 +128,5 @@ export function Header() {
         </>
     );
 }
+
+    

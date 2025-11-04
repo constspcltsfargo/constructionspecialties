@@ -1,6 +1,7 @@
+
 import { Facebook, Twitter, Instagram, Linkedin, Youtube } from "lucide-react";
 import Link from "next/link";
-import { Logo } from "@/components/icons/logo";
+import Image from "next/image";
 
 export function Footer() {
   return (
@@ -9,10 +10,13 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <Logo className="h-8 w-8 text-primary" />
-                <p className="text-xl font-bold text-white">
-                  Construction Specialties & Roofing
-                </p>
+                 <Image 
+                    src="https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/CS%20LLC%20New%20logo%202.png?alt=media&token=587016e6-9e7f-4622-a454-7088936b0642"
+                    alt="Construction Specialties, LLC Logo"
+                    width={150}
+                    height={50}
+                    className="h-12 w-auto invert brightness-0"
+                 />
               </div>
               <p className="text-sm text-muted-foreground">Quality you can trust, service you can count on.</p>
               <div className="flex items-center gap-4 mt-6">
@@ -68,3 +72,5 @@ export function Footer() {
     </footer>
   );
 }
+
+    
