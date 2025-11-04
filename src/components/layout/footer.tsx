@@ -41,7 +41,7 @@ export function Footer() {
               <h4 className="font-semibold text-white mb-4">Quick Links</h4>
               <ul className="space-y-2 text-sm">
                 <li><Link href="#services" className="text-muted-foreground hover:text-primary">Our Services</Link></li>
-                <li><Link href="#gallery" className="text-muted-foreground hover:text-primary">Gallery</Link></li>
+                <li><Link href="/gallery" className="text-muted-foreground hover:text-primary">Gallery</Link></li>
                 <li><Link href="#contact" className="text-muted-foreground hover:text-primary">Contact Us</Link></li>
               </ul>
             </div>
@@ -51,8 +51,6 @@ export function Footer() {
                 <li><Link href="#" className="text-muted-foreground hover:text-primary">Residential Roofing</Link></li>
                 <li><Link href="#" className="text-muted-foreground hover:text-primary">Commercial Roofing</Link></li>
                 <li><Link href="#" className="text-muted-foreground hover:text-primary">Storm Damage</Link></li>
-                <li><Link href="#" className="text-muted-foreground hover:text-primary">Multi-Family Roofing</Link></li>
-                <li><Link href="#" className="text-muted-foreground hover:text-primary">Repairs</Link></li>
               </ul>
             </div>
              <div>
