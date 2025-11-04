@@ -30,11 +30,11 @@ export function WhyUs({ content }: { content: WhyUsContent }) {
                         </div>
                     ))}
                 </div>
-                <Button asChild size="lg" className="rounded-full">
+                <Button asChild size="lg">
                     <Link href="#contact">Schedule Your Free Inspection</Link>
                 </Button>
             </div>
-            <div className="relative h-80 lg:h-[500px] rounded-lg overflow-hidden">
+            <div className="relative h-80 lg:h-[500px] rounded-lg overflow-hidden shadow-lg">
              {whyUsImage && (
                 <Image
                     src={whyUsImage.imageUrl}

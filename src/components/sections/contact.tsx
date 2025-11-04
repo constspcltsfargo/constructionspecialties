@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 
 export function Contact() {
   return (
-    <section id="contact" className="py-12 md:py-24 bg-white">
+    <section id="contact" className="py-12 md:py-24 bg-secondary">
       <div className="container">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold">Contact Us</h2>
@@ -12,8 +12,8 @@ export function Contact() {
             We're ready to help with your next project. Reach out to us today for a free estimate!
           </p>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 max-w-6xl mx-auto">
-          <div className="lg:col-span-2 bg-gray-100 p-8 rounded-lg shadow-lg">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+          <div className="lg:col-span-1">
               <h3 className="text-2xl font-semibold mb-4">Our Information</h3>
               <p className="text-muted-foreground mb-6">
                 Use the form to send us a message, or contact us directly using the information below. We look forward to hearing from you.
@@ -37,8 +37,8 @@ export function Contact() {
                 </div>
               </div>
           </div>
-          <div className="lg:col-span-3">
-             <Card className="bg-blue-900/50 p-4 md:p-8 rounded-lg text-white shadow-2xl">
+          <div className="lg:col-span-1">
+             <Card className="p-4 md:p-8 rounded-lg shadow-lg">
                 <ContactForm />
              </Card>
           </div>

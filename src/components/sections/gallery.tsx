@@ -17,7 +17,7 @@ const galleryImages = [
 
 export function Gallery() {
   return (
-    <section id="gallery" className="py-12 md:py-24">
+    <section id="gallery" className="py-12 md:py-24 bg-secondary">
       <div className="container">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold">Our Recent Work</h2>
@@ -48,13 +48,11 @@ export function Gallery() {
           })}
         </div>
         <div className="text-center mt-12">
-            <Button variant="outline" size="lg" asChild className="rounded-full">
-                <Link href="/gallery">View Full Gallery <ArrowRight className="ml-2"/></Link>
+            <Button variant="outline" size="lg" asChild>
+                <Link href="/gallery">View Full Gallery <ArrowRight className="ml-2 h-4 w-4"/></Link>
             </Button>
         </div>
       </div>
     </section>
   );
 }
-
-    

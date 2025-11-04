@@ -48,7 +48,7 @@ export function Services() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => (
-            <Card key={index} className="flex flex-col text-center items-center p-6 hover:shadow-xl transition-shadow duration-300 border-2 hover:border-primary">
+            <Card key={index} className="flex flex-col text-center items-center p-6 hover:shadow-lg transition-shadow duration-300">
               <CardHeader className="p-0">
                 {service.icon}
               </CardHeader>
@@ -60,7 +60,7 @@ export function Services() {
           ))}
         </div>
         <div className="text-center mt-12">
-            <Button asChild size="lg" className="rounded-full">
+            <Button asChild size="lg">
                 <Link href="#contact">Request a Free Consultation</Link>
             </Button>
         </div>

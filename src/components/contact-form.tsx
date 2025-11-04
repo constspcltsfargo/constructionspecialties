@@ -21,7 +21,7 @@ const initialState: FormState = {
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" className="w-full rounded-md bg-red-600 hover:bg-red-700 text-white font-bold" disabled={pending}>
+    <Button type="submit" className="w-full" disabled={pending}>
       {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
       {pending ? "Submitting..." : "REQUEST NOW"}
     </Button>
@@ -50,7 +50,7 @@ export function ContactForm() {
   if (state.message.startsWith("Success") && state.data) {
     return (
         <CardContent className="pt-6">
-          <div className="flex flex-col items-center text-center p-4 rounded-lg bg-green-50/90 border border-green-200 text-green-900">
+          <div className="flex flex-col items-center text-center p-4 rounded-lg bg-green-50 border border-green-200 text-green-900">
             <CheckCircle className="h-12 w-12 text-green-500 mb-4" />
             <h3 className="text-lg font-semibold">Request Sent & Analyzed!</h3>
             <p className="text-sm mt-2">
@@ -69,44 +69,43 @@ export function ContactForm() {
   
   return (
         <form ref={formRef} action={formAction}>
-          <CardHeader className="text-center">
-            <CardTitle className="text-4xl font-bold">
-              Request Your<br />
-              <span className="bg-red-600 text-white px-4 rounded-md inline-block mt-1">Free Estimate</span>
+          <CardHeader className="text-center p-0 mb-6">
+            <CardTitle className="text-2xl font-bold">
+              Request Your Free Estimate
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 p-0">
              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName" className="text-white/80">First Name *</Label>
-                  <Input id="firstName" name="firstName" placeholder="" defaultValue={state.fields?.firstName} className="bg-white/90 text-gray-800 placeholder:text-gray-500 rounded-lg"/>
+                  <Label htmlFor="firstName">First Name *</Label>
+                  <Input id="firstName" name="firstName" defaultValue={state.fields?.firstName} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName" className="text-white/80">Last Name *</Label>
-                  <Input id="lastName" name="lastName" placeholder="" defaultValue={state.fields?.lastName} className="bg-white/90 text-gray-800 placeholder:text-gray-500 rounded-lg"/>
+                  <Label htmlFor="lastName">Last Name *</Label>
+                  <Input id="lastName" name="lastName" defaultValue={state.fields?.lastName} />
                 </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-white/80">Email Address *</Label>
-              <Input id="email" name="email" type="email" placeholder="" defaultValue={state.fields?.email} className="bg-white/90 text-gray-800 placeholder:text-gray-500 rounded-lg"/>
+              <Label htmlFor="email">Email Address *</Label>
+              <Input id="email" name="email" type="email" defaultValue={state.fields?.email} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="phone" className="text-white/80">Phone Number *</Label>
-              <Input id="phone" name="phone" placeholder="" defaultValue={state.fields?.phone} className="bg-white/90 text-gray-800 placeholder:text-gray-500 rounded-lg"/>
+              <Label htmlFor="phone">Phone Number *</Label>
+              <Input id="phone" name="phone" defaultValue={state.fields?.phone} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="zip" className="text-white/80">Zip Code *</Label>
-              <Input id="zip" name="zip" placeholder="" defaultValue={state.fields?.zip} className="bg-white/90 text-gray-800 placeholder:text-gray-500 rounded-lg"/>
+              <Label htmlFor="zip">Zip Code *</Label>
+              <Input id="zip" name="zip" defaultValue={state.fields?.zip} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="project" className="text-white/80">Tell us about your project...*</Label>
-              <Textarea id="project" name="project" placeholder="" className="min-h-[100px] bg-white/90 text-gray-800 placeholder:text-gray-500 rounded-lg" defaultValue={state.fields?.project} />
+              <Label htmlFor="project">Tell us about your project...*</Label>
+              <Textarea id="project" name="project" className="min-h-[100px]" defaultValue={state.fields?.project} />
             </div>
             <div className="space-y-2">
-                <Label htmlFor="howDidYouHear" className="text-white/80">How Did You Hear About Us?</Label>
+                <Label htmlFor="howDidYouHear">How Did You Hear About Us?</Label>
                 <Select name="howDidYouHear" defaultValue={state.fields?.howDidYouHear}>
-                    <SelectTrigger className="w-full bg-white/90 text-gray-800 rounded-lg">
-                        <SelectValue placeholder="" />
+                    <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select an option" />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="google">Google</SelectItem>
@@ -117,14 +116,14 @@ export function ContactForm() {
                     </SelectContent>
                 </Select>
             </div>
-            <p className="text-xs text-white/70">
-              By submitting this form, you agree to receive automated texts or calls from Houston Roofing & Construction. Msg & data rates may apply. Reply STOP to cancel. You also agree to the <Link href="#" className="underline">Terms of Service</Link> and <Link href="#" className="underline">Privacy Policy</Link>. Consent is not a condition of purchase.
+            <p className="text-xs text-muted-foreground">
+              By submitting this form, you agree to our <Link href="#" className="underline hover:text-primary">Terms of Service</Link> and <Link href="#" className="underline hover:text-primary">Privacy Policy</Link>.
             </p>
           </CardContent>
-          <CardFooter className="flex flex-col items-start">
+          <CardFooter className="flex flex-col items-start p-0 mt-6">
             <SubmitButton />
             {state.message.startsWith("Error:") && state.issues && (
-              <div className="mt-4 text-red-300 text-sm flex items-center gap-2">
+              <div className="mt-4 text-destructive text-sm flex items-center gap-2">
                 <AlertCircle className="h-4 w-4" />
                 <p>{state.issues.join(", ")}</p>
               </div>
