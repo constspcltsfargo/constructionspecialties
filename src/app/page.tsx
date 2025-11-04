@@ -4,8 +4,6 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { Hero } from "@/components/sections/hero";
 import { Services } from "@/components/sections/services";
-import { WhyUs } from "@/components/sections/why-us";
-import { Testimonials } from "@/components/sections/testimonials";
 import { Cta } from "@/components/sections/cta";
 import { Faq } from "@/components/sections/faq";
 import { Gallery } from "@/components/sections/gallery";
@@ -19,9 +17,7 @@ import { useMemo } from "react";
 const componentMap: { [key: string]: React.ComponentType<any> } = {
   hero: Hero,
   services: Services,
-  'why-us': WhyUs,
   gallery: Gallery,
-  testimonials: Testimonials,
   faq: Faq,
   cta: Cta,
   contact: Contact,
@@ -67,7 +63,7 @@ export default function Home() {
         {pageElements.map(element => {
           const Component = componentMap[element.type];
           if (!Component) {
-            return <div key={element.id}>Unknown section type: {element.type}</div>;
+            return null; // Don't render unknown sections
           }
           // Pass content to components that need it
           const props = contentBySection[element.type] ? { content: contentBySection[element.type] } : {};

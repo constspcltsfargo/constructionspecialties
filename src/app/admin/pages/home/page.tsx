@@ -23,19 +23,11 @@ const heroSchema = z.object({
     subtitle: z.string().min(1, 'Subtitle is required'),
 });
 
-const whyUsSchema = z.object({
-    title: z.string().min(1, 'Title is required'),
-    subtitle: z.string().min(1, 'Subtitle is required'),
-    features: z.array(z.string().min(1, "Feature cannot be empty")).min(1, "At least one feature is required"),
-});
-
 // A "discriminated union" to validate content based on the element type
 const elementContentSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal('hero'), content: heroSchema }),
-  z.object({ type: z.literal('why-us'), content: whyUsSchema }),
   z.object({ type: z.literal('services'), content: z.object({}) }),
   z.object({ type: z.literal('gallery'), content: z.object({}) }),
-  z.object({ type: z.literal('testimonials'), content: z.object({}) }),
   z.object({ type: z.literal('faq'), content: z.object({}) }),
   z.object({ type: z.literal('cta'), content: z.object({}) }),
   z.object({ type: z.literal('contact'), content: z.object({}) }),
@@ -57,12 +49,10 @@ type PageElementsFormValues = z.infer<typeof pageElementsSchema>;
 const defaultElements = [
     { id: 'hero', type: 'hero', order: 1, content: { title: "Your Trusted Orlando <span class=\"text-transparent bg-clip-text bg-gradient-to-tr from-pink-700 to-orange-800\">Roofing Company.</span>", subtitle: "Providing quality roof services to Central Florida homeowners and businesses since 2003. We are a local, family-owned roofing company dedicated to providing our customers with the best roofing services possible." }},
     { id: 'services', type: 'services', order: 2, content: {} },
-    { id: 'why-us', type: 'why-us', order: 3, content: { title: "Why Choose Us for Your Next Project?", subtitle: "We are a local, family-owned roofing company that has been serving Central Florida since 2003. We are dedicated to providing our customers with the best roofing services possible.", features: ["20+ Years of Experience", "Licensed & Insured", "Financing Available", "Locally Owned & Operated", "Certified Installers", "Quality Materials"] }},
-    { id: 'gallery', type: 'gallery', order: 4, content: {} },
-    { id: 'testimonials', type: 'testimonials', order: 5, content: {} },
-    { id: 'faq', type: 'faq', order: 6, content: {} },
-    { id: 'cta', type: 'cta', order: 7, content: {} },
-    { id: 'contact', type: 'contact', order: 8, content: {} },
+    { id: 'gallery', type: 'gallery', order: 3, content: {} },
+    { id: 'faq', type: 'faq', order: 4, content: {} },
+    { id: 'cta', type: 'cta', order: 5, content: {} },
+    { id: 'contact', type: 'contact', order: 6, content: {} },
 ];
 
 
@@ -76,52 +66,6 @@ const HeroForm = ({ index, control }: { index: number, control: Control<PageElem
         )} />
     </>
 );
-
-const WhyUsForm = ({ index, control }: { index: number, control: Control<PageElementsFormValues> }) => {
-    const { fields: featureFields, append, remove } = useFieldArray({
-        control: control,
-        name: `elements.${index}.content.features`
-    });
-
-    return (
-        <>
-            <FormField control={control} name={`elements.${index}.content.title`} render={({ field }) => (
-                <FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <FormField control={control} name={`elements.${index}.content.subtitle`} render={({ field }) => (
-                <FormItem><FormLabel>Subtitle</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <div>
-                <FormLabel>Features</FormLabel>
-                <div className="space-y-2 mt-2">
-                    {featureFields.map((field, featureIndex) => (
-                        <div key={field.id} className="flex items-center gap-2">
-                             <FormField
-                                control={control}
-                                name={`elements.${index}.content.features.${featureIndex}`}
-                                render={({ field }) => (
-                                    <FormItem className="flex-1">
-                                        <FormControl>
-                                            <Input {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <Button type="button" variant="ghost" size="icon" onClick={() => remove(featureIndex)}>
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    ))}
-                </div>
-                 <Button type="button" variant="outline" size="sm" className="mt-2" onClick={() => append("")}>
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Add Feature
-                </Button>
-            </div>
-        </>
-    );
-};
 
 export default function EditHomepage() {
   const firestore = useFirestore();
@@ -225,8 +169,6 @@ export default function EditHomepage() {
     switch (element.type) {
       case 'hero':
         return <HeroForm index={index} control={form.control} />;
-      case 'why-us':
-        return <WhyUsForm index={index} control={form.control} />;
       default:
         return <p className="text-sm text-muted-foreground">This section has no editable content fields.</p>;
     }
