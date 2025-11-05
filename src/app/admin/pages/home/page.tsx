@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useRef } from 'react';
@@ -17,10 +16,17 @@ import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { GripVertical, PlusCircle, Trash2 } from 'lucide-react';
 
+const imageSchema = z.object({
+    id: z.string(),
+    url: z.string().url('Must be a valid URL'),
+    alt: z.string().min(1, 'Alt text is required'),
+});
+
 // Defines the schema for a single page element's content
 const heroSchema = z.object({
     title: z.string().min(1, 'Title is required'),
     subtitle: z.string().min(1, 'Subtitle is required'),
+    images: z.array(imageSchema),
 });
 
 // A "discriminated union" to validate content based on the element type
@@ -46,7 +52,14 @@ type PageElementsFormValues = z.infer<typeof pageElementsSchema>;
 
 // Default content for seeding the database
 const defaultElements = [
-    { id: 'hero', type: 'hero', order: 1, content: { title: "Your Trusted Orlando <span class=\"text-transparent bg-clip-text bg-gradient-to-tr from-pink-700 to-orange-800\">Roofing Company.</span>", subtitle: "Providing quality roof services to Central Florida homeowners and businesses since 2003. We are a local, family-owned roofing company dedicated to providing our customers with the best roofing services possible." }},
+    { id: 'hero', type: 'hero', order: 1, content: { 
+        title: "Your Trusted Orlando <span class=\"text-transparent bg-clip-text bg-gradient-to-tr from-pink-700 to-orange-800\">Roofing Company.</span>", 
+        subtitle: "Providing quality roof services to Central Florida homeowners and businesses since 2003. We are a local, family-owned roofing company dedicated to providing our customers with the best roofing services possible.",
+        images: [
+            { id: 'hero-1', url: 'https://images.unsplash.com/photo-1613977257363-707ba9348227?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtb2Rlcm4lMjBob3VzZXxlbnwwfHx8fDE3NjE4MjA0MTl8MA&ixlib=rb-4.1.0&q=80&w=1080', alt: 'Modern house with a new roof' },
+            { id: 'hero-2', url: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjb25zdHJ1Y3Rpb24lMjB3b3JrZXJzfGVufDB8fHx8MTc2MTkyOTQ4MHww&ixlib=rb-4.1.0&q=80&w=1080', alt: 'Construction workers on a roof' },
+        ]
+    }},
     { id: 'services', type: 'services', order: 2, content: {} },
     { id: 'gallery', type: 'gallery', order: 3, content: {} },
     { id: 'cta', type: 'cta', order: 4, content: {} },
@@ -54,7 +67,25 @@ const defaultElements = [
 ];
 
 
-const HeroForm = ({ index, control }: { index: number, control: Control<PageElementsFormValues> }) => (
+const HeroForm = ({ index, control }: { index: number, control: Control<PageElementsFormValues> }) => {
+    const { fields, append, remove, move } = useFieldArray({
+        control,
+        name: `elements.${index}.content.images`,
+    });
+    
+    const dragItem = useRef<number | null>(null);
+    const dragOverItem = useRef<number | null>(null);
+
+    const handleDragEnd = () => {
+        if (dragItem.current !== null && dragOverItem.current !== null) {
+            move(dragItem.current, dragOverItem.current);
+        }
+        dragItem.current = null;
+        dragOverItem.current = null;
+    };
+
+
+    return (
     <>
         <FormField control={control} name={`elements.${index}.content.title`} render={({ field }) => (
             <FormItem><FormLabel>Title (HTML)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
@@ -62,8 +93,48 @@ const HeroForm = ({ index, control }: { index: number, control: Control<PageElem
         <FormField control={control} name={`elements.${index}.content.subtitle`} render={({ field }) => (
             <FormItem><FormLabel>Subtitle</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
         )} />
+
+        <div className="space-y-4 pt-4">
+            <FormLabel>Hero Images</FormLabel>
+            {fields.map((imageField, imageIndex) => (
+                <Card 
+                    key={imageField.id} 
+                    className="p-4 space-y-2 relative"
+                    draggable
+                    onDragStart={() => (dragItem.current = imageIndex)}
+                    onDragEnter={() => (dragOverItem.current = imageIndex)}
+                    onDragEnd={handleDragEnd}
+                    onDragOver={(e) => e.preventDefault()}
+                >
+                    <GripVertical className="h-5 w-5 text-muted-foreground absolute top-2 left-2 cursor-grab" />
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-2 right-2 h-6 w-6"
+                        onClick={() => remove(imageIndex)}
+                    >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                    <FormField control={control} name={`elements.${index}.content.images.${imageIndex}.url`} render={({ field }) => (
+                        <FormItem><FormLabel>Image URL</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={control} name={`elements.${index}.content.images.${imageIndex}.alt`} render={({ field }) => (
+                        <FormItem><FormLabel>Alt Text</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                </Card>
+            ))}
+            <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => append({ id: `hero-${Date.now()}`, url: '', alt: '' })}
+            >
+                <PlusCircle className="mr-2 h-4 w-4" /> Add Image
+            </Button>
+        </div>
     </>
-);
+)};
 
 export default function EditHomepage() {
   const firestore = useFirestore();

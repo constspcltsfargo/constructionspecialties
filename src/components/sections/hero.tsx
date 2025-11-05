@@ -1,30 +1,56 @@
-
 "use client";
 import Image from 'next/image';
 import Link from 'next/link';
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Button } from '@/components/ui/button';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import Autoplay from "embla-carousel-autoplay"
 
+interface HeroImage {
+    id: string;
+    url: string;
+    alt: string;
+}
 interface HeroContent {
     title: string;
     subtitle: string;
+    images: HeroImage[];
 }
 
 export function Hero({ content }: { content: HeroContent }) {
-    const heroImage1 = PlaceHolderImages.find(img => img.id === 'hero-image-1');
+    
+    const hasImages = content.images && content.images.length > 0;
 
     return (
         <section className="relative h-[600px] w-full flex items-center justify-center text-center text-white">
-            {heroImage1 && (
-                <Image 
-                    src={heroImage1.imageUrl} 
-                    alt={heroImage1.description} 
-                    fill
-                    className="object-cover -z-10"
-                    data-ai-hint={heroImage1.imageHint}
-                    priority
-                />
-            )}
+             {hasImages ? (
+                <Carousel
+                    className="w-full h-full"
+                    plugins={[
+                        Autoplay({
+                            delay: 5000,
+                        }),
+                    ]}
+                >
+                    <CarouselContent className="h-full">
+                        {content.images.map((image) => (
+                            <CarouselItem key={image.id} className="h-full">
+                                <Image
+                                    src={image.url}
+                                    alt={image.alt}
+                                    fill
+                                    className="object-cover -z-10"
+                                    priority
+                                />
+                            </CarouselItem>
+                        ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="absolute left-4" />
+                    <CarouselNext className="absolute right-4" />
+                </Carousel>
+             ) : (
+                <div className="w-full h-full bg-gray-300 -z-10" />
+             )}
             <div className="absolute inset-0 bg-black/50 -z-10" />
 
             <div className="container px-4 md:px-6">
