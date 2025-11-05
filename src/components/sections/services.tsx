@@ -1,24 +1,27 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Home, Building, Wind } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
 
 const services = [
   {
-    icon: <Home className="h-10 w-10 text-primary" />,
-    title: "Residential Roofing",
-    description: "Protect your home and family with our expert residential roofing services.",
-  },
-  {
-    icon: <Building className="h-10 w-10 text-primary" />,
+    imageUrl: "https://images.unsplash.com/photo-1579725942440-9941d18f4a8e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjb21tZXJjaWFsJTIwYnVpbGRpbmd8ZW58MHx8fHwxNzYyMjI0NTgxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+    imageHint: "commercial building",
     title: "Commercial Roofing",
     description: "We provide quality commercial roofing services to protect your business.",
   },
   {
-    icon: <Wind className="h-10 w-10 text-primary" />,
-    title: "Storm Damage",
-    description: "Our team is ready to help you with your storm damage needs.",
+    imageUrl: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxyZXNpZGVudGlhbCUyMGhvdXNlfGVufDB8fHx8MTc2MjIyNDU4MXww&ixlib=rb-4.1.0&q=80&w=1080",
+    imageHint: "residential house",
+    title: "Residential Roofing",
+    description: "Protect your home and family with our expert residential roofing services.",
+  },
+  {
+    imageUrl: "https://images.unsplash.com/photo-1581351628313-1a71688527b3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmYXJtJTIwYnVpbGRpbmd8ZW58MHx8fHwxNzYyMjI0NTgxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+    imageHint: "farm building",
+    title: "Industrial and Agricultural Roofing",
+    description: "Durable and reliable roofing solutions for industrial and agricultural properties.",
   },
 ];
 
@@ -34,13 +37,19 @@ export function Services() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => (
-            <Card key={index} className="flex flex-col text-center items-center p-6 hover:shadow-lg transition-shadow duration-300">
-              <CardHeader className="p-0">
-                {service.icon}
-              </CardHeader>
-              <CardContent className="p-0 mt-4 flex-1">
+            <Card key={index} className="flex flex-col overflow-hidden text-center hover:shadow-lg transition-shadow duration-300">
+                <CardHeader className="p-0 relative h-56 w-full">
+                    <Image 
+                        src={service.imageUrl}
+                        alt={service.title}
+                        fill
+                        className="object-cover"
+                        data-ai-hint={service.imageHint}
+                    />
+                </CardHeader>
+              <CardContent className="p-6 flex-1 flex flex-col">
                 <CardTitle className="text-xl mb-2">{service.title}</CardTitle>
-                <p className="text-muted-foreground">{service.description}</p>
+                <p className="text-muted-foreground flex-1">{service.description}</p>
               </CardContent>
             </Card>
           ))}
