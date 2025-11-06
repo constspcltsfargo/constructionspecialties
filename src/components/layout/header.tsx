@@ -79,16 +79,16 @@ export function Header() {
                     </div>
                 </div>
             </div>
-            <header className="sticky left-0 top-0 w-full flex items-center h-20 border-b z-40 bg-background/80 backdrop-filter backdrop-blur-xl">
+            <header className="sticky left-0 top-0 w-full flex items-center h-28 border-b z-40 bg-background/80 backdrop-filter backdrop-blur-xl">
                 <nav className="relative mx-auto lg:max-w-7xl w-full px-5 sm:px-10 md:px-12 lg:px-5 flex gap-x-5 justify-between items-center">
                     <div className="flex items-center min-w-max">
                         <Link href="/" className="text-xl font-semibold flex items-center gap-x-2">
                            <Image 
                                 src="https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/CS%20LLC%20New%20logo%20PNG.png?alt=media&token=c1de30c8-b019-4f96-bcbc-14371b3c3dd2"
                                 alt="Construction Specialties, LLC Logo"
-                                width={150}
-                                height={50}
-                                className="h-12 w-auto"
+                                width={200}
+                                height={66}
+                                className="h-20 w-auto"
                            />
                         </Link>
                     </div>

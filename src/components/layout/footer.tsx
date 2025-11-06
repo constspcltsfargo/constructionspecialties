@@ -13,9 +13,9 @@ export function Footer() {
                  <Image 
                     src="https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/CS%20LLC%20New%20logo%20PNG.png?alt=media&token=c1de30c8-b019-4f96-bcbc-14371b3c3dd2"
                     alt="Construction Specialties, LLC Logo"
-                    width={150}
-                    height={50}
-                    className="h-12 w-auto invert brightness-0"
+                    width={200}
+                    height={66}
+                    className="h-20 w-auto invert brightness-0"
                  />
               </div>
               <p className="text-sm text-muted-foreground">Quality you can trust, service you can count on.</p>
