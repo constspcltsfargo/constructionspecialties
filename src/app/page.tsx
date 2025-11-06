@@ -31,12 +31,10 @@ export default function Home() {
 
   const { data: pageElements, isLoading } = useCollection<any>(elementsQuery);
 
-  const contentBySection = useMemo(() => {
-    if (!pageElements) return {};
-    return pageElements.reduce((acc, el) => {
-      acc[el.type] = el.content;
-      return acc;
-    }, {} as { [key: string]: any });
+  const sortedElements = useMemo(() => {
+    if (!pageElements) return [];
+    // The query should already order them, but an extra sort doesn't hurt.
+    return [...pageElements].sort((a, b) => a.order - b.order);
   }, [pageElements]);
 
 
@@ -45,7 +43,7 @@ export default function Home() {
         <div className="flex flex-col min-h-screen">
             <Header />
             <main className="flex-1">
-                <Skeleton className="h-[500px] w-full" />
+                <Skeleton className="h-[600px] w-full" />
                 <Skeleton className="h-[500px] w-full mt-4" />
                 <Skeleton className="h-[500px] w-full mt-4" />
             </main>
@@ -58,13 +56,13 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-1">
-        {pageElements.map(element => {
+        {sortedElements.map(element => {
           const Component = componentMap[element.type];
           if (!Component) {
             return null; // Don't render unknown sections
           }
           // Pass content to components that need it
-          const props = contentBySection[element.type] ? { content: contentBySection[element.type] } : {};
+          const props = element.content ? { content: element.content } : {};
           return <Component key={element.id} {...props} />;
         })}
       </main>
