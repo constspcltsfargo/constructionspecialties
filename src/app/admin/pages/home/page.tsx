@@ -56,8 +56,14 @@ const defaultElements = [
         title: "Your Trusted Orlando <span class=\"text-transparent bg-clip-text bg-gradient-to-tr from-pink-700 to-orange-800\">Roofing Company.</span>", 
         subtitle: "Providing quality roof services to Central Florida homeowners and businesses since 2003. We are a local, family-owned roofing company dedicated to providing our customers with the best roofing services possible.",
         images: [
-            { id: 'hero-1', url: 'https://images.unsplash.com/photo-1613977257363-707ba9348227?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtb2Rlcm4lMjBob3VzZXxlbnwwfHx8fDE3NjE4MjA0MTl8MA&ixlib=rb-4.1.0&q=80&w=1080', alt: 'Modern house with a new roof' },
-            { id: 'hero-2', url: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjb25zdHJ1Y3Rpb24lMjB3b3JrZXJzfGVufDB8fHx8MTc2MTkyOTQ4MHww&ixlib=rb-4.1.0&q=80&w=1080', alt: 'Construction workers on a roof' },
+            { id: 'hero-1', url: 'https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Slider%20Images%2FAnnex%20IMG_20250630_122752.jpg?alt=media&token=8b921d83-feb4-484f-bf8e-deb54d83444e', alt: 'Commercial building roofing project' },
+            { id: 'hero-2', url: 'https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Slider%20Images%2FBig%20O%202%2020250629_173800_edited.jpg?alt=media&token=79cd26e1-ac45-4d11-9ed8-a296f0605ab4', alt: 'Big O Tires commercial roofing' },
+            { id: 'hero-3', url: 'https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Slider%20Images%2FBismarck%20School%2020250629_144239.jpg?alt=media&token=5f563a8e-87be-4e19-96de-ff77617b4fac', alt: 'Bismarck School roofing project' },
+            { id: 'hero-4', url: 'https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Slider%20Images%2FMSU%20Summer%2020250629_182401.jpg?alt=media&token=230268e8-27f7-4dd7-b15b-f54c13d7ba35', alt: 'MSU building roofing in summer' },
+            { id: 'hero-5', url: 'https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Slider%20Images%2FMinot%20DOT%202%2020250629_174127.jpg?alt=media&token=226d6f49-7a9f-47f3-aa3a-6a545fe3f330', alt: 'Minot DOT building roofing project' },
+            { id: 'hero-6', url: 'https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Slider%20Images%2FRPZ%20Tiger%2020250630_124936.jpg?alt=media&token=6ba8f8e2-2fbc-4eb1-a302-7ff7d365fe94', alt: 'RPZ Tiger commercial roofing' },
+            { id: 'hero-7', url: 'https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Slider%20Images%2FStarbucks%202%2020250629_184237.jpg?alt=media&token=2a8e0bf2-a1b0-41b3-96a8-ac2ddc2790f9', alt: 'Starbucks commercial roofing' },
+            { id: 'hero-8', url: 'https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Slider%20Images%2Fbottineau-county-sheriffs-office.jpg?alt=media&token=af5da1dc-8a4b-4134-a5b6-0bf733399cfc', alt: 'Bottineau County Sheriffs Office roofing' },
         ]
     }},
     { id: 'services', type: 'services', order: 2, content: {} },
@@ -306,3 +312,5 @@ export default function EditHomepage() {
     </Form>
   );
 }
+
+    
