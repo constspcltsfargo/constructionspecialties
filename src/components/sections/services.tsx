@@ -12,7 +12,7 @@ const services = [
     description: "We provide quality commercial roofing services to protect your business.",
   },
   {
-    imageUrl: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxyZXNpZGVudGlhbCUyMGhvdXNlfGVufDB8fHx8MTc2MjIyNDU4MXww&ixlib=rb-4.1.0&q=80&w=1080",
+    imageUrl: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
     imageHint: "residential house",
     title: "Residential Roofing",
     description: "Protect your home and family with our expert residential roofing services.",
@@ -43,6 +43,7 @@ export function Services() {
                         src={service.imageUrl}
                         alt={service.title}
                         fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         className="object-cover"
                         data-ai-hint={service.imageHint}
                     />
