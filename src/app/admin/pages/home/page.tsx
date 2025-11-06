@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useRef } from 'react';
@@ -52,8 +53,8 @@ type PageElementsFormValues = z.infer<typeof pageElementsSchema>;
 
 // Default content for seeding the database
 const defaultElements = [
-    { id: 'hero', type: 'hero', order: 1, content: { 
-        title: "Your Trusted Orlando <span class=\"text-transparent bg-clip-text bg-gradient-to-tr from-pink-700 to-orange-800\">Roofing Company.</span>", 
+    { id: 'hero', type: 'hero', order: 1, content: {
+        title: "Your Trusted Orlando <span class=\"text-transparent bg-clip-text bg-gradient-to-tr from-pink-700 to-orange-800\">Roofing Company.</span>",
         subtitle: "Providing quality roof services to Central Florida homeowners and businesses since 2003. We are a local, family-owned roofing company dedicated to providing our customers with the best roofing services possible.",
         images: [
             { id: 'hero-1', url: 'https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Slider%20Images%2FAnnex%20IMG_20250630_122752.jpg?alt=media&token=8b921d83-feb4-484f-bf8e-deb54d83444e', alt: 'Commercial building roofing project' },
@@ -103,8 +104,8 @@ const HeroForm = ({ index, control }: { index: number, control: Control<PageElem
         <div className="space-y-4 pt-4">
             <FormLabel>Hero Images</FormLabel>
             {fields.map((imageField, imageIndex) => (
-                <Card 
-                    key={imageField.id} 
+                <Card
+                    key={imageField.id}
                     className="p-4 space-y-2 relative"
                     draggable
                     onDragStart={() => (dragItem.current = imageIndex)}
@@ -284,8 +285,8 @@ export default function EditHomepage() {
             </CardHeader>
             <CardContent className="space-y-6">
             {fields.map((field, index) => (
-                <Card 
-                  key={field.id} 
+                <Card
+                  key={field.id}
                   className="p-4"
                   draggable
                   onDragStart={() => (dragItem.current = index)}
@@ -312,3 +313,5 @@ export default function EditHomepage() {
     </Form>
   );
 }
+
+    
