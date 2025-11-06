@@ -1,7 +1,6 @@
 "use client";
 import Image from 'next/image';
 import Link from 'next/link';
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Button } from '@/components/ui/button';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import Autoplay from "embla-carousel-autoplay"
@@ -19,7 +18,7 @@ interface HeroContent {
 
 export function Hero({ content }: { content: HeroContent }) {
     
-    const hasImages = content.images && content.images.length > 0;
+    const hasImages = content?.images && content.images.length > 0;
 
     return (
         <section className="relative h-[600px] w-full flex items-center justify-center text-center text-white">
@@ -57,10 +56,10 @@ export function Hero({ content }: { content: HeroContent }) {
                 <div className="space-y-6 max-w-3xl mx-auto">
                     <h1 
                         className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl"
-                        dangerouslySetInnerHTML={{ __html: content.title.replace(/<span.*?>/g, '<span class="text-primary">').replace(/<\/span>/g, '</span>') }}
+                        dangerouslySetInnerHTML={{ __html: content?.title || "" }}
                     />
                     <p className="text-lg md:text-xl text-gray-200">
-                        {content.subtitle}
+                        {content?.subtitle}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
                         <Button asChild size="lg">
