@@ -32,14 +32,14 @@ export function Hero({ content }: { content: HeroContent }) {
                     ]}
                 >
                     <CarouselContent className="h-full">
-                        {content.images.map((image) => (
+                        {content.images.map((image, index) => (
                             <CarouselItem key={image.id} className="h-full">
                                 <Image
                                     src={image.url}
                                     alt={image.alt}
                                     fill
                                     className="object-cover -z-10"
-                                    priority
+                                    priority={index === 0}
                                 />
                             </CarouselItem>
                         ))}
