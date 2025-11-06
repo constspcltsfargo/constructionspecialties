@@ -30,6 +30,9 @@ export function Hero({ content }: { content: HeroContent }) {
                             delay: 5000,
                         }),
                     ]}
+                    opts={{
+                        loop: true,
+                    }}
                 >
                     <CarouselContent className="h-full">
                         {content.images.map((image, index) => (
@@ -40,6 +43,7 @@ export function Hero({ content }: { content: HeroContent }) {
                                     fill
                                     className="object-cover -z-10"
                                     priority={index === 0}
+                                    sizes="100vw"
                                 />
                             </CarouselItem>
                         ))}
