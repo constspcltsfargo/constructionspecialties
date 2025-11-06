@@ -62,8 +62,7 @@ export default function Home() {
             return null; // Don't render unknown sections
           }
           // Pass content to components that need it
-          const props = element.content ? { content: element.content } : {};
-          return <Component key={element.id} {...props} />;
+          return <Component key={element.id} content={element.content} />;
         })}
       </main>
       <Footer />
