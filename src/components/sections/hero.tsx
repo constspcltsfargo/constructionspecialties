@@ -48,9 +48,9 @@ export function Hero({ content }: { content?: HeroContent }) {
                         loop: true,
                     }}
                 >
-                    <CarouselContent className="h-[600px]">
+                    <CarouselContent className="h-[600px] m-0">
                         {imagesToDisplay.map((image, index) => (
-                            <CarouselItem key={image.id}>
+                             <CarouselItem key={image.id} className="p-0">
                                 <Card className="h-full w-full rounded-none border-none">
                                     <CardContent className="relative flex h-full w-full items-center justify-center p-0">
                                         <Image
@@ -66,15 +66,15 @@ export function Hero({ content }: { content?: HeroContent }) {
                             </CarouselItem>
                         ))}
                     </CarouselContent>
-                    <CarouselPrevious className="absolute left-4 z-10" />
-                    <CarouselNext className="absolute right-4 z-10" />
+                    <CarouselPrevious className="absolute left-4 z-10 bg-black/30 text-white border-white/50 hover:bg-black/50 hover:text-white" />
+                    <CarouselNext className="absolute right-4 z-10 bg-black/30 text-white border-white/50 hover:bg-black/50 hover:text-white" />
                 </Carousel>
              ) : (
                 <div className="w-full h-[600px] bg-gray-300" />
              )}
             <div className="absolute inset-0 bg-black/50" />
 
-            <div className="container px-4 md:px-6 absolute">
+            <div className="container px-4 md:px-6 absolute z-10">
                 <div className="space-y-6 max-w-3xl mx-auto">
                     <h1 
                         className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl"
