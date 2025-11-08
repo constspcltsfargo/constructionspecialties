@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import Autoplay from "embla-carousel-autoplay"
+import { Card, CardContent } from '@/components/ui/card';
 
 interface HeroImage {
     id: string;
@@ -34,10 +35,10 @@ export function Hero({ content }: { content?: HeroContent }) {
     const hasImages = imagesToDisplay.length > 0;
 
     return (
-        <section className="relative h-[600px] w-full flex items-center justify-center text-center text-white">
+        <section className="relative w-full flex items-center justify-center text-center text-white">
              {hasImages ? (
                 <Carousel
-                    className="w-full h-full"
+                    className="w-full"
                     plugins={[
                         Autoplay({
                             delay: 5000,
@@ -47,29 +48,33 @@ export function Hero({ content }: { content?: HeroContent }) {
                         loop: true,
                     }}
                 >
-                    <CarouselContent className="h-full">
+                    <CarouselContent className="h-[600px]">
                         {imagesToDisplay.map((image, index) => (
-                            <CarouselItem key={image.id} className="h-full relative">
-                                <Image
-                                    src={image.url}
-                                    alt={image.alt}
-                                    fill
-                                    className="object-cover"
-                                    priority={index === 0}
-                                    sizes="100vw"
-                                />
+                            <CarouselItem key={image.id}>
+                                <Card className="h-full w-full rounded-none border-none">
+                                    <CardContent className="relative flex h-full w-full items-center justify-center p-0">
+                                        <Image
+                                            src={image.url}
+                                            alt={image.alt}
+                                            fill
+                                            className="object-cover"
+                                            priority={index === 0}
+                                            sizes="100vw"
+                                        />
+                                    </CardContent>
+                                </Card>
                             </CarouselItem>
                         ))}
                     </CarouselContent>
-                    <CarouselPrevious className="absolute left-4" />
-                    <CarouselNext className="absolute right-4" />
+                    <CarouselPrevious className="absolute left-4 z-10" />
+                    <CarouselNext className="absolute right-4 z-10" />
                 </Carousel>
              ) : (
-                <div className="w-full h-full bg-gray-300" />
+                <div className="w-full h-[600px] bg-gray-300" />
              )}
             <div className="absolute inset-0 bg-black/50" />
 
-            <div className="container px-4 md:px-6 relative">
+            <div className="container px-4 md:px-6 absolute">
                 <div className="space-y-6 max-w-3xl mx-auto">
                     <h1 
                         className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl"
