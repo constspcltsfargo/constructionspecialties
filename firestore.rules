@@ -1,3 +1,4 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -39,6 +40,11 @@ service cloud.firestore {
     match /media/{mediaId} {
         allow read: if true;
         allow write: if isAdmin();
+    }
+
+    // Rules for estimate requests
+    match /estimateRequests/{requestId} {
+        allow read, write: if isAdmin();
     }
   }
 }

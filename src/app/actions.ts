@@ -1,7 +1,10 @@
+
 "use server";
 
 import { z } from "zod";
 import { analyzeContactForm } from "@/ai/flows/contact-form-analyzer";
+import { getFirestore, addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { initializeFirebase } from "@/firebase/server-init";
 
 const contactFormSchema = z.object({
   firstName: z.string().min(1, { message: "First name is required." }),
@@ -56,11 +59,35 @@ export async function handleContactFormSubmission(
       phone: validatedFields.data.phone,
       howDidYouHear: validatedFields.data.howDidYouHear,
     });
+    
+    // Save to Firestore
+    try {
+        const { firestore } = initializeFirebase();
+        const estimateRequestsCollection = collection(firestore, 'estimateRequests');
+        await addDoc(estimateRequestsCollection, {
+            name: `${validatedFields.data.firstName} ${validatedFields.data.lastName}`,
+            email: validatedFields.data.email,
+            phone: validatedFields.data.phone,
+            zip: validatedFields.data.zip,
+            project: validatedFields.data.project,
+            howDidYouHear: validatedFields.data.howDidYouHear || '',
+            submittedAt: serverTimestamp(),
+            suggestedTeam: result.suggestedTeam,
+            summary: result.summary,
+            status: 'new'
+        });
+    } catch (dbError: any) {
+        console.error("Firestore write error:", dbError);
+        // Don't block the user, just log the error for now. The user still gets the success message.
+    }
+
+
     return {
       message: "Success! Your message has been analyzed.",
       data: result,
     };
   } catch (error) {
+    console.error("AI analysis error:", error);
     return {
       message: "Error: AI analysis failed. Please try again later.",
       fields: validatedFields.data,

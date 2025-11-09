@@ -135,6 +135,23 @@
         "pageId",
         "order"
       ]
+    },
+    "EstimateRequest": {
+        "title": "Estimate Request",
+        "description": "Represents a submission from the contact/estimate form.",
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "description": "Full name of the requester." },
+          "email": { "type": "string", "format": "email" },
+          "phone": { "type": "string" },
+          "zip": { "type": "string" },
+          "project": { "type": "string", "description": "The project description/message." },
+          "howDidYouHear": { "type": "string" },
+          "submittedAt": { "type": "string", "format": "date-time" },
+          "suggestedTeam": { "type": "string", "description": "AI-suggested team for routing." },
+          "summary": { "type": "string", "description": "AI-generated summary of the request." }
+        },
+        "required": ["name", "email", "phone", "zip", "project", "submittedAt"]
     }
   },
   "auth": {
@@ -145,55 +162,33 @@
   },
   "firestore": {
     "structure": [
-        {
-            "path": "/users/{userId}",
-            "definition": {
-              "entityName": "UserProfile",
-              "schema": {
-                "$ref": "#/backend/entities/UserProfile"
-              },
-              "description": "Stores public user profile information. Users can read all profiles but can only write to their own.",
-              "params": [
-                {
-                  "name": "userId",
-                  "description": "The unique identifier for the user, corresponding to their Firebase Auth UID."
-                }
-              ]
-            }
-        },
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "UserProfile",
+          "schema": { "$ref": "#/backend/entities/UserProfile" },
+          "description": "Stores public user profile information. Users can read all profiles but can only write to their own.",
+          "params": [{ "name": "userId", "description": "The unique identifier for the user, corresponding to their Firebase Auth UID." }]
+        }
+      },
       {
         "path": "/pages/{pageId}",
         "definition": {
           "entityName": "Page",
-          "schema": {
-            "$ref": "#/backend/entities/Page"
-          },
-          "description": "Stores page content for the website. Accessible and editable only by admins (users with a document in /roles_admin/{uid}).",
-          "params": [
-            {
-              "name": "pageId",
-              "description": "The unique identifier for the page."
-            }
-          ]
+          "schema": { "$ref": "#/backend/entities/Page" },
+          "description": "Stores page content for the website. Accessible and editable only by admins.",
+          "params": [{ "name": "pageId", "description": "The unique identifier for the page." }]
         }
       },
       {
         "path": "/pages/{pageId}/pageElements/{pageElementId}",
         "definition": {
           "entityName": "PageElement",
-          "schema": {
-            "$ref": "#/backend/entities/PageElement"
-          },
-          "description": "Stores reusable elements associated with a specific page. Includes denormalized `pageId` to allow easy access to the page content. Accessible and editable only by admins (users with a document in /roles_admin/{uid}).",
+          "schema": { "$ref": "#/backend/entities/PageElement" },
+          "description": "Stores reusable elements associated with a specific page. Accessible and editable only by admins.",
           "params": [
-            {
-              "name": "pageId",
-              "description": "The unique identifier for the page."
-            },
-            {
-              "name": "pageElementId",
-              "description": "The unique identifier for the page element."
-            }
+            { "name": "pageId", "description": "The unique identifier for the page." },
+            { "name": "pageElementId", "description": "The unique identifier for the page element." }
           ]
         }
       },
@@ -201,35 +196,30 @@
         "path": "/media/{mediaId}",
         "definition": {
           "entityName": "Media",
-          "schema": {
-            "$ref": "#/backend/entities/Media"
-          },
-          "description": "Stores media files uploaded to the storage bucket.  Accessible and editable only by admins (users with a document in /roles_admin/{uid}).",
-          "params": [
-            {
-              "name": "mediaId",
-              "description": "The unique identifier for the media file."
-            }
-          ]
+          "schema": { "$ref": "#/backend/entities/Media" },
+          "description": "Stores media files. Accessible and editable only by admins.",
+          "params": [{ "name": "mediaId", "description": "The unique identifier for the media file." }]
         }
       },
       {
         "path": "/roles_admin/{userId}",
         "definition": {
           "entityName": "roles_admin",
-          "schema": {
-            "$ref": "#/backend/entities/roles_admin"
-          },
+          "schema": { "$ref": "#/backend/entities/roles_admin" },
           "description": "Marks a user as an administrator. The first authenticated user can create their own admin document if the collection is empty. Subsequent admin roles can only be granted by an existing admin.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier for the user."
-            }
-          ]
+          "params": [{ "name": "userId", "description": "The unique identifier for the user." }]
+        }
+      },
+      {
+        "path": "/estimateRequests/{requestId}",
+        "definition": {
+            "entityName": "EstimateRequest",
+            "schema": { "$ref": "#/backend/entities/EstimateRequest" },
+            "description": "Stores all contact form submissions for estimates. Only accessible by admins.",
+            "params": [{ "name": "requestId", "description": "The unique identifier for the estimate request." }]
         }
       }
     ],
-    "reasoning": "This design prioritizes security and scalability for the Construction Specialties application. The structure is designed around the principle of Authorization Independence, achieved by denormalizing authorization data where necessary to avoid using `get()` calls in Firestore rules. This ensures atomic operations and simplifies debugging. Structural Segregation is applied by separating content based on access needs (e.g., global CMS content managed by admins). The design incorporates explicit state modeling using dedicated status fields. QAPs are supported by structuring content by access requirements, enabling secure `list` operations.\n\nSpecifically, the `pages` collection is globally accessible to admins, managed via existence in the `/roles_admin/{uid}` collection. The `pageElements` are stored as a subcollection of `pages` and include the `pageId` to correctly associate elements to their parent page."
+    "reasoning": "This design prioritizes security and scalability. The `estimateRequests` collection is added to store form submissions and is restricted to admin access only, ensuring customer data privacy."
   }
 }
