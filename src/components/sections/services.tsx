@@ -12,7 +12,7 @@ const services = [
     description: "We provide quality commercial roofing services to protect your business.",
   },
   {
-    imageUrl: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    imageUrl: "https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Services%20Photos%2FResedential%20Roofing.avif?alt=media&token=03b78654-6274-4822-b242-75e9b710fd12",
     imageHint: "residential house",
     title: "Residential Roofing",
     description: "Protect your home and family with our expert residential roofing services.",
