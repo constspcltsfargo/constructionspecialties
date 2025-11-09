@@ -18,7 +18,7 @@ const services = [
     description: "Protect your home and family with our expert residential roofing services.",
   },
   {
-    imageUrl: "https://images.unsplash.com/photo-1581351628313-1a71688527b3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmYXJtJTIwYnVpbGRpbmd8ZW58MHx8fHwxNzYyMjI0NTgxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+    imageUrl: "https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Services%20Photos%2FIndustrial%20roofing.avif?alt=media&token=24f19f81-3d91-4719-9afd-d1e14f0632ae",
     imageHint: "farm building",
     title: "Industrial and Agricultural Roofing",
     description: "Durable and reliable roofing solutions for industrial and agricultural properties.",
