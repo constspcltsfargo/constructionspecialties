@@ -6,7 +6,7 @@ import Image from "next/image";
 
 const services = [
   {
-    imageUrl: "https://images.unsplash.com/photo-1579725942440-9941d18f4a8e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjb21tZXJjaWFsJTIwYnVpbGRpbmd8ZW58MHx8fHwxNzYyMjI0NTgxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+    imageUrl: "https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Services%20Photos%2FCommercial%20Roofing.avif?alt=media&token=a84e5e2d-66dd-4a2d-b147-9863bc451dfb",
     imageHint: "commercial building",
     title: "Commercial Roofing",
     description: "We provide quality commercial roofing services to protect your business.",
