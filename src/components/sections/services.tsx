@@ -9,19 +9,19 @@ const services = [
     imageUrl: "https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Services%20Photos%2FCommercial%20Roofing.avif?alt=media&token=a84e5e2d-66dd-4a2d-b147-9863bc451dfb",
     imageHint: "commercial building",
     title: "Commercial Roofing",
-    description: "We provide quality commercial roofing services to protect your business.",
+    description: "Our commercial roofing solutions are custom-tailored to your business needs. Whether it’s a fresh installation, expert repairs, or proactive maintenance, we keep your property fully protected and secure.",
   },
   {
     imageUrl: "https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Services%20Photos%2FResedential%20Roofing.avif?alt=media&token=03b78654-6274-4822-b242-75e9b710fd12",
     imageHint: "residential house",
     title: "Residential Roofing",
-    description: "Protect your home and family with our expert residential roofing services.",
+    description: "From new roofs to emergency repairs, we safeguard your home with top-quality materials and expert craftsmanship, ensuring your family’s safety and comfort.",
   },
   {
     imageUrl: "https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Services%20Photos%2FIndustrial%20roofing.avif?alt=media&token=24f19f81-3d91-4719-9afd-d1e14f0632ae",
     imageHint: "farm building",
     title: "Industrial and Agricultural Roofing",
-    description: "Durable and reliable roofing solutions for industrial and agricultural properties.",
+    description: "Our robust roofing systems are built to withstand the rigorous demands of industrial and agricultural environments, ensuring your operations continue without interruption.",
   },
 ];
 
