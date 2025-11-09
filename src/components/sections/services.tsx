@@ -21,7 +21,7 @@ const services = [
     imageUrl: "https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Services%20Photos%2FIndustrial%20roofing.avif?alt=media&token=24f19f81-3d91-4719-9afd-d1e14f0632ae",
     imageHint: "farm building",
     title: "Industrial and Agricultural Roofing",
-    description: "Our robust roofing systems are built to withstand the rigorous demands of industrial and agricultural environments, ensuring your operations continue without interruption.",
+    description: "For industrial and agricultural properties, we offer specialized roofing solutions designed to withstand the demanding environments of these facilities. Trust us to deliver durable and long-lasting roofing systems.",
   },
 ];
 
