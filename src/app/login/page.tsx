@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useFirestore } from '@/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
@@ -9,22 +9,42 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ensureAdminUser } from '@/app/admin/users/actions';
+import { Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [isPreparing, setIsPreparing] = useState(true);
   const firestore = useFirestore();
   const router = useRouter();
 
+  useEffect(() => {
+    async function prepareAdmin() {
+      setIsPreparing(true);
+      try {
+        const result = await ensureAdminUser();
+        if (!result.success) {
+            setError(`Failed to prepare admin account: ${result.message}`);
+        }
+      } catch (e: any) {
+        setError(`An unexpected error occurred: ${e.message}`);
+      } finally {
+        setIsPreparing(false);
+      }
+    }
+    prepareAdmin();
+  }, []);
+
   const handleLogin = async () => {
     setError(null);
-    setIsLoading(true);
+    setIsLoggingIn(true);
 
     if (!firestore) {
       setError('Firestore is not available.');
-      setIsLoading(false);
+      setIsLoggingIn(false);
       return;
     }
 
@@ -35,7 +55,7 @@ export default function LoginPage() {
 
       if (querySnapshot.empty) {
         setError('No user found with this email.');
-        setIsLoading(false);
+        setIsLoggingIn(false);
         return;
       }
 
@@ -46,7 +66,7 @@ export default function LoginPage() {
       // In a real application, you must hash passwords on a server.
       if (userData.password !== password) {
         setError('Incorrect password.');
-        setIsLoading(false);
+        setIsLoggingIn(false);
         return;
       }
       
@@ -60,9 +80,11 @@ export default function LoginPage() {
     } catch (e: any) {
       setError(e.message || 'An error occurred during login.');
       console.error(e);
-      setIsLoading(false);
+      setIsLoggingIn(false);
     }
   };
+  
+  const isLoading = isLoggingIn || isPreparing;
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -72,35 +94,45 @@ export default function LoginPage() {
           <CardDescription>
             Enter your credentials to access the admin dashboard.
             <br />
-            Use <b>admin@example.com</b> and <b>password</b> for the first login.
+            Use <b>admin@example.com</b> and <b>password</b> to log in.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-            <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isLoading}
-                />
-            </div>
-            <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
-                />
-            </div>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-            <Button onClick={handleLogin} className="w-full" disabled={isLoading}>
-                {isLoading ? 'Logging in...' : 'Login'}
-            </Button>
+            {isPreparing ? (
+                <div className="flex items-center justify-center p-8 text-muted-foreground">
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <span>Preparing admin account...</span>
+                </div>
+            ) : (
+                <>
+                    <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                        id="email"
+                        type="email"
+                        placeholder="m@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        disabled={isLoading}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="password">Password</Label>
+                        <Input
+                        id="password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        disabled={isLoading}
+                        />
+                    </div>
+                    {error && <p className="text-red-500 text-sm">{error}</p>}
+                    <Button onClick={handleLogin} className="w-full" disabled={isLoading}>
+                        {isLoggingIn ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                        {isLoggingIn ? 'Logging in...' : 'Login'}
+                    </Button>
+                </>
+            )}
         </CardContent>
       </Card>
     </div>

@@ -2,7 +2,7 @@
 'use server';
 
 import { getAuth } from 'firebase-admin/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, collection, getDocs, limit, query } from 'firebase-admin/firestore';
 import { initializeFirebaseAdmin } from '@/firebase/admin-init';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
@@ -15,6 +15,52 @@ const newUserSchema = z.object({
 });
 
 type NewUser = z.infer<typeof newUserSchema>;
+
+export async function ensureAdminUser(): Promise<{ success: boolean; created?: boolean, message?: string }> {
+  try {
+    const { app } = initializeFirebaseAdmin();
+    const firestore = getFirestore(app);
+    const auth = getAuth(app);
+
+    const usersCollection = collection(firestore, 'users');
+    const q = query(usersCollection, limit(1));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      console.log('No users found. Creating default admin user...');
+      
+      const userRecord = await auth.createUser({
+        email: 'admin@example.com',
+        password: 'password',
+        displayName: 'Admin User',
+        emailVerified: true,
+        disabled: false,
+      });
+      
+      await auth.setCustomUserClaims(userRecord.uid, { role: 'admin' });
+
+      const userProfileRef = doc(firestore, 'users', userRecord.uid);
+      await setDoc(userProfileRef, {
+        displayName: 'Admin User',
+        email: 'admin@example.com',
+        role: 'admin',
+        password: 'password', // Storing for Firestore-based login
+      });
+      
+       const adminRoleRef = doc(firestore, 'roles_admin', userRecord.uid);
+       await setDoc(adminRoleRef, { role: 'admin' });
+
+      console.log('Default admin user created successfully.');
+      return { success: true, created: true };
+    }
+    
+    return { success: true, created: false };
+  } catch (error: any) {
+    console.error('Error in ensureAdminUser:', error);
+    // Don't throw, just report failure
+    return { success: false, message: error.message || 'An unknown error occurred.' };
+  }
+}
 
 export async function createUser(userData: NewUser): Promise<{ success: boolean; error?: string }> {
   try {
