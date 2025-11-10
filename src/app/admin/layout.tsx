@@ -12,7 +12,7 @@ import {
   SidebarTrigger,
   SidebarInset,
 } from '@/components/ui/sidebar';
-import { Home, Users, FileText, LayoutTemplate, ChevronDown, Mailbox } from 'lucide-react';
+import { Home, Users, FileText, LayoutTemplate, ChevronDown, Mailbox, Image as ImageIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -62,6 +62,14 @@ export default function AdminLayout({
                            <Link href="/admin/pages">
                                 <FileText />
                                 <span>Pages</span>
+                           </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/media')}>
+                           <Link href="/admin/media">
+                                <ImageIcon />
+                                <span>Media</span>
                            </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
