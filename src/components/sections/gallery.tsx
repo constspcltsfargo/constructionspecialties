@@ -1,43 +1,20 @@
-
 'use client';
 
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
-import { collection, query, where, orderBy } from "firebase/firestore";
-
-interface Media {
-    id: string;
-    url: string;
-    filename: string;
-}
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 export function Gallery() {
-  const firestore = useFirestore();
-  const galleryQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return query(
-      collection(firestore, 'media'),
-      where('folder', '==', 'gallery'),
-      orderBy('uploadDate', 'desc')
-    );
-  }, [firestore]);
-
-  const { data: galleryImages, isLoading } = useCollection<Media>(galleryQuery);
-
-  const imagesToShow = galleryImages?.slice(0, 10) || [];
-  const duplicatedImages = [...imagesToShow, ...imagesToShow];
-
-  if (isLoading) {
-    // Optional: add a skeleton loader here
-    return null;
-  }
+  const imagesToShow = PlaceHolderImages.filter(img => img.id.startsWith('gallery-')).slice(0, 10);
   
-  if (!imagesToShow.length) {
+  if (imagesToShow.length === 0) {
     return null; // Don't render if there are no images
   }
+
+  // Duplicate images for a seamless scrolling effect
+  const duplicatedImages = [...imagesToShow, ...imagesToShow];
 
   return (
     <section id="gallery" className="py-12 md:py-24 bg-secondary">
@@ -58,11 +35,12 @@ export function Gallery() {
                 return (
                    <li key={`${image.id}-${index}`} className="relative h-64 w-96 flex-shrink-0">
                        <Image
-                        src={image.url}
-                        alt={image.filename}
+                        src={image.imageUrl}
+                        alt={image.description}
                         fill
                         className="object-cover rounded-lg"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        data-ai-hint={image.imageHint}
                       />
                   </li>
                 );
@@ -74,11 +52,12 @@ export function Gallery() {
                 return (
                    <li key={`${image.id}-duplicate-${index}`} className="relative h-64 w-96 flex-shrink-0">
                        <Image
-                        src={image.url}
-                        alt={image.filename}
+                        src={image.imageUrl}
+                        alt={image.description}
                         fill
                         className="object-cover rounded-lg"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        data-ai-hint={image.imageHint}
                       />
                   </li>
                 );
