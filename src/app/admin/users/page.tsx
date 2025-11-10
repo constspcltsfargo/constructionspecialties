@@ -1,10 +1,14 @@
 
 'use client';
+import { useState } from 'react';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { PlusCircle } from 'lucide-react';
+import { AddUserDialog } from './_components/add-user-dialog';
 
 interface UserProfile {
     displayName: string;
@@ -15,6 +19,8 @@ interface UserProfile {
 
 export default function UserManagementPage() {
   const firestore = useFirestore();
+  const [isAddUserOpen, setAddUserOpen] = useState(false);
+
   const usersCollectionRef = useMemoFirebase(() => {
     if (!firestore) return null;
     return collection(firestore, 'users');
@@ -24,7 +30,13 @@ export default function UserManagementPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">User Management</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">User Management</h1>
+        <Button onClick={() => setAddUserOpen(true)}>
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Add User
+        </Button>
+      </div>
       
       {isLoading && <p>Loading users...</p>}
       {error && <p className="text-red-500">Error: {error.message}</p>}
@@ -46,7 +58,7 @@ export default function UserManagementPage() {
                         <div className="flex items-center gap-3">
                             <Avatar>
                                 <AvatarImage src={user.photoURL} alt={user.displayName} />
-                                <AvatarFallback>{user.displayName.charAt(0)}</AvatarFallback>
+                                <AvatarFallback>{user.displayName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <span>{user.displayName}</span>
                         </div>
@@ -65,6 +77,7 @@ export default function UserManagementPage() {
             </TableBody>
         </Table>
       )}
+      <AddUserDialog isOpen={isAddUserOpen} onOpenChange={setAddUserOpen} />
     </div>
   );
 }
