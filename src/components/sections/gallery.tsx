@@ -5,18 +5,20 @@ import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { ArrowRight } from "lucide-react";
 
-const galleryImages = [
-  { imageId: "gallery-1" },
-  { imageId: "gallery-4" },
-  { imageId: "gallery-3" },
-  { imageId: "gallery-5" },
-  { imageId: "gallery-2" },
-  { imageId: "gallery-6" },
-  { imageId: "gallery-7" },
-  { imageId: "gallery-8" },
-  { imageId: "gallery-9" },
-  { imageId: "gallery-10" },
+const galleryImageIds = [
+  "gallery-1",
+  "gallery-4",
+  "gallery-3",
+  "gallery-5",
+  "gallery-2",
+  "gallery-6",
+  "gallery-7",
+  "gallery-8",
+  "gallery-9",
+  "gallery-10",
 ];
+
+const galleryImages = galleryImageIds.map(id => PlaceHolderImages.find(img => img.id === id)).filter(Boolean);
 
 export function Gallery() {
   const duplicatedImages = [...galleryImages, ...galleryImages];
@@ -35,11 +37,10 @@ export function Gallery() {
           className="w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-200px),transparent_100%)]"
         >
           <ul className="flex items-center justify-center md:justify-start [&_li]:mx-4 [&_img]:max-w-none animate-infinite-scroll">
-             {duplicatedImages.map((item, index) => {
-                const image = PlaceHolderImages.find((img) => img.id === item.imageId);
+             {duplicatedImages.map((image, index) => {
+                if (!image) return null;
                 return (
-                   <li key={index} className="group relative overflow-hidden rounded-lg">
-                    {image && (
+                   <li key={`${image.id}-${index}`} className="group relative overflow-hidden rounded-lg">
                        <Image
                         src={image.imageUrl}
                         alt={image.description}
@@ -48,17 +49,15 @@ export function Gallery() {
                         className="object-cover aspect-[4/3] w-full max-w-sm"
                         data-ai-hint={image.imageHint}
                       />
-                    )}
                   </li>
                 );
              })}
           </ul>
            <ul className="flex items-center justify-center md:justify-start [&_li]:mx-4 [&_img]:max-w-none animate-infinite-scroll" aria-hidden="true">
-             {duplicatedImages.map((item, index) => {
-                const image = PlaceHolderImages.find((img) => img.id === item.imageId);
+             {duplicatedImages.map((image, index) => {
+                if (!image) return null;
                 return (
-                   <li key={index} className="group relative overflow-hidden rounded-lg">
-                    {image && (
+                   <li key={`${image.id}-duplicate-${index}`} className="group relative overflow-hidden rounded-lg">
                        <Image
                         src={image.imageUrl}
                         alt={image.description}
@@ -67,7 +66,6 @@ export function Gallery() {
                         className="object-cover aspect-[4/3] w-full max-w-sm"
                         data-ai-hint={image.imageHint}
                       />
-                    )}
                   </li>
                 );
              })}
