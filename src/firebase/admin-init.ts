@@ -3,29 +3,30 @@
 
 import * as admin from 'firebase-admin';
 
-// Correctly format the private key by replacing literal \n with actual newlines
-const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
-
-// Service account credentials from environment variables
-const serviceAccount = {
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-  privateKey: privateKey,
-};
-
 /**
  * Initializes the Firebase Admin SDK, ensuring it's a singleton.
  * This function is designed to be called within Server Actions or Route Handlers.
+ * It reads credentials directly from environment variables when called.
  * @returns The initialized Firebase Admin app instance.
  */
 export async function initializeFirebaseAdmin(): Promise<admin.app.App> {
-  // Check if an app is already initialized
+  // Check if an app is already initialized to avoid re-initialization
   if (admin.apps.length > 0 && admin.apps[0]) {
     return admin.apps[0];
   }
 
-  // Ensure all required environment variables are present
+  // Read and format credentials *inside* the function
+  const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+
+  const serviceAccount = {
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    privateKey: privateKey,
+  };
+
+  // Ensure all required environment variables are present before trying to initialize
   if (!serviceAccount.projectId || !serviceAccount.clientEmail || !serviceAccount.privateKey) {
+    console.error("Firebase Admin SDK credentials are not set in environment variables.");
     throw new Error('Firebase Admin SDK credentials are not set in environment variables.');
   }
 
