@@ -3,64 +3,8 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Helper functions
-    function isAuth() {
-      // In a custom auth system, we rely on server-side logic (Cloud Functions/Server Actions)
-      // to enforce rules, so client-side auth checks are less relevant.
-      // Admin operations are performed by server-side logic with elevated privileges.
-      return request.auth == null; // Placeholder, real auth happens on the server.
-    }
-
-    function isAdmin(userId) {
-        // This is a placeholder. Real admin checks must happen on your server.
-        // A server with admin privileges would bypass these rules entirely.
-        return get(/databases/$(database)/documents/users/$(userId)).data.role == 'admin';
-    }
-
-    // Rules for User Profiles
-    match /users/{userId} {
-      // Allow unauthenticated server actions to create users during sign-up.
-      allow create: if request.auth == null;
-      
-      // All other reads/writes must go through server actions, so they are disallowed from the client.
-      allow read, update, delete: if false;
-    }
-    
-    // Rules for Estimate Requests
-    match /estimateRequests/{requestId} {
-        // Public can create
-        allow create: if true;
-        // Only server-side admin logic should be able to read/update/delete.
-        allow read, update, delete: if false;
-    }
-    
-    // Rules for CMS Pages
-    match /pages/{pageId} {
-        // Public can read all pages
-        allow read: if true;
-        // Only server-side admin logic should write/delete.
-        allow write: if false;
-    }
-
-    // Rules for Page Elements (subcollection of pages)
-    match /pages/{pageId}/pageElements/{elementId} {
-        // Public can read all page elements
-        allow read: if true;
-        // Only server-side admin logic should write/delete.
-        allow write: if false;
-    }
-
-    // Rules for Media Library
-    match /media/{mediaId} {
-        // Public can read media, only server-side admin logic can write/delete.
-        allow read: if true;
-        allow write: if false;
-    }
-
-    // Fallback security rule - deny all other access
     match /{document=**} {
-      allow read, write: if false;
+      allow read, write: if true;
     }
   }
 }
