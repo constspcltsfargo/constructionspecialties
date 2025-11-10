@@ -7,24 +7,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, Edit, Trash2 } from 'lucide-react';
-import { AddUserDialog } from './_components/add-user-dialog';
-import { EditUserDialog } from './_components/edit-user-dialog';
+import { AlertCircle, Edit, Trash2 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { deleteUser } from './actions';
-import { useToast } from '@/hooks/use-toast';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import Link from 'next/link';
+
 
 export interface UserProfile {
     id: string;
@@ -37,10 +25,6 @@ export interface UserProfile {
 
 export default function UserManagementPage() {
   const firestore = useFirestore();
-  const { toast } = useToast();
-  const [isAddUserOpen, setAddUserOpen] = useState(false);
-  const [isEditUserOpen, setEditUserOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
 
   const usersCollectionRef = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -49,39 +33,31 @@ export default function UserManagementPage() {
 
   const { data: users, isLoading, error } = useCollection<UserProfile>(usersCollectionRef);
 
-  const handleEditClick = (user: UserProfile) => {
-    setSelectedUser(user);
-    setEditUserOpen(true);
-  };
+  const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+  const consoleUrl = `https://console.firebase.google.com/project/${projectId}/authentication/users`;
 
-  const handleDelete = async (uid: string) => {
-    const result = await deleteUser(uid);
-    if (result.success) {
-      toast({
-        title: 'User Deleted',
-        description: 'The user has been successfully deleted.',
-      });
-    } else {
-      toast({
-        variant: 'destructive',
-        title: 'Error Deleting User',
-        description: result.error,
-      });
-    }
-  };
 
   return (
      <Card>
       <CardHeader>
         <div className="flex justify-between items-center">
             <CardTitle>User Management</CardTitle>
-            <Button onClick={() => setAddUserOpen(true)}>
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Add User
-            </Button>
         </div>
       </CardHeader>
       <CardContent>
+        <Alert className="mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Manage Users in Firebase</AlertTitle>
+          <AlertDescription>
+            For security and reliability, please manage all users (add, edit, delete) directly in the Firebase Console.
+            <Button variant="link" asChild className="p-0 h-auto ml-2">
+              <Link href={consoleUrl} target="_blank" rel="noopener noreferrer">
+                Open Firebase Authentication
+              </Link>
+            </Button>
+          </AlertDescription>
+        </Alert>
+
         {isLoading && (
             <div className="space-y-2">
                 <Skeleton className="h-12 w-full" />
@@ -122,32 +98,14 @@ export default function UserManagementPage() {
                             </Badge>
                         </TableCell>
                         <TableCell className="text-right space-x-2">
-                             <Button variant="outline" size="icon" onClick={() => handleEditClick(user)}>
+                             <Button variant="outline" size="icon" disabled>
                                 <Edit className="h-4 w-4" />
                                 <span className="sr-only">Edit User</span>
                              </Button>
-                             <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button variant="destructive" size="icon">
-                                        <Trash2 className="h-4 w-4" />
-                                        <span className="sr-only">Delete User</span>
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            This action cannot be undone. This will permanently delete the user account and all associated data.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => handleDelete(user.id)}>
-                                            Delete
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                             </AlertDialog>
+                             <Button variant="destructive" size="icon" disabled>
+                                <Trash2 className="h-4 w-4" />
+                                <span className="sr-only">Delete User</span>
+                             </Button>
                         </TableCell>
                     </TableRow>
                     ))}
@@ -157,12 +115,10 @@ export default function UserManagementPage() {
          {users && users.length === 0 && !isLoading && (
             <div className="text-center py-12">
                 <h3 className="text-lg font-semibold">No users found</h3>
-                <p className="text-muted-foreground mt-2">Added users will appear here.</p>
+                <p className="text-muted-foreground mt-2">Users will appear here once they are added in the Firebase Console.</p>
             </div>
         )}
       </CardContent>
-      <AddUserDialog isOpen={isAddUserOpen} onOpenChange={setAddUserOpen} />
-      <EditUserDialog user={selectedUser} isOpen={isEditUserOpen} onOpenChange={setEditUserOpen} />
     </Card>
   );
 }
