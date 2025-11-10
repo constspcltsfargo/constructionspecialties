@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { ArrowRight } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 const galleryImages = [
   { imageId: "gallery-1" },
