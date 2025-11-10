@@ -1,3 +1,4 @@
+
 'use server';
 
 import { initializeFirebaseAdmin } from '@/firebase/admin-init';
@@ -7,6 +8,8 @@ import { revalidatePath } from 'next/cache';
 
 export async function uploadMedia(formData: FormData) {
     const files = formData.getAll('files') as File[];
+    const folderPath = formData.get('folderPath') as string || '';
+
     if (!files || files.length === 0) {
         return { error: 'No files provided.' };
     }
@@ -18,8 +21,10 @@ export async function uploadMedia(formData: FormData) {
 
     try {
         const uploadPromises = files.map(async (file) => {
+            const path = folderPath ? `uploads/${folderPath}/${Date.now()}_${file.name}` : `uploads/${Date.now()}_${file.name}`;
+            const storageRef = bucket.file(path);
+            
             const buffer = Buffer.from(await file.arrayBuffer());
-            const storageRef = bucket.file(`uploads/${Date.now()}_${file.name}`);
             
             await uploadBytes(storageRef, buffer, {
                 contentType: file.type,
@@ -33,6 +38,7 @@ export async function uploadMedia(formData: FormData) {
                 mimeType: file.type,
                 size: file.size,
                 uploadDate: serverTimestamp(),
+                folder: folderPath,
             });
         });
 

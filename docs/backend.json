@@ -93,6 +93,10 @@
           "type": "string",
           "description": "The date and time the media file was uploaded.",
           "format": "date-time"
+        },
+        "folder": {
+          "type": "string",
+          "description": "The folder where the media file is stored."
         }
       },
       "required": [
