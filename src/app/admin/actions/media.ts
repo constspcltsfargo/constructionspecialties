@@ -29,9 +29,10 @@ export async function createFolder(folderName: string) {
             name: folderName.trim(),
             createdAt: serverTimestamp(),
         };
-        await addDoc(foldersCollection, newFolder);
+        const docRef = await addDoc(foldersCollection, newFolder);
         revalidatePath('/admin/media');
-        return { success: true, folder: newFolder };
+        // Return the created folder with its new ID
+        return { success: true, folder: { id: docRef.id, ...newFolder } };
     } catch (error: any) {
         console.error('Folder creation failed:', error);
         return { error: error.message || 'Failed to create folder.' };
@@ -65,12 +66,13 @@ export async function uploadMedia(formData: FormData) {
             const fileUpload = bucket.file(path);
             await fileUpload.save(buffer, {
                 contentType: file.type,
-                // Make the file publicly readable
-                public: true,
             });
+            
+            // Make the file publicly readable
+            await fileUpload.makePublic();
 
-            // Construct the public URL manually
-            const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(path)}?alt=media`;
+            // Use the public URL
+            const publicUrl = `https://storage.googleapis.com/${bucket.name}/${path}`;
 
             await addDoc(collection(firestore, 'media'), {
                 filename: file.name,
@@ -102,16 +104,18 @@ export async function deleteMedia(mediaId: string, fileUrl: string) {
     try {
         // Extract the file path from the public URL
         const url = new URL(fileUrl);
-        const encodedPath = url.pathname.split('/o/')[1].split('?')[0];
-        const filePath = decodeURIComponent(encodedPath);
+        // The path in storage is everything after the bucket name in the URL's pathname.
+        const filePath = url.pathname.substring(url.pathname.indexOf('/', 1) + 1);
         
-        await bucket.file(filePath).delete();
+        if (filePath) {
+            await bucket.file(filePath).delete();
+        }
 
     } catch (error: any) {
+        // It's okay if the file doesn't exist in storage, we still want to delete the DB record.
+        // Log other errors but don't block the Firestore deletion.
         if (error.code !== 404 && error.code !== 'storage/object-not-found') {
             console.error('Storage deletion error:', error);
-            // Don't return, still try to delete from Firestore
-            // return { error: 'Failed to delete file from storage.' };
         }
     }
     
