@@ -1,13 +1,20 @@
 
 'use client';
 
+import { useState } from 'react';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy } from 'firebase/firestore';
+import { collection, query, orderBy, doc, updateDoc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { ChevronDown } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+
 
 interface EstimateRequest {
     id: string;
@@ -23,8 +30,16 @@ interface EstimateRequest {
     nearbyBranches?: string[];
 }
 
+const statusColors = {
+  new: 'bg-blue-500 hover:bg-blue-500/90',
+  contacted: 'bg-yellow-500 hover:bg-yellow-500/90',
+  closed: 'bg-green-500 hover:bg-green-500/90',
+};
+
 export default function EstimateRequestsPage() {
   const firestore = useFirestore();
+  const { toast } = useToast();
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
   
   const requestsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -32,6 +47,27 @@ export default function EstimateRequestsPage() {
   }, [firestore]);
 
   const { data: requests, isLoading, error } = useCollection<EstimateRequest>(requestsQuery);
+
+  const handleStatusChange = async (requestId: string, status: EstimateRequest['status']) => {
+    if (!firestore) return;
+    setUpdatingId(requestId);
+    const requestDocRef = doc(firestore, 'estimateRequests', requestId);
+    try {
+        await updateDoc(requestDocRef, { status });
+        toast({
+            title: 'Status Updated',
+            description: `Request status changed to "${status}".`,
+        });
+    } catch(err: any) {
+        toast({
+            variant: 'destructive',
+            title: 'Update Failed',
+            description: err.message,
+        })
+    } finally {
+        setUpdatingId(null);
+    }
+  }
 
   return (
     <Card>
@@ -85,7 +121,32 @@ export default function EstimateRequestsPage() {
                     )}
                   </TableCell>
                   <TableCell>
-                    <Badge>{req.status}</Badge>
+                     <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                variant="default"
+                                size="sm"
+                                className={cn(
+                                    "capitalize w-28 justify-between",
+                                    statusColors[req.status],
+                                )}
+                                disabled={updatingId === req.id}
+                            >
+                                {updatingId === req.id ? 'Updating...' : req.status}
+                                <ChevronDown className="h-4 w-4 ml-2" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            {(['new', 'contacted', 'closed'] as const).map(status => (
+                               <DropdownMenuItem
+                                    key={status}
+                                    onClick={() => handleStatusChange(req.id, status)}
+                                >
+                                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                               </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))}
