@@ -1,7 +1,7 @@
 
 'use server';
 import { config } from 'dotenv';
-config({ path: '.env.local' });
+// config({ path: '.env.local' }); // This line is moved into the functions
 
 import { initializeFirebaseAdmin } from '@/firebase/admin-init';
 import { getStorage } from 'firebase-admin/storage';
@@ -9,6 +9,7 @@ import { getFirestore, collection, addDoc, serverTimestamp, deleteDoc, doc, wher
 import { revalidatePath } from 'next/cache';
 
 export async function createFolder(folderName: string) {
+    config({ path: '.env.local' }); // Load env vars right before use
     if (!folderName || folderName.trim().length === 0) {
         return { error: 'Folder name cannot be empty.' };
     }
@@ -40,6 +41,7 @@ export async function createFolder(folderName: string) {
 
 
 export async function uploadMedia(formData: FormData) {
+    config({ path: '.env.local' }); // Load env vars right before use
     const files = formData.getAll('files') as File[];
     const folderPath = formData.get('folderPath') as string || '';
 
@@ -91,6 +93,7 @@ export async function uploadMedia(formData: FormData) {
 
 
 export async function deleteMedia(mediaId: string, fileUrl: string) {
+    config({ path: '.env.local' }); // Load env vars right before use
     const { firebaseApp } = initializeFirebaseAdmin();
     const storage = getStorage(firebaseApp);
     const bucket = storage.bucket();
