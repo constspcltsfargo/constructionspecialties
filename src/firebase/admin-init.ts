@@ -3,6 +3,16 @@
 
 import * as admin from 'firebase-admin';
 
+// Correctly format the private key by replacing literal \n with actual newlines
+const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+
+// Service account credentials from environment variables
+const serviceAccount = {
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+  privateKey: privateKey,
+};
+
 /**
  * Initializes the Firebase Admin SDK, ensuring it's a singleton.
  * This function is designed to be called within Server Actions or Route Handlers.
@@ -14,15 +24,19 @@ export async function initializeFirebaseAdmin(): Promise<admin.app.App> {
     return admin.apps[0];
   }
 
-  // In a managed environment like Firebase App Hosting, the SDK can
-  // often be initialized without any parameters. It automatically discovers
-  // the service account credentials from the environment.
+  // Ensure all required environment variables are present
+  if (!serviceAccount.projectId || !serviceAccount.clientEmail || !serviceAccount.privateKey) {
+    throw new Error('Firebase Admin SDK credentials are not set in environment variables.');
+  }
+
   try {
-    const app = admin.initializeApp();
+    // Initialize the Admin SDK with the credentials
+    const app = admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+    });
     return app;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Firebase Admin SDK initialization failed:', error);
-    // Throw a more descriptive error to make debugging easier.
-    throw new Error('Could not initialize Firebase Admin SDK. Please ensure your service account credentials are set up correctly in the environment.');
+    throw new Error(`Could not initialize Firebase Admin SDK. Please check your service account credentials. Error: ${error.message}`);
   }
 }
