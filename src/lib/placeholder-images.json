@@ -49,12 +49,6 @@
       "imageHint": "school building"
     },
     {
-      "id": "gallery-10",
-      "description": "Modern home with a new roof",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.appspot.com/o/Gallery%20Images%2FResidential%205.jpg?alt=media",
-      "imageHint": "modern home"
-    },
-    {
       "id": "why-us-image",
       "description": "Team of construction workers discussing a project.",
       "imageUrl": "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjb25zdHJ1Y3Rpb24lMjB3b3JrZXJzfGVufDB8fHx8MTc2MTkyOTQ4MHww&ixlib=rb-4.1.0&q=80&w=1080",
