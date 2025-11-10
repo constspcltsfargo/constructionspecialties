@@ -7,12 +7,26 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Edit, Trash2 } from 'lucide-react';
 import { AddUserDialog } from './_components/add-user-dialog';
+import { EditUserDialog } from './_components/edit-user-dialog';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { deleteUser } from './actions';
+import { useToast } from '@/hooks/use-toast';
 
-interface UserProfile {
+export interface UserProfile {
     id: string;
     name: string;
     username: string;
@@ -23,7 +37,10 @@ interface UserProfile {
 
 export default function UserManagementPage() {
   const firestore = useFirestore();
+  const { toast } = useToast();
   const [isAddUserOpen, setAddUserOpen] = useState(false);
+  const [isEditUserOpen, setEditUserOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
 
   const usersCollectionRef = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -31,6 +48,27 @@ export default function UserManagementPage() {
   }, [firestore]);
 
   const { data: users, isLoading, error } = useCollection<UserProfile>(usersCollectionRef);
+
+  const handleEditClick = (user: UserProfile) => {
+    setSelectedUser(user);
+    setEditUserOpen(true);
+  };
+
+  const handleDelete = async (uid: string) => {
+    const result = await deleteUser(uid);
+    if (result.success) {
+      toast({
+        title: 'User Deleted',
+        description: 'The user has been successfully deleted.',
+      });
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Error Deleting User',
+        description: result.error,
+      });
+    }
+  };
 
   return (
      <Card>
@@ -83,8 +121,33 @@ export default function UserManagementPage() {
                                 {user.role || 'user'}
                             </Badge>
                         </TableCell>
-                        <TableCell className="text-right">
-                            {/* Actions buttons will go here */}
+                        <TableCell className="text-right space-x-2">
+                             <Button variant="outline" size="icon" onClick={() => handleEditClick(user)}>
+                                <Edit className="h-4 w-4" />
+                                <span className="sr-only">Edit User</span>
+                             </Button>
+                             <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button variant="destructive" size="icon">
+                                        <Trash2 className="h-4 w-4" />
+                                        <span className="sr-only">Delete User</span>
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This action cannot be undone. This will permanently delete the user account and all associated data.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => handleDelete(user.id)}>
+                                            Delete
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                             </AlertDialog>
                         </TableCell>
                     </TableRow>
                     ))}
@@ -99,6 +162,7 @@ export default function UserManagementPage() {
         )}
       </CardContent>
       <AddUserDialog isOpen={isAddUserOpen} onOpenChange={setAddUserOpen} />
+      <EditUserDialog user={selectedUser} isOpen={isEditUserOpen} onOpenChange={setEditUserOpen} />
     </Card>
   );
 }
