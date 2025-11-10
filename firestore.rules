@@ -1,9 +1,37 @@
+
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true;
+    
+    // Public read for gallery, admin write
+    match /media/{mediaId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.role == 'admin';
+    }
+
+    // Allow logged-in users to manage their own profile
+    match /users/{userId} {
+      allow read, update, delete: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null;
+    }
+
+    // Admin-only access for other collections
+    match /pages/{pageId}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.token.role == 'admin';
+    }
+
+    match /estimateRequests/{requestId} {
+      allow read, write: if request.auth != null && request.auth.token.role == 'admin';
+    }
+
+    match /folders/{folderId} {
+      allow read, write: if request.auth != null && request.auth.token.role == 'admin';
+    }
+    
+    // Fallback for general creation of new estimate requests by anyone
+    match /estimateRequests/{requestId} {
+        allow create: if true;
     }
   }
 }
