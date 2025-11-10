@@ -84,8 +84,7 @@ export async function handleContactFormSubmission(
 
 
     return {
-      message: "Success! Your message has been analyzed.",
-      data: result,
+      message: "Success! Your request has been sent.",
     };
   } catch (error) {
     console.error("AI analysis error:", error);

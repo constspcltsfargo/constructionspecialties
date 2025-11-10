@@ -47,21 +47,15 @@ export function ContactForm() {
     }
   }, [state, toast]);
 
-  if (state.message.startsWith("Success") && state.data) {
+  if (state.message.startsWith("Success")) {
     return (
         <CardContent className="pt-6">
           <div className="flex flex-col items-center text-center p-4 rounded-lg bg-green-50 border border-green-200 text-green-900">
             <CheckCircle className="h-12 w-12 text-green-500 mb-4" />
-            <h3 className="text-lg font-semibold">Request Sent & Analyzed!</h3>
+            <h3 className="text-lg font-semibold">Thank You!</h3>
             <p className="text-sm mt-2">
-              {state.data.summary}
+              Your request has been sent successfully. We will contact you soon.
             </p>
-            <div className="text-left w-full mt-4 text-sm space-y-2">
-                <p><strong>Suggested Team:</strong> <span className="font-mono p-1 bg-green-100 rounded">{state.data.suggestedTeam}</span></p>
-                {state.data.nearbyBranches && state.data.nearbyBranches.length > 0 && (
-                     <p><strong>Nearby Branches:</strong> {state.data.nearbyBranches.join(', ')}</p>
-                )}
-            </div>
           </div>
         </CardContent>
     )
