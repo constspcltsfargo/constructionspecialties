@@ -11,12 +11,14 @@ import {
   SidebarProvider,
   SidebarTrigger,
   SidebarInset,
+  SidebarFooter,
 } from '@/components/ui/sidebar';
-import { Home, Users, FileText, LayoutTemplate, ChevronDown, Mailbox, Image as ImageIcon } from 'lucide-react';
+import { Home, Users, FileText, LayoutTemplate, ChevronDown, Mailbox, Image as ImageIcon, LogOut } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 
 export default function AdminLayout({
@@ -25,6 +27,14 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
     const pathname = usePathname();
+    const router = useRouter();
+
+    const handleSignOut = async () => {
+      // Remove the mock session cookie and redirect to login
+      document.cookie = 'mockSession=; path=/; max-age=-1';
+      router.push('/login');
+    };
+
   return (
     <SidebarProvider>
         <Sidebar>
@@ -75,9 +85,19 @@ export default function AdminLayout({
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarContent>
+             <SidebarFooter>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton onClick={handleSignOut}>
+                            <LogOut />
+                            <span>Log Out</span>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarFooter>
         </Sidebar>
         <SidebarInset>
-            <div className="p-4">
+            <div className="p-4 sm:p-6 lg:p-8">
                  {children}
             </div>
         </SidebarInset>

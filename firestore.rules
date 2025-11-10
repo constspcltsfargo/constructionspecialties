@@ -2,48 +2,8 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // For this prototype, we are allowing open access to the users collection
-    // to enable the custom login flow. In a real production app, you would
-    // implement server-side validation and secure these rules significantly.
-    match /users/{userId} {
+    match /{document=**} {
       allow read, write: if true;
-    }
-    
-    // Admin roles are not managed via secure tokens anymore.
-    // This is open for the prototype.
-    match /roles_admin/{userId} {
-      allow read, write: if true;
-    }
-    
-    // Pages and media are publicly readable, but only writable by admins.
-    // The definition of "admin" will need to be re-established for this new auth system.
-    function isAdmin() {
-      // THIS IS INSECURE FOR PRODUCTION
-      // This is a placeholder. In a real app, you'd check a custom claim
-      // or a role field on a user document that can only be set by a trusted server.
-      return true;
-    }
-    
-    match /pages/{pageId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-    
-    match /pages/{pageId}/pageElements/{pageElementId} {
-        allow read: if true;
-        allow write: if isAdmin();
-    }
-
-    match /media/{mediaId} {
-        allow read: if true;
-        allow write: if isAdmin();
-    }
-
-    // Estimate requests can be created by anyone, but only read by admins.
-    match /estimateRequests/{requestId} {
-        allow create: if true;
-        allow read, write: if isAdmin();
     }
   }
 }

@@ -2,15 +2,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useFirestore } from '@/firebase';
+import { useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ensureAdminUser } from '@/app/admin/users/actions';
 import { Loader2 } from 'lucide-react';
+import { ensureAdminUser } from '@/app/admin/users/actions';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -21,35 +21,38 @@ export default function LoginPage() {
   const firestore = useFirestore();
   const router = useRouter();
 
-  useEffect(() => {
+   useEffect(() => {
     async function prepareAdmin() {
       setIsPreparing(true);
       try {
-        const result = await ensureAdminUser();
-        if (!result.success) {
-            setError(`Failed to prepare admin account: ${result.message}`);
-        }
+        await ensureAdminUser();
       } catch (e: any) {
-        setError(`An unexpected error occurred: ${e.message}`);
+        setError(`An unexpected error occurred while preparing the admin account: ${e.message}`);
       } finally {
         setIsPreparing(false);
       }
     }
-    prepareAdmin();
-  }, []);
+    // Since firestore is now available, we can run this.
+    if (firestore) {
+        prepareAdmin();
+    }
+  }, [firestore]);
 
-  const handleLogin = async () => {
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
     setError(null);
     setIsLoggingIn(true);
 
-    // Check for special pre-coded credentials first
+    // 1. Check for pre-coded credentials first
     if (email === 'admin@example.com' && password === 'password') {
         const adminUser = { uid: 'precoded-admin', email: 'admin@example.com', role: 'admin' };
         document.cookie = `mockSession=${JSON.stringify(adminUser)}; path=/; max-age=3600`;
         router.push('/admin');
-        return; 
+        return; // Important: Stop execution here
     }
 
+    // 2. If not pre-coded, check Firestore
     if (!firestore) {
       setError('Firestore is not available.');
       setIsLoggingIn(false);
@@ -70,6 +73,7 @@ export default function LoginPage() {
       const userDoc = querySnapshot.docs[0];
       const userData = userDoc.data();
       
+      // NOTE: In a real app, passwords should be hashed and compared securely on the server.
       if (userData.password !== password) {
         setError('Incorrect password.');
         setIsLoggingIn(false);
@@ -77,8 +81,10 @@ export default function LoginPage() {
       }
       
       const userId = userDoc.id;
+      // Create a mock session cookie
       document.cookie = `mockSession=${JSON.stringify({ uid: userId, email: userData.email, role: userData.role })}; path=/; max-age=3600`;
 
+      // Redirect to the admin page
       router.push('/admin');
 
     } catch (e: any) {
@@ -101,14 +107,15 @@ export default function LoginPage() {
             Use <b>admin@example.com</b> and <b>password</b> to log in.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent>
             {isPreparing ? (
-                <div className="flex items-center justify-center p-8 text-muted-foreground">
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <div className="flex flex-col items-center justify-center p-8 text-center text-muted-foreground">
+                    <Loader2 className="mr-2 h-6 w-6 animate-spin mb-4" />
                     <span>Preparing admin account...</span>
+                    <span className="text-xs mt-2">(This may take a moment on first load)</span>
                 </div>
             ) : (
-                <>
+                <form onSubmit={handleLogin} className="space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="email">Email</Label>
                         <Input
@@ -118,6 +125,7 @@ export default function LoginPage() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         disabled={isLoading}
+                        required
                         />
                     </div>
                     <div className="space-y-2">
@@ -128,14 +136,15 @@ export default function LoginPage() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         disabled={isLoading}
+                        required
                         />
                     </div>
                     {error && <p className="text-red-500 text-sm">{error}</p>}
-                    <Button onClick={handleLogin} className="w-full" disabled={isLoading}>
+                    <Button type="submit" className="w-full" disabled={isLoading}>
                         {isLoggingIn ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                        {isLoggingIn ? 'Logging in...' : 'Login'}
+                        {isLoading ? 'Please wait...' : 'Login'}
                     </Button>
-                </>
+                </form>
             )}
         </CardContent>
       </Card>

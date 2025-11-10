@@ -1,10 +1,10 @@
 
 'use server';
 
-import * as admin from 'firebase-admin';
 import { initializeFirebaseAdmin } from '@/firebase/admin-init';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
+import * as admin from 'firebase-admin';
 
 const newUserSchema = z.object({
   displayName: z.string().min(1),
@@ -19,45 +19,31 @@ export async function ensureAdminUser(): Promise<{ success: boolean; created?: b
   try {
     const app = initializeFirebaseAdmin();
     const firestore = admin.firestore(app);
-    const auth = admin.auth(app);
 
     const usersCollection = firestore.collection('users');
     const q = usersCollection.limit(1);
     const querySnapshot = await q.get();
 
-
     if (querySnapshot.empty) {
       console.log('No users found. Creating default admin user...');
       
-      const userRecord = await auth.createUser({
-        email: 'admin@example.com',
-        password: 'password',
-        displayName: 'Admin User',
-        emailVerified: true,
-        disabled: false,
-      });
-      
-      await auth.setCustomUserClaims(userRecord.uid, { role: 'admin' });
-
-      const userProfileRef = firestore.doc(`users/${userRecord.uid}`);
-      await userProfileRef.set({
+      // Store user profile in Firestore
+      // NOTE: In a real app, the password should be securely hashed before storing.
+      // We are storing it plain for this prototype's login system.
+      await firestore.collection('users').doc('default-admin').set({
         displayName: 'Admin User',
         email: 'admin@example.com',
         role: 'admin',
-        password: 'password', // Storing for Firestore-based login
+        password: 'password', 
       });
-      
-       const adminRoleRef = firestore.doc(`roles_admin/${userRecord.uid}`);
-       await adminRoleRef.set({ role: 'admin' });
 
-      console.log('Default admin user created successfully.');
+      console.log('Default admin user created in Firestore successfully.');
       return { success: true, created: true };
     }
     
     return { success: true, created: false };
   } catch (error: any) {
     console.error('Error in ensureAdminUser:', error);
-    // Don't throw, just report failure
     return { success: false, message: error.message || 'An unknown error occurred.' };
   }
 }
@@ -65,28 +51,18 @@ export async function ensureAdminUser(): Promise<{ success: boolean; created?: b
 export async function createUser(userData: NewUser): Promise<{ success: boolean; error?: string }> {
   try {
     const app = initializeFirebaseAdmin();
-    const auth = admin.auth(app);
     const firestore = admin.firestore(app);
 
-    // Create user in Firebase Auth
-    const userRecord = await auth.createUser({
-      email: userData.email,
-      password: userData.password,
-      displayName: userData.displayName,
-      emailVerified: true,
-      disabled: false,
-    });
-    
-    // Set custom claim if the user is an admin
-    if (userData.role === 'admin') {
-      await auth.setCustomUserClaims(userRecord.uid, { role: 'admin' });
-      const adminRoleRef = firestore.doc(`roles_admin/${userRecord.uid}`);
-      await adminRoleRef.set({ role: 'admin' });
+    // Create user profile in Firestore. We will use the email as the document ID for simplicity.
+    const userRef = firestore.collection('users').doc(userData.email);
+
+    // Check if user already exists
+    const userDoc = await userRef.get();
+    if (userDoc.exists) {
+        return { success: false, error: "A user with this email already exists." };
     }
 
-    // Create user profile in Firestore
-    const userProfileRef = firestore.doc(`users/${userRecord.uid}`);
-    await userProfileRef.set({
+    await userRef.set({
       displayName: userData.displayName,
       email: userData.email,
       role: userData.role,

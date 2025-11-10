@@ -12,6 +12,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { format } from 'date-fns';
 import { Users, FileText, Activity } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useCollection } from '@/firebase/firestore/use-collection';
+
 
 // Sample data for site visitors
 const visitorData = [
@@ -31,9 +33,7 @@ interface EstimateRequest {
 }
 
 export default function AdminPage() {
-  const { isUserLoading } = useUser();
   const firestore = useFirestore();
-  const router = useRouter();
 
   const requestsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -53,38 +53,11 @@ export default function AdminPage() {
     new: requests?.filter(r => r.status === 'new').length || 0,
   };
 
-  const handleSignOut = async () => {
-    // Remove the mock session cookie and redirect to login
-    document.cookie = 'mockSession=; path=/; max-age=-1';
-    router.push('/login');
-  };
-
-  if (isUserLoading) {
-    return (
-        <div className="p-4 space-y-4">
-            <div className="flex justify-between items-center mb-4">
-                <Skeleton className="h-8 w-64" />
-                <Skeleton className="h-10 w-24" />
-            </div>
-             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Skeleton className="h-32 w-full" />
-                <Skeleton className="h-32 w-full" />
-                <Skeleton className="h-32 w-full" />
-                <Skeleton className="h-32 w-full" />
-            </div>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                <Skeleton className="h-80 w-full col-span-4" />
-                <Skeleton className="h-80 w-full col-span-3" />
-            </div>
-        </div>
-    );
-  }
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        <Button onClick={handleSignOut} variant="outline">Log Out</Button>
       </div>
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
