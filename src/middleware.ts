@@ -1,6 +1,6 @@
 export { auth as middleware } from "@/lib/auth"
 
 export const config = {
-  // Match all paths except for static assets, API routes, and internal Next.js paths
+  // The matcher is updated to exclude the /api route path.
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };
