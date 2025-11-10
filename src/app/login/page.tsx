@@ -10,18 +10,31 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ensureAdminUser } from '@/app/admin/users/actions';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const firestore = useFirestore();
   const router = useRouter();
 
   useEffect(() => {
     // This will run when the component mounts on the client-side
     // to ensure a default admin exists.
-    ensureAdminUser().catch(console.error);
+    const checkAdmin = async () => {
+        setIsLoading(true);
+        try {
+            await ensureAdminUser();
+        } catch (e) {
+            console.error(e)
+            setError('Could not verify admin account setup.');
+        } finally {
+            setIsLoading(false);
+        }
+    }
+    checkAdmin();
   }, []);
 
   const handleLogin = async () => {
@@ -74,29 +87,46 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="m@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-          <Button onClick={handleLogin} className="w-full">
-            Login
-          </Button>
+          {isLoading ? (
+            <div className="space-y-4">
+                <div className="space-y-2">
+                    <Skeleton className="h-4 w-1/4" />
+                    <Skeleton className="h-10 w-full" />
+                </div>
+                 <div className="space-y-2">
+                    <Skeleton className="h-4 w-1/4" />
+                    <Skeleton className="h-10 w-full" />
+                </div>
+                <Skeleton className="h-10 w-full" />
+                <p className="text-sm text-center text-muted-foreground">Verifying admin account...</p>
+            </div>
+          ) : (
+            <>
+                <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                    id="email"
+                    type="email"
+                    placeholder="m@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    />
+                </div>
+                {error && <p className="text-red-500 text-sm">{error}</p>}
+                <Button onClick={handleLogin} className="w-full">
+                    Login
+                </Button>
+            </>
+          )}
         </CardContent>
       </Card>
     </div>
