@@ -26,7 +26,7 @@ export default function AdminLayout({
     const router = useRouter();
 
     const handleSignOut = async () => {
-        // Placeholder for future sign-out logic
+        // For a custom auth system, we redirect to login, which should clear any session state.
         router.push('/login');
     };
 

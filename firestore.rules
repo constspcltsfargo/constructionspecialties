@@ -20,8 +20,8 @@ service cloud.firestore {
 
     // Rules for User Profiles
     match /users/{userId} {
-      // Anyone can create a new user profile (for sign-up).
-      allow create: if true;
+      // Allow unauthenticated server actions to create users during sign-up.
+      allow create: if request.auth == null;
       
       // All other reads/writes must go through server actions, so they are disallowed from the client.
       allow read, update, delete: if false;

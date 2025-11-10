@@ -13,7 +13,6 @@ import { AddUserDialog } from './_components/add-user-dialog';
 import { EditUserDialog } from './_components/edit-user-dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { useSession } from 'next-auth/react';
 import { deleteUser } from '../actions/users';
 
 export interface UserProfile {
@@ -27,7 +26,6 @@ export interface UserProfile {
 
 export default function UserManagementPage() {
   const firestore = useFirestore();
-  const { data: session } = useSession();
   const { toast } = useToast();
 
   const [isAddUserOpen, setAddUserOpen] = useState(false);
@@ -141,7 +139,7 @@ export default function UserManagementPage() {
                                 </Button>
                                 <AlertDialog>
                                     <AlertDialogTrigger asChild>
-                                        <Button variant="destructive" size="icon" disabled={isDeleting === user.id || user.id === session?.user?.id}>
+                                        <Button variant="destructive" size="icon" disabled={isDeleting === user.id}>
                                             <Trash2 className="h-4 w-4" />
                                             <span className="sr-only">Delete User</span>
                                         </Button>
