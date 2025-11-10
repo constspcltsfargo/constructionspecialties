@@ -35,8 +35,8 @@ export async function handleSignUp(prevState: FormState, formData: FormData): Pr
   }
 
   try {
-    const app = initializeFirebaseAdmin();
-    const firestore = admin.firestore(app);
+    await initializeFirebaseAdmin();
+    const firestore = admin.firestore();
 
     // We will use the email as the document ID for simplicity and to enforce uniqueness
     const userRef = firestore.collection('users').doc(validatedFields.data.email);
