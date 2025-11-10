@@ -2,7 +2,7 @@
 'use server';
 
 import { getAuth } from 'firebase-admin/auth';
-import { getFirestore, doc, setDoc, collection, getDocs, limit, query } from 'firebase-admin/firestore';
+import * as admin from 'firebase-admin';
 import { initializeFirebaseAdmin } from '@/firebase/admin-init';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
@@ -19,12 +19,13 @@ type NewUser = z.infer<typeof newUserSchema>;
 export async function ensureAdminUser(): Promise<{ success: boolean; created?: boolean, message?: string }> {
   try {
     const { app } = initializeFirebaseAdmin();
-    const firestore = getFirestore(app);
+    const firestore = admin.firestore();
     const auth = getAuth(app);
 
-    const usersCollection = collection(firestore, 'users');
-    const q = query(usersCollection, limit(1));
-    const querySnapshot = await getDocs(q);
+    const usersCollection = firestore.collection('users');
+    const q = usersCollection.limit(1);
+    const querySnapshot = await q.get();
+
 
     if (querySnapshot.empty) {
       console.log('No users found. Creating default admin user...');
@@ -39,16 +40,16 @@ export async function ensureAdminUser(): Promise<{ success: boolean; created?: b
       
       await auth.setCustomUserClaims(userRecord.uid, { role: 'admin' });
 
-      const userProfileRef = doc(firestore, 'users', userRecord.uid);
-      await setDoc(userProfileRef, {
+      const userProfileRef = firestore.doc(`users/${userRecord.uid}`);
+      await userProfileRef.set({
         displayName: 'Admin User',
         email: 'admin@example.com',
         role: 'admin',
         password: 'password', // Storing for Firestore-based login
       });
       
-       const adminRoleRef = doc(firestore, 'roles_admin', userRecord.uid);
-       await setDoc(adminRoleRef, { role: 'admin' });
+       const adminRoleRef = firestore.doc(`roles_admin/${userRecord.uid}`);
+       await adminRoleRef.set({ role: 'admin' });
 
       console.log('Default admin user created successfully.');
       return { success: true, created: true };
@@ -66,7 +67,7 @@ export async function createUser(userData: NewUser): Promise<{ success: boolean;
   try {
     const { app } = initializeFirebaseAdmin();
     const auth = getAuth(app);
-    const firestore = getFirestore(app);
+    const firestore = admin.firestore();
 
     // Create user in Firebase Auth
     const userRecord = await auth.createUser({
@@ -80,13 +81,13 @@ export async function createUser(userData: NewUser): Promise<{ success: boolean;
     // Set custom claim if the user is an admin
     if (userData.role === 'admin') {
       await auth.setCustomUserClaims(userRecord.uid, { role: 'admin' });
-      const adminRoleRef = doc(firestore, 'roles_admin', userRecord.uid);
-      await setDoc(adminRoleRef, { role: 'admin' });
+      const adminRoleRef = firestore.doc(`roles_admin/${userRecord.uid}`);
+      await adminRoleRef.set({ role: 'admin' });
     }
 
     // Create user profile in Firestore
-    const userProfileRef = doc(firestore, 'users', userRecord.uid);
-    await setDoc(userProfileRef, {
+    const userProfileRef = firestore.doc(`users/${userRecord.uid}`);
+    await userProfileRef.set({
       displayName: userData.displayName,
       email: userData.email,
       role: userData.role,
