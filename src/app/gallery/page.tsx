@@ -2,12 +2,31 @@
 'use client';
 
 import Image from 'next/image';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, query, where, orderBy } from 'firebase/firestore';
+import { Skeleton } from '@/components/ui/skeleton';
+
+interface Media {
+    id: string;
+    url: string;
+    filename: string;
+}
 
 export default function GalleryPage() {
-  const galleryImages = PlaceHolderImages.filter(img => img.id.startsWith('gallery-'));
+  const firestore = useFirestore();
+  const galleryQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(
+      collection(firestore, 'media'),
+      where('folder', '==', 'gallery'),
+      orderBy('uploadDate', 'desc')
+    );
+  }, [firestore]);
+
+  const { data: galleryImages, isLoading } = useCollection<Media>(galleryQuery);
+
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -23,20 +42,31 @@ export default function GalleryPage() {
         </section>
         <section className="py-12 md:py-24">
           <div className="container">
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {galleryImages.map((image) => (
-                <div key={image.id}>
-                  <Image
-                    src={image.imageUrl}
-                    alt={image.description}
-                    width={600}
-                    height={400}
-                    className="h-auto max-w-full rounded-lg object-cover aspect-square"
-                    data-ai-hint={image.imageHint}
-                  />
+            {isLoading && (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {[...Array(9)].map((_, i) => (
+                       <Skeleton key={i} className="aspect-square w-full rounded-lg" />
+                    ))}
                 </div>
-              ))}
-            </div>
+            )}
+            {!isLoading && galleryImages && (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {galleryImages.map((image) => (
+                  <div key={image.id}>
+                    <Image
+                      src={image.url}
+                      alt={image.filename}
+                      width={600}
+                      height={400}
+                      className="h-auto max-w-full rounded-lg object-cover aspect-square"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+             {!isLoading && galleryImages && galleryImages.length === 0 && (
+                <p className="text-center text-muted-foreground">No gallery images have been uploaded yet.</p>
+             )}
           </div>
         </section>
       </main>

@@ -13,7 +13,7 @@ import {
   SidebarInset,
   SidebarFooter,
 } from '@/components/ui/sidebar';
-import { Home, Users, FileText, Mailbox, ImageIcon, LogOut } from 'lucide-react';
+import { Home, Users, FileText, Mailbox, ImageIcon, LogOut, GalleryHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -73,8 +73,8 @@ export default function AdminLayout({
                     <SidebarMenuItem>
                         <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/media')}>
                            <Link href="/admin/media">
-                                <ImageIcon />
-                                <span>Media</span>
+                                <GalleryHorizontal />
+                                <span>Gallery</span>
                            </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
