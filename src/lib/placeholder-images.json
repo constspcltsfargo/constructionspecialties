@@ -13,118 +13,64 @@
       "imageHint": "construction worker"
     },
     {
-      "id": "client-logo-1",
-      "description": "Client logo",
-      "imageUrl": "https://images.unsplash.com/photo-1562783912-21ad31ee2a83?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjb21wYW55JTIwbG9nb3xlbnwwfHx8fDE3NjE4MzAwMzd8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "company logo"
-    },
-    {
-      "id": "client-logo-2",
-      "description": "Client logo",
-      "imageUrl": "https://images.unsplash.com/photo-1687523327554-fa9f50423489?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxjb21wYW55JTIwbG9nb3xlbnwwfHx8fDE3NjE4MzAwMzd8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "company logo"
-    },
-    {
-      "id": "client-logo-3",
-      "description": "Client logo",
-      "imageUrl": "https://images.unsplash.com/photo-1622465911368-72162f8da3e2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjb21wYW55JTIwbG9nb3xlbnwwfHx8fDE3NjE4MzAwMzd8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "company logo"
-    },
-    {
-      "id": "client-logo-4",
-      "description": "Client logo",
-      "imageUrl": "https://images.unsplash.com/photo-1619551734325-81aaf323686c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjb21wYW55JTIwbG9nb3xlbnwwfHx8fDE3NjE4MzAwMzd8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "company logo"
-    },
-    {
-      "id": "testimonial-avatar-1",
-      "description": "Portrait of a smiling man.",
-      "imageUrl": "https://images.unsplash.com/photo-1590086782792-42dd2350140d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjE4ODIwMzV8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "person portrait"
-    },
-    {
-      "id": "testimonial-avatar-2",
-      "description": "Portrait of a smiling woman.",
-      "imageUrl": "https://images.unsplash.com/photo-1609505848912-b7c3b8b4beda?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2MTkwOTQyNXww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "woman portrait"
-    },
-    {
-      "id": "testimonial-avatar-3",
-      "description": "Portrait of a person.",
-      "imageUrl": "https://images.unsplash.com/photo-1590086782792-42dd2350140d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjE4ODIwMzV8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "person portrait"
-    },
-    {
       "id": "gallery-1",
-      "description": "A close-up of a newly installed roof.",
-      "imageUrl": "https://images.unsplash.com/photo-1551480626-addae7bd3f65?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxuZXclMjByb29mfGVufDB8fHx8MTc2MTkyNDI2Mnww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "new roof"
+      "description": "A commercial roofing project",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Gallery%20Images%2FCommercial%201.jpg?alt=media",
+      "imageHint": "commercial roofing"
     },
     {
       "id": "gallery-2",
-      "description": "A construction worker inspecting a roof.",
-      "imageUrl": "https://images.unsplash.com/photo-1722253358577-7ae5a54304d5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxyb29mJTIwaW5zcGVjdGlvbnxlbnwwfHx8fDE3NjE5MjQyNjJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "roof inspection"
+      "description": "Close-up of a residential roof",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Gallery%20Images%2FResidential%201.jpg?alt=media",
+      "imageHint": "residential roof"
     },
     {
       "id": "gallery-3",
-      "description": "Rain gutters on a residential house.",
-      "imageUrl": "https://images.unsplash.com/photo-1633153627614-b11594517f09?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8aG91c2UlMjBndXR0ZXJzfGVufDB8fHx8MTc2MTkyNDI2Mnww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "house gutters"
+      "description": "Side view of a commercial building with new roofing",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Gallery%20Images%2FCommercial%202.jpg?alt=media",
+      "imageHint": "commercial building"
     },
     {
       "id": "gallery-4",
-      "description": "Close up of new vinyl siding on a house.",
-      "imageUrl": "https://images.unsplash.com/photo-1569898773055-2f2b6e97e1ed?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxob3VzZSUyMHNpZGluZ3xlbnwwfHx8fDE3NjE5Mjk0ODB8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "house siding"
+      "description": "Residential house with new roof",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Gallery%20Images%2FResidential%202.jpg?alt=media",
+      "imageHint": "house roof"
     },
     {
       "id": "gallery-5",
-      "description": "Roofer installing new shingles on a roof.",
-      "imageUrl": "https://images.unsplash.com/photo-1635424710918-d5c138981922?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8cm9vZiUyMGluc3RhbGxhdGlvbnxlbnwwfHx8fDE3NjE5Mjk0ODB8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "roof installation"
+      "description": "Top view of a large commercial roof",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Gallery%20Images%2FCommercial%203.jpg?alt=media",
+      "imageHint": "commercial roof"
     },
     {
       "id": "gallery-6",
-      "description": "Modern home with large windows.",
-      "imageUrl": "https://images.unsplash.com/photo-1559354484-587384b2badc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtb2Rlcm4lMjB3aW5kb3dzfGVufDB8fHx8MTc2MTkyOTQ4MHww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "modern windows"
+      "description": "Shingles on a residential roof",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Gallery%20Images%2FResidential%203.jpg?alt=media",
+      "imageHint": "roof shingles"
     },
     {
       "id": "gallery-7",
-      "description": "Close-up of residential siding.",
-      "imageUrl": "https://images.unsplash.com/photo-1759015395326-6e877ae6cb7c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxyZXNpZGVudGlhbCUyMHNpZGluZ3xlbnwwfHx8fDE3NjIxOTQ0MDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "residential siding"
+      "description": "A large industrial building with a new roof",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Gallery%20Images%2FCommercial%204.jpg?alt=media",
+      "imageHint": "industrial building"
     },
     {
       "id": "gallery-8",
-      "description": "Kitchen renovation.",
-      "imageUrl": "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxraXRjaGVuJTIwcmVub3ZhdGlvbnxlbnwwfHx8fDE3NjIxNTQwMDd8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "kitchen renovation"
+      "description": "Newly installed residential roof",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Gallery%20Images%2FResidential%204.jpg?alt=media",
+      "imageHint": "new roof"
     },
     {
       "id": "gallery-9",
-      "description": "Bathroom remodeling project.",
-      "imageUrl": "https://images.unsplash.com/photo-1564540579594-0930edb6de43?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxiYXRocm9vbSUyMHJlbW9kZWxpbmd8ZW58MHx8fHwxNzYyMTk0NDAzfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "bathroom remodeling"
+      "description": "Aerial view of a commercial property",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Gallery%20Images%2FCommercial%205.jpg?alt=media",
+      "imageHint": "commercial property"
     },
     {
       "id": "gallery-10",
-      "description": "Commercial building exterior.",
-      "imageUrl": "https://images.unsplash.com/photo-1634316039737-8a0f1474e54c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjb21tZXJjaWFsJTIwZXh0ZXJpb3J8ZW58MHx8fHwxNzYyMTk0NDAzfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "commercial exterior"
-    },
-    {
-      "id": "gallery-11",
-      "description": "New window installation.",
-      "imageUrl": "https://images.unsplash.com/photo-1728206813685-bdaff3a6bf91?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx3aW5kb3clMjBpbnN0YWxsYXRpb258ZW58MHx8fHwxNzYyMTk0NDAzfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "window installation"
-    },
-    {
-      "id": "gallery-12",
-      "description": "Deck construction.",
-      "imageUrl": "https://images.unsplash.com/photo-1595844730289-b248c919d6f9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxkZWNrJTIwY29uc3RydWN0aW9ufGVufDB8fHx8MTc2MjE5NDQwM3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "deck construction"
+      "description": "Modern home with a new roof",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Gallery%20Images%2FResidential%205.jpg?alt=media",
+      "imageHint": "modern home"
     },
     {
       "id": "why-us-image",
