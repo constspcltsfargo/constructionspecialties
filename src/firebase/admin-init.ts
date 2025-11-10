@@ -26,17 +26,13 @@ export function initializeFirebaseAdmin(): FirebaseAdminServices {
 
   let serviceAccount;
   try {
-    // Attempt to parse the key as a JSON string directly.
-    serviceAccount = JSON.parse(serviceAccountString);
-  } catch (e1) {
-    try {
-      // If direct parsing fails, assume it's a Base64 encoded string.
-      const decodedString = Buffer.from(serviceAccountString, 'base64').toString('utf-8');
-      serviceAccount = JSON.parse(decodedString);
-    } catch (e2) {
-      console.error("Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY as JSON or Base64-encoded JSON.", e1, e2);
+    // The key is often stored as a Base64 encoded string in environment variables.
+    // Decode it first, then parse.
+    const decodedString = Buffer.from(serviceAccountString, 'base64').toString('utf-8');
+    serviceAccount = JSON.parse(decodedString);
+  } catch (e) {
+      console.error("Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY. Ensure it's a valid Base64-encoded JSON.", e);
       throw new Error("The Firebase service account key is not a valid JSON object.");
-    }
   }
 
 
