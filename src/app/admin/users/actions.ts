@@ -15,39 +15,6 @@ const newUserSchema = z.object({
 
 type NewUser = z.infer<typeof newUserSchema>;
 
-export async function ensureAdminUser(): Promise<{ success: boolean; created?: boolean, message?: string }> {
-  try {
-    const app = initializeFirebaseAdmin();
-    const firestore = admin.firestore(app);
-
-    const usersCollection = firestore.collection('users');
-    const q = usersCollection.limit(1);
-    const querySnapshot = await q.get();
-
-    if (querySnapshot.empty) {
-      console.log('No users found. Creating default admin user...');
-      
-      // Store user profile in Firestore
-      // NOTE: In a real app, the password should be securely hashed before storing.
-      // We are storing it plain for this prototype's login system.
-      await firestore.collection('users').doc('admin@example.com').set({
-        displayName: 'Admin User',
-        email: 'admin@example.com',
-        role: 'admin',
-        password: 'password', 
-      });
-
-      console.log('Default admin user created in Firestore successfully.');
-      return { success: true, created: true };
-    }
-    
-    return { success: true, created: false };
-  } catch (error: any) {
-    console.error('Error in ensureAdminUser:', error);
-    return { success: false, message: error.message || 'An unknown error occurred.' };
-  }
-}
-
 export async function createUser(userData: NewUser): Promise<{ success: boolean; error?: string }> {
   try {
     const app = initializeFirebaseAdmin();
@@ -63,7 +30,8 @@ export async function createUser(userData: NewUser): Promise<{ success: boolean;
     }
 
     await userRef.set({
-      displayName: userData.displayName,
+      name: userData.displayName, // Match the updated schema
+      username: userData.email, // Use email as username for admin-created users for simplicity
       email: userData.email,
       role: userData.role,
       password: userData.password, // Storing password for Firestore-based login

@@ -84,7 +84,7 @@ export function AddUserDialog({ isOpen, onOpenChange }: AddUserDialogProps) {
               name="displayName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Display Name</FormLabel>
+                  <FormLabel>Full Name</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>

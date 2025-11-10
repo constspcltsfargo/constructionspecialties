@@ -12,7 +12,8 @@ import { AddUserDialog } from './_components/add-user-dialog';
 
 interface UserProfile {
     id: string;
-    displayName: string;
+    name: string;
+    username: string;
     email: string;
     photoURL?: string;
     role?: string;
@@ -47,6 +48,7 @@ export default function UserManagementPage() {
             <TableHeader>
                 <TableRow>
                 <TableHead>User</TableHead>
+                <TableHead>Username</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Actions</TableHead>
@@ -58,12 +60,13 @@ export default function UserManagementPage() {
                     <TableCell>
                         <div className="flex items-center gap-3">
                             <Avatar>
-                                <AvatarImage src={user.photoURL} alt={user.displayName} />
-                                <AvatarFallback>{user.displayName?.charAt(0)}</AvatarFallback>
+                                <AvatarImage src={user.photoURL} alt={user.name} />
+                                <AvatarFallback>{user.name?.charAt(0)}</AvatarFallback>
                             </Avatar>
-                            <span>{user.displayName}</span>
+                            <span>{user.name}</span>
                         </div>
                     </TableCell>
+                    <TableCell>{user.username}</TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>
                         <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>

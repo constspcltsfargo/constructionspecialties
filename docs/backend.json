@@ -6,9 +6,13 @@
       "description": "Represents a user's public profile information.",
       "type": "object",
       "properties": {
-        "displayName": {
+        "name": {
           "type": "string",
-          "description": "The user's display name."
+          "description": "The user's full name."
+        },
+        "username": {
+          "type": "string",
+          "description": "The user's unique username."
         },
         "email": {
           "type": "string",
@@ -30,7 +34,7 @@
           "enum": ["admin", "user"]
         }
       },
-      "required": ["displayName", "email", "password"]
+      "required": ["name", "username", "email", "password"]
     },
     "Page": {
       "title": "Page",
