@@ -27,44 +27,34 @@ export default function LoginPage() {
     setIsLoggingIn(true);
     setError(null);
 
-    // First, check for the special pre-coded admin credentials
-    if (email === 'admin@example.com' && password === 'password') {
-        try {
-            // Attempt to sign in. This will create the user if they don't exist.
-            await signInWithEmailAndPassword(auth, email, password);
-        } catch (authError: any) {
-            // If the user doesn't exist, create them.
-            if (authError.code === 'auth/user-not-found') {
-                try {
-                    await auth.createUserWithEmailAndPassword(auth, email, password);
-                } catch (creationError: any) {
-                    setError(creationError.message);
-                    setIsLoggingIn(false);
-                    return;
-                }
-            } else {
-                setError(authError.message);
-                setIsLoggingIn(false);
-                return;
-            }
-        }
-        // On success, Firebase's own auth state listener will handle the redirect.
-        toast({ title: 'Admin login successful!' });
-        router.push('/admin');
-        return;
-    }
-
-
-    // If not the admin, proceed with standard email/password sign-in
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      // onAuthStateChanged will handle the redirect
-       toast({ title: 'Login successful!' });
-       router.push('/admin');
+      // Step 1: Sign in with Firebase Authentication
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      
+      // Step 2: Get the ID token from the user
+      const idToken = await userCredential.user.getIdToken();
+
+      // Step 3: Send the ID token to the session creation API route
+      const response = await fetch('/api/auth/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create session.');
+      }
+      
+      toast({ title: 'Login successful!' });
+
+      // Step 4: Redirect to the admin dashboard
+      router.push('/admin');
+
     } catch (err: any) {
       setError(err.message || 'An error occurred during login.');
       setIsLoggingIn(false);
-    }
+    } 
+    // No finally block to set isLoggingIn to false, because on success, we navigate away.
   };
 
   return (
@@ -118,4 +108,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
