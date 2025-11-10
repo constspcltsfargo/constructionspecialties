@@ -1,7 +1,6 @@
 
 'use server';
 import { config } from 'dotenv';
-// config({ path: '.env.local' }); // This line is moved into the functions
 
 import { initializeFirebaseAdmin } from '@/firebase/admin-init';
 import { getStorage } from 'firebase-admin/storage';
@@ -56,29 +55,30 @@ export async function uploadMedia(formData: FormData) {
 
     try {
         const uploadPromises = files.map(async (file) => {
-            const path = folderPath ? `uploads/${folderPath}/${Date.now()}_${file.name}` : `uploads/${Date.now()}_${file.name}`;
+            const fileName = `${Date.now()}_${file.name.replace(/\s/g, '_')}`;
+            const path = folderPath && folderPath !== '__uncategorized__' 
+                ? `uploads/${folderPath}/${fileName}` 
+                : `uploads/${fileName}`;
             
             const buffer = Buffer.from(await file.arrayBuffer());
             
-            // Use bucket.file().save() for admin SDK
-            await bucket.file(path).save(buffer, {
+            const fileUpload = bucket.file(path);
+            await fileUpload.save(buffer, {
                 contentType: file.type,
+                // Make the file publicly readable
+                public: true,
             });
 
-            // Get download URL
-            const downloadURL = await bucket.file(path).getSignedUrl({
-                action: 'read',
-                expires: '03-09-2491' // A far-future date
-            }).then(urls => urls[0]);
-
+            // Construct the public URL manually
+            const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(path)}?alt=media`;
 
             await addDoc(collection(firestore, 'media'), {
                 filename: file.name,
-                url: downloadURL,
+                url: publicUrl,
                 mimeType: file.type,
                 size: file.size,
                 uploadDate: serverTimestamp(),
-                folder: folderPath,
+                folder: folderPath === '__uncategorized__' ? '' : folderPath,
             });
         });
 
@@ -100,23 +100,22 @@ export async function deleteMedia(mediaId: string, fileUrl: string) {
     const firestore = getFirestore(firebaseApp);
 
     try {
-        // Create a file object from the URL
+        // Extract the file path from the public URL
         const url = new URL(fileUrl);
-        // The pathname is /v0/b/{bucket}/o/{path}?...
-        // We need to decode and get the path after the /o/
-        const filePath = decodeURIComponent(url.pathname.split('/o/')[1].split('?')[0]);
+        const encodedPath = url.pathname.split('/o/')[1].split('?')[0];
+        const filePath = decodeURIComponent(encodedPath);
+        
         await bucket.file(filePath).delete();
 
     } catch (error: any) {
-        // If the file doesn't exist in storage, we can still proceed to delete from Firestore
         if (error.code !== 404 && error.code !== 'storage/object-not-found') {
             console.error('Storage deletion error:', error);
-            return { error: 'Failed to delete file from storage.' };
+            // Don't return, still try to delete from Firestore
+            // return { error: 'Failed to delete file from storage.' };
         }
     }
     
     try {
-        // Delete from Firestore
         await deleteDoc(doc(firestore, 'media', mediaId));
         revalidatePath('/admin/media');
         return { success: true };
