@@ -30,7 +30,7 @@ export async function ensureAdminUser(): Promise<{ success: boolean; created?: b
       // Store user profile in Firestore
       // NOTE: In a real app, the password should be securely hashed before storing.
       // We are storing it plain for this prototype's login system.
-      await firestore.collection('users').doc('default-admin').set({
+      await firestore.collection('users').doc('admin@example.com').set({
         displayName: 'Admin User',
         email: 'admin@example.com',
         role: 'admin',
