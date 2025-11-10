@@ -1,9 +1,7 @@
 
-// The 'use server' directive isn't strictly necessary for this file since it's imported by server actions,
-// but it's a good practice to keep it.
-
 // Load environment variables from .env.local
-require('dotenv').config({ path: '.env.local' });
+import { config } from 'dotenv';
+config({ path: '.env.local' });
 
 import { initializeApp, getApps, getApp, App, cert } from 'firebase-admin/app';
 import { ServiceAccount } from 'firebase-admin';

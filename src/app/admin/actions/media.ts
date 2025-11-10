@@ -1,8 +1,10 @@
 
 'use server';
+import { config } from 'dotenv';
+config({ path: '.env.local' });
 
 import { initializeFirebaseAdmin } from '@/firebase/admin-init';
-import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase-admin/storage';
+import { getStorage } from 'firebase-admin/storage';
 import { getFirestore, collection, addDoc, serverTimestamp, deleteDoc, doc } from 'firebase-admin/firestore';
 import { revalidatePath } from 'next/cache';
 
@@ -22,15 +24,20 @@ export async function uploadMedia(formData: FormData) {
     try {
         const uploadPromises = files.map(async (file) => {
             const path = folderPath ? `uploads/${folderPath}/${Date.now()}_${file.name}` : `uploads/${Date.now()}_${file.name}`;
-            const storageRef = bucket.file(path);
             
             const buffer = Buffer.from(await file.arrayBuffer());
             
-            await uploadBytes(storageRef, buffer, {
+            // Use bucket.file().save() for admin SDK
+            await bucket.file(path).save(buffer, {
                 contentType: file.type,
             });
 
-            const downloadURL = await getDownloadURL(storageRef);
+            // Get download URL
+            const downloadURL = await bucket.file(path).getSignedUrl({
+                action: 'read',
+                expires: '03-09-2491' // A far-future date
+            }).then(urls => urls[0]);
+
 
             await addDoc(collection(firestore, 'media'), {
                 filename: file.name,
@@ -47,7 +54,7 @@ export async function uploadMedia(formData: FormData) {
         return { success: true, count: files.length };
     } catch (error: any) {
         console.error('Upload failed:', error);
-        return { error: 'Failed to upload files.' };
+        return { error: error.message || 'Failed to upload files.' };
     }
 }
 
@@ -55,15 +62,20 @@ export async function uploadMedia(formData: FormData) {
 export async function deleteMedia(mediaId: string, fileUrl: string) {
     const { firebaseApp } = initializeFirebaseAdmin();
     const storage = getStorage(firebaseApp);
+    const bucket = storage.bucket();
     const firestore = getFirestore(firebaseApp);
 
     try {
-        // Delete from Storage
-        const fileRef = ref(storage, fileUrl);
-        await deleteObject(fileRef);
+        // Create a file object from the URL
+        const url = new URL(fileUrl);
+        // The pathname is /v0/b/{bucket}/o/{path}?...
+        // We need to decode and get the path after the /o/
+        const filePath = decodeURIComponent(url.pathname.split('/o/')[1].split('?')[0]);
+        await bucket.file(filePath).delete();
+
     } catch (error: any) {
         // If the file doesn't exist in storage, we can still proceed to delete from Firestore
-        if (error.code !== 'storage/object-not-found') {
+        if (error.code !== 404 && error.code !== 'storage/object-not-found') {
             console.error('Storage deletion error:', error);
             return { error: 'Failed to delete file from storage.' };
         }

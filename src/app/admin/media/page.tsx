@@ -70,15 +70,14 @@ export default function MediaPage() {
         const groups: { [key: string]: Media[] } = { [UNCATEGORIZED_VALUE]: [] };
 
         media.forEach(item => {
+            const folderKey = item.folder || UNCATEGORIZED_VALUE;
             if (item.folder) {
                 folderSet.add(item.folder);
-                if (!groups[item.folder]) {
-                    groups[item.folder] = [];
-                }
-                groups[item.folder].push(item);
-            } else {
-                groups[UNCATEGORIZED_VALUE].push(item);
             }
+            if (!groups[folderKey]) {
+                groups[folderKey] = [];
+            }
+            groups[folderKey].push(item);
         });
         
         return {
@@ -225,10 +224,11 @@ export default function MediaPage() {
                 )}
                 {error && <p className="text-destructive text-center">Error: {error.message}</p>}
                 
-                {media && (groupedMedia[UNCATEGORIZED_VALUE] || allFolders.length > 0) && (
-                     <Accordion type="multiple" defaultValue={["__uncategorized__", ...allFolders]} className="w-full">
-                        {Object.entries(groupedMedia).map(([folderName, items]) => {
-                            if (items.length === 0) return null;
+                {media && (
+                     <Accordion type="multiple" defaultValue={[UNCATEGORIZED_VALUE, ...allFolders]} className="w-full">
+                        {Object.keys(groupedMedia).sort().map((folderName) => {
+                            const items = groupedMedia[folderName];
+                            if (!items || items.length === 0) return null;
                             const displayFolderName = folderName === UNCATEGORIZED_VALUE ? 'Uncategorized' : folderName;
                             return (
                                 <AccordionItem value={folderName} key={folderName}>
@@ -238,13 +238,13 @@ export default function MediaPage() {
                                        </div>
                                     </AccordionTrigger>
                                     <AccordionContent>
-                                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 pt-4">
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 pt-4">
                                             {items.map(item => (
                                                 <Card key={item.id} className="group relative overflow-hidden">
                                                     <div className="aspect-square relative">
-                                                        <Image src={item.url} alt={item.filename} fill className="object-cover" sizes="(max-width: 768px) 50vw, 20vw"/>
+                                                        <Image src={item.url} alt={item.filename} fill className="object-cover" sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"/>
                                                     </div>
-                                                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 p-2">
+                                                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 p-2">
                                                         <TooltipProvider>
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
@@ -274,6 +274,9 @@ export default function MediaPage() {
                                                         </AlertDialogContent>
                                                         </AlertDialog>
                                                     </div>
+                                                     <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent">
+                                                        <p className="text-white text-xs truncate font-mono" title={item.filename}>{item.filename}</p>
+                                                    </div>
                                                 </Card>
                                             ))}
                                         </div>
@@ -301,7 +304,3 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
-    
-
-    
