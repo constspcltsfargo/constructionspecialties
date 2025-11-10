@@ -44,13 +44,15 @@ interface Media {
     folder?: string;
 }
 
+const UNCATEGORIZED_VALUE = "__uncategorized__";
+
 export default function MediaPage() {
     const firestore = useFirestore();
     const { toast } = useToast();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isUploading, setIsUploading] = useState(false);
     const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
-    const [selectedFolder, setSelectedFolder] = useState<string>('');
+    const [selectedFolder, setSelectedFolder] = useState<string>(UNCATEGORIZED_VALUE);
     const [isCreatingFolder, setIsCreatingFolder] = useState(false);
     const [newFolderName, setNewFolderName] = useState('');
 
@@ -64,7 +66,7 @@ export default function MediaPage() {
     const { folders, groupedMedia } = useMemo(() => {
         if (!media) return { folders: [], groupedMedia: {} };
         const folderSet = new Set<string>();
-        const groups: { [key: string]: Media[] } = { uncategorized: [] };
+        const groups: { [key: string]: Media[] } = { [UNCATEGORIZED_VALUE]: [] };
 
         media.forEach(item => {
             if (item.folder) {
@@ -74,7 +76,7 @@ export default function MediaPage() {
                 }
                 groups[item.folder].push(item);
             } else {
-                groups.uncategorized.push(item);
+                groups[UNCATEGORIZED_VALUE].push(item);
             }
         });
         
@@ -105,7 +107,7 @@ export default function MediaPage() {
             formData.append('files', file);
         });
 
-        if (selectedFolder) {
+        if (selectedFolder && selectedFolder !== UNCATEGORIZED_VALUE) {
             formData.append('folderPath', selectedFolder);
         }
 
@@ -139,10 +141,13 @@ export default function MediaPage() {
     };
 
     const handleCreateFolder = () => {
-        if (newFolderName.trim()) {
-            setSelectedFolder(newFolderName.trim());
+        const trimmedName = newFolderName.trim();
+        if (trimmedName && !folders.includes(trimmedName) && trimmedName !== UNCATEGORIZED_VALUE) {
+            setSelectedFolder(trimmedName);
             setIsCreatingFolder(false);
             setNewFolderName('');
+        } else if (folders.includes(trimmedName)) {
+            toast({ variant: 'destructive', title: 'Folder exists', description: 'A folder with this name already exists.' });
         }
     }
 
@@ -175,7 +180,7 @@ export default function MediaPage() {
                                             <SelectValue placeholder="Select folder..." />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="">Uncategorized</SelectItem>
+                                            <SelectItem value={UNCATEGORIZED_VALUE}>Uncategorized</SelectItem>
                                             {folders.map(folder => (
                                                 <SelectItem key={folder} value={folder}>{folder}</SelectItem>
                                             ))}
@@ -212,14 +217,15 @@ export default function MediaPage() {
                 {error && <p className="text-destructive text-center">Error: {error.message}</p>}
                 
                 {media && media.length > 0 && (
-                     <Accordion type="multiple" defaultValue={["uncategorized", ...folders]} className="w-full">
+                     <Accordion type="multiple" defaultValue={["__uncategorized__", ...folders]} className="w-full">
                         {Object.entries(groupedMedia).map(([folderName, items]) => {
                             if (items.length === 0) return null;
+                            const displayFolderName = folderName === UNCATEGORIZED_VALUE ? 'Uncategorized' : folderName;
                             return (
                                 <AccordionItem value={folderName} key={folderName}>
                                     <AccordionTrigger className="capitalize text-lg font-semibold">
                                        <div className="flex items-center gap-2">
-                                         <Folder className="h-5 w-5"/> {folderName} ({items.length})
+                                         <Folder className="h-5 w-5"/> {displayFolderName} ({items.length})
                                        </div>
                                     </AccordionTrigger>
                                     <AccordionContent>
@@ -286,3 +292,5 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
+    
