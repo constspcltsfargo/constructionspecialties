@@ -2,8 +2,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useFirestore } from '@/firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,62 +14,18 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const firestore = useFirestore();
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
     setIsLoggingIn(true);
 
-    try {
-      // 1. Check for pre-coded credentials first
-      if (email === 'admin@example.com' && password === 'password') {
-          const adminUser = { uid: 'precoded-admin', email: 'admin@example.com', role: 'admin' };
-          document.cookie = `mockSession=${JSON.stringify(adminUser)}; path=/; max-age=3600`;
-          router.push('/admin');
-          // No need to set isLoggingIn to false as we are navigating away
-          return;
-      }
-
-      // 2. If not pre-coded, check Firestore
-      if (!firestore) {
-        setError('Firestore is not available.');
-        setIsLoggingIn(false);
-        return;
-      }
-
-      const usersRef = collection(firestore, 'users');
-      const q = query(usersRef, where('email', '==', email));
-      const querySnapshot = await getDocs(q);
-
-      if (querySnapshot.empty) {
-        setError('No user found with this email.');
-        setIsLoggingIn(false);
-        return;
-      }
-
-      const userDoc = querySnapshot.docs[0];
-      const userData = userDoc.data();
-      
-      if (userData.password !== password) {
-        setError('Incorrect password.');
-        setIsLoggingIn(false);
-        return;
-      }
-      
-      const userId = userDoc.id;
-      // Create a mock session cookie
-      document.cookie = `mockSession=${JSON.stringify({ uid: userId, email: userData.email, role: userData.role })}; path=/; max-age=3600`;
-
-      // Redirect to the admin page
-      router.push('/admin');
-
-    } catch (e: any) {
-      setError(e.message || 'An error occurred during login.');
-      console.error(e);
-      setIsLoggingIn(false);
-    }
+    // Bypass all credential checks and create a mock session
+    const adminUser = { uid: 'bypassed-admin', email: 'admin@example.com', role: 'admin' };
+    document.cookie = `mockSession=${JSON.stringify(adminUser)}; path=/; max-age=3600`;
+    
+    // Redirect directly to the admin dashboard
+    router.push('/admin');
   };
 
   return (
@@ -80,9 +34,7 @@ export default function LoginPage() {
         <CardHeader>
           <CardTitle>Login</CardTitle>
           <CardDescription>
-            Enter your credentials to access the admin dashboard.
-            <br />
-            Use <b>admin@example.com</b> and <b>password</b> to log in.
+            Click login to bypass authentication and access the admin dashboard.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -96,7 +48,6 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     disabled={isLoggingIn}
-                    required
                     />
                 </div>
                 <div className="space-y-2">
@@ -107,7 +58,6 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={isLoggingIn}
-                    required
                     />
                 </div>
                 {error && <p className="text-red-500 text-sm">{error}</p>}
