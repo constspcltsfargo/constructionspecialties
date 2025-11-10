@@ -21,6 +21,10 @@ const galleryImageIds = [
 const galleryImages = galleryImageIds.map(id => PlaceHolderImages.find(img => img.id === id)).filter(Boolean);
 
 export function Gallery() {
+  if (!galleryImages.length) {
+    return null; // Don't render if there are no images
+  }
+  
   const duplicatedImages = [...galleryImages, ...galleryImages];
 
   return (
