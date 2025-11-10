@@ -4,7 +4,7 @@
 import { useState, useRef, ChangeEvent, useMemo, useEffect } from 'react';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
-import { uploadMedia, deleteMedia } from '../actions/media';
+import { uploadMedia, deleteMedia, createFolder } from '../actions/media';
 
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -44,6 +44,11 @@ interface Media {
     folder?: string;
 }
 
+interface FolderData {
+    id: string;
+    name: string;
+}
+
 const UNCATEGORIZED_VALUE = "__uncategorized__";
 
 export default function MediaPage() {
@@ -55,42 +60,40 @@ export default function MediaPage() {
     const [selectedFolder, setSelectedFolder] = useState<string>(UNCATEGORIZED_VALUE);
     const [isCreatingFolder, setIsCreatingFolder] = useState(false);
     const [newFolderName, setNewFolderName] = useState('');
-    const [allFolders, setAllFolders] = useState<string[]>([]);
 
     const mediaCollectionRef = useMemoFirebase(() => {
         if (!firestore) return null;
         return query(collection(firestore, 'media'), orderBy('uploadDate', 'desc'));
     }, [firestore]);
 
-    const { data: media, isLoading, error } = useCollection<Media>(mediaCollectionRef);
+    const foldersCollectionRef = useMemoFirebase(() => {
+        if (!firestore) return null;
+        return query(collection(firestore, 'folders'), orderBy('name', 'asc'));
+    }, [firestore]);
 
-    const { dbFolders, groupedMedia } = useMemo(() => {
-        if (!media) return { dbFolders: [], groupedMedia: {} };
-        const folderSet = new Set<string>();
+    const { data: media, isLoading: isLoadingMedia } = useCollection<Media>(mediaCollectionRef);
+    const { data: folders, isLoading: isLoadingFolders } = useCollection<FolderData>(foldersCollectionRef);
+
+    const allFolders = useMemo(() => folders?.map(f => f.name) || [], [folders]);
+
+    const { groupedMedia } = useMemo(() => {
+        if (!media) return { groupedMedia: {} };
         const groups: { [key: string]: Media[] } = { [UNCATEGORIZED_VALUE]: [] };
+        
+        allFolders.forEach(folderName => {
+            groups[folderName] = [];
+        });
 
         media.forEach(item => {
             const folderKey = item.folder || UNCATEGORIZED_VALUE;
-            if (item.folder) {
-                folderSet.add(item.folder);
-            }
             if (!groups[folderKey]) {
                 groups[folderKey] = [];
             }
             groups[folderKey].push(item);
         });
         
-        return {
-            dbFolders: Array.from(folderSet).sort(),
-            groupedMedia: groups
-        };
-    }, [media]);
-
-    useEffect(() => {
-      // Combine folders from DB and newly created folders
-      const combined = new Set([...dbFolders, ...allFolders]);
-      setAllFolders(Array.from(combined).sort());
-    }, [dbFolders]);
+        return { groupedMedia: groups };
+    }, [media, allFolders]);
 
 
     const handleCopyUrl = (url: string) => {
@@ -147,18 +150,25 @@ export default function MediaPage() {
         }
     };
 
-    const handleCreateFolder = () => {
+    const handleCreateFolder = async () => {
         const trimmedName = newFolderName.trim();
-        if (trimmedName && !allFolders.includes(trimmedName) && trimmedName !== UNCATEGORIZED_VALUE) {
-            setAllFolders(prev => [...prev, trimmedName].sort());
+        if (!trimmedName) return;
+
+        try {
+            const result = await createFolder(trimmedName);
+            if (result.error) {
+                throw new Error(result.error);
+            }
+            toast({ title: 'Folder created', description: `Folder "${trimmedName}" has been created.`});
             setSelectedFolder(trimmedName);
             setIsCreatingFolder(false);
             setNewFolderName('');
-        } else if (allFolders.includes(trimmedName)) {
-            toast({ variant: 'destructive', title: 'Folder exists', description: 'A folder with this name already exists.' });
+        } catch(error: any) {
+            toast({ variant: 'destructive', title: 'Folder creation failed', description: error.message });
         }
     }
 
+    const isLoading = isLoadingMedia || isLoadingFolders;
 
     return (
         <Card>
@@ -286,7 +296,7 @@ export default function MediaPage() {
                         })}
                      </Accordion>
                 )}
-                {media && media.length === 0 && !isLoading && !isUploading && allFolders.length === 0 && (
+                {media && media.length === 0 && !isLoading && allFolders.length === 0 && (
                      <div className="text-center py-12 border-2 border-dashed rounded-lg">
                         <h3 className="text-lg font-semibold">No media found</h3>
                         <p className="text-muted-foreground mt-2">Click "Upload" to get started.</p>

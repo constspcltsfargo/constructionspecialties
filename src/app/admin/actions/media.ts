@@ -5,8 +5,39 @@ config({ path: '.env.local' });
 
 import { initializeFirebaseAdmin } from '@/firebase/admin-init';
 import { getStorage } from 'firebase-admin/storage';
-import { getFirestore, collection, addDoc, serverTimestamp, deleteDoc, doc } from 'firebase-admin/firestore';
+import { getFirestore, collection, addDoc, serverTimestamp, deleteDoc, doc, where, query, getDocs } from 'firebase-admin/firestore';
 import { revalidatePath } from 'next/cache';
+
+export async function createFolder(folderName: string) {
+    if (!folderName || folderName.trim().length === 0) {
+        return { error: 'Folder name cannot be empty.' };
+    }
+
+    const { firebaseApp } = initializeFirebaseAdmin();
+    const firestore = getFirestore(firebaseApp);
+    const foldersCollection = collection(firestore, 'folders');
+
+    try {
+        // Check if folder already exists
+        const q = query(foldersCollection, where('name', '==', folderName.trim()));
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+            return { error: 'Folder with this name already exists.' };
+        }
+
+        const newFolder = {
+            name: folderName.trim(),
+            createdAt: serverTimestamp(),
+        };
+        await addDoc(foldersCollection, newFolder);
+        revalidatePath('/admin/media');
+        return { success: true, folder: newFolder };
+    } catch (error: any) {
+        console.error('Folder creation failed:', error);
+        return { error: error.message || 'Failed to create folder.' };
+    }
+}
+
 
 export async function uploadMedia(formData: FormData) {
     const files = formData.getAll('files') as File[];
