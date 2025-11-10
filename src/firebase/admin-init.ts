@@ -8,7 +8,7 @@ import * as admin from 'firebase-admin';
  * This function is designed to be called within Server Actions or Route Handlers.
  * @returns The initialized Firebase Admin app instance.
  */
-export function initializeFirebaseAdmin(): admin.app.App {
+export async function initializeFirebaseAdmin(): Promise<admin.app.App> {
   // Check if an app is already initialized
   if (admin.apps.length > 0 && admin.apps[0]) {
     return admin.apps[0];
