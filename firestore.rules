@@ -21,7 +21,8 @@ service cloud.firestore {
     // Rules for admin roles
     match /roles_admin/{userId} {
       allow read: if true;
-      allow create: if request.auth != null && size(get(/databases/$(database)/documents/roles_admin).data) == 0 && isOwner(userId);
+      // Allow create only if the user is authenticated, the roles_admin collection is empty, and the user is creating their own document.
+      allow create: if request.auth != null && !exists(/databases/$(database)/documents/roles_admin) && isOwner(userId);
       allow write: if isAdmin();
     }
     
