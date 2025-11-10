@@ -18,35 +18,30 @@ export function initializeFirebaseAdmin(): FirebaseAdminServices {
     };
   }
 
-  // If no app is initialized, initialize one.
-  // On the server, we must use the explicit config from environment variables.
-  const serviceAccountString = process.env.FIREBASE_SERVICE_ACCOUNT_KEY as string;
+  const serviceAccountString = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+
   if (!serviceAccountString) {
     throw new Error('FIREBASE_SERVICE_ACCOUNT_KEY environment variable is not set.');
   }
 
   let serviceAccount;
   try {
-    // The key might be a JSON string or a base64 encoded string.
-    // First, try to parse it as JSON directly.
+    // Attempt to parse the key as a JSON string directly.
     serviceAccount = JSON.parse(serviceAccountString);
-  } catch (e) {
-    // If that fails, assume it might be a malformed string that needs escaping,
-    // or it's just not valid JSON. A common issue is unescaped newlines.
+  } catch (e1) {
     try {
-        const correctlyEscapedString = serviceAccountString.replace(/\\n/g, '\\n');
-        serviceAccount = JSON.parse(correctlyEscapedString);
-    } catch (finalError) {
-        console.error("Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY. Ensure it's a valid JSON string.", finalError);
-        throw new Error("The Firebase service account key is not a valid JSON object.");
+      // If direct parsing fails, assume it's a Base64 encoded string.
+      const decodedString = Buffer.from(serviceAccountString, 'base64').toString('utf-8');
+      serviceAccount = JSON.parse(decodedString);
+    } catch (e2) {
+      console.error("Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY as JSON or Base64-encoded JSON.", e1, e2);
+      throw new Error("The Firebase service account key is not a valid JSON object.");
     }
   }
 
 
   const app = initializeApp({
     credential: cert(serviceAccount),
-    // You might need to add databaseURL if it's not automatically picked up
-    // databaseURL: `https://${serviceAccount.project_id}.firebaseio.com`
   });
   
   return {
