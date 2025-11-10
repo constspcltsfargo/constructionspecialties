@@ -49,12 +49,6 @@
       "imageHint": "school building"
     },
     {
-      "id": "gallery-8",
-      "description": "Newly installed residential roof",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.appspot.com/o/Gallery%20Images%2FResidential%204.jpg?alt=media",
-      "imageHint": "new roof"
-    },
-    {
       "id": "gallery-10",
       "description": "Modern home with a new roof",
       "imageUrl": "https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.appspot.com/o/Gallery%20Images%2FResidential%205.jpg?alt=media",
@@ -81,7 +75,7 @@
     {
       "id": "team-member-3",
       "description": "Portrait of a construction worker.",
-      "imageUrl": "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjb25zdHJ1Y3Rpb24lMjB3b3JrZXJ8ZW58MHx8fHwxNzYyMDAyMzYxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjb25zdHJ1Y3Rpb24lMjB3b3JrZXJ8ZW58MHx8fHwxNzYyMDAyMzYxfDA&ixlibrb-4.1.0&q=80&w=1080",
       "imageHint": "construction worker"
     },
     {
