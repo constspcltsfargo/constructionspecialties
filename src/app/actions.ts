@@ -74,6 +74,7 @@ export async function handleContactFormSubmission(
             submittedAt: serverTimestamp(),
             suggestedTeam: result.suggestedTeam,
             summary: result.summary,
+            nearbyBranches: result.nearbyBranches,
             status: 'new'
         });
     } catch (dbError: any) {

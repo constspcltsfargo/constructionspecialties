@@ -149,7 +149,12 @@
           "howDidYouHear": { "type": "string" },
           "submittedAt": { "type": "string", "format": "date-time" },
           "suggestedTeam": { "type": "string", "description": "AI-suggested team for routing." },
-          "summary": { "type": "string", "description": "AI-generated summary of the request." }
+          "summary": { "type": "string", "description": "AI-generated summary of the request." },
+          "nearbyBranches": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "AI-suggested nearby branches based on location."
+          }
         },
         "required": ["name", "email", "phone", "zip", "project", "submittedAt"]
     }

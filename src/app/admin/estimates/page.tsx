@@ -20,6 +20,7 @@ interface EstimateRequest {
     suggestedTeam: string;
     summary: string;
     status: 'new' | 'contacted' | 'closed';
+    nearbyBranches?: string[];
 }
 
 export default function EstimateRequestsPage() {
@@ -54,7 +55,7 @@ export default function EstimateRequestsPage() {
                 <TableHead>Date</TableHead>
                 <TableHead>Contact</TableHead>
                 <TableHead>Summary</TableHead>
-                <TableHead>Suggested Team</TableHead>
+                <TableHead>AI Suggestions</TableHead>
                 <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
@@ -76,7 +77,12 @@ export default function EstimateRequestsPage() {
                     </p>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="secondary">{req.suggestedTeam}</Badge>
+                    <div><Badge variant="secondary">{req.suggestedTeam}</Badge></div>
+                    {req.nearbyBranches && req.nearbyBranches.length > 0 && (
+                        <div className="text-xs text-muted-foreground mt-2">
+                            Branches: {req.nearbyBranches.join(', ')}
+                        </div>
+                    )}
                   </TableCell>
                   <TableCell>
                     <Badge>{req.status}</Badge>
