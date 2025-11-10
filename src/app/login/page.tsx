@@ -42,6 +42,14 @@ export default function LoginPage() {
     setError(null);
     setIsLoggingIn(true);
 
+    // Check for special pre-coded credentials first
+    if (email === 'admin@example.com' && password === 'password') {
+        const adminUser = { uid: 'precoded-admin', email: 'admin@example.com', role: 'admin' };
+        document.cookie = `mockSession=${JSON.stringify(adminUser)}; path=/; max-age=3600`;
+        router.push('/admin');
+        return; 
+    }
+
     if (!firestore) {
       setError('Firestore is not available.');
       setIsLoggingIn(false);
@@ -61,9 +69,7 @@ export default function LoginPage() {
 
       const userDoc = querySnapshot.docs[0];
       const userData = userDoc.data();
-
-      // IMPORTANT: This is an insecure password check for prototyping only.
-      // In a real application, you must hash passwords on a server.
+      
       if (userData.password !== password) {
         setError('Incorrect password.');
         setIsLoggingIn(false);
@@ -71,10 +77,8 @@ export default function LoginPage() {
       }
       
       const userId = userDoc.id;
-      // Set a mock session cookie. In a real app, this would be a secure, HTTP-only session token.
       document.cookie = `mockSession=${JSON.stringify({ uid: userId, email: userData.email, role: userData.role })}; path=/; max-age=3600`;
 
-      // Redirect to the admin dashboard on successful login
       router.push('/admin');
 
     } catch (e: any) {
