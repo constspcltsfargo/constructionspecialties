@@ -1,4 +1,3 @@
-'use server';
 
 // The 'use server' directive isn't strictly necessary for this file since it's imported by server actions,
 // but it's a good practice to keep it.
