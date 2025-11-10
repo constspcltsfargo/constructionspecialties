@@ -20,9 +20,11 @@ service cloud.firestore {
 
     // Rules for User Profiles
     match /users/{userId} {
-      // No one can read or write user data from the client.
-      // All user creation, updates, and reads for login must go through server actions.
-      allow read, write: if false;
+      // Anyone can create a new user profile (for sign-up).
+      allow create: if true;
+      
+      // All other reads/writes must go through server actions, so they are disallowed from the client.
+      allow read, update, delete: if false;
     }
     
     // Rules for Estimate Requests
