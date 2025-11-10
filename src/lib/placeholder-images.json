@@ -43,12 +43,6 @@
       "imageHint": "commercial building"
     },
     {
-      "id": "gallery-6",
-      "description": "Shingles on a residential roof",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.appspot.com/o/Gallery%20Images%2FResidential%203.jpg?alt=media",
-      "imageHint": "roof shingles"
-    },
-    {
       "id": "gallery-7",
       "description": "Underwood ND School roofing project",
       "imageUrl": "https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Gallery%20Images%2FUnderwood%2020250629_162111.jpg?alt=media&token=8ba0c8f5-60dc-44d7-b181-d69291d3ad65",
@@ -59,12 +53,6 @@
       "description": "Newly installed residential roof",
       "imageUrl": "https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.appspot.com/o/Gallery%20Images%2FResidential%204.jpg?alt=media",
       "imageHint": "new roof"
-    },
-    {
-      "id": "gallery-9",
-      "description": "Aerial view of a commercial property",
-      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.appspot.com/o/Gallery%20Images%2FCommercial%205.jpg?alt=media",
-      "imageHint": "commercial property"
     },
     {
       "id": "gallery-10",
