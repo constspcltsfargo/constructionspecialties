@@ -1,9 +1,71 @@
 
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuth() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuth() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+    }
+
+    // Rules for User Profiles
+    match /users/{userId} {
+      // Anyone authenticated can view any user profile
+      allow read: if isAuth();
+      // Only the owner can create or update their own profile
+      allow write: if isOwner(userId);
+    }
+    
+    // Rules for Admin Roles
+    match /roles_admin/{userId} {
+        // Only admins can read the roles collection
+        allow read: if isAdmin();
+        // Only an existing admin can make another user an admin
+        allow write: if isAdmin();
+    }
+
+    // Rules for Estimate Requests
+    match /estimateRequests/{requestId} {
+        // Public can create
+        allow create: if true;
+        // Only admins can read, update, or delete estimate requests
+        allow read, update, delete: if isAdmin();
+    }
+    
+    // Rules for CMS Pages
+    match /pages/{pageId} {
+        // Public can read all pages
+        allow read: if true;
+        // Only admins can write/delete pages
+        allow write: if isAdmin();
+    }
+
+    // Rules for Page Elements (subcollection of pages)
+    match /pages/{pageId}/pageElements/{elementId} {
+        // Public can read all page elements
+        allow read: if true;
+        // Only admins can write/delete page elements
+        allow write: if isAdmin();
+    }
+
+    // Rules for Media Library
+    match /media/{mediaId} {
+        // Only admins can read/write media files
+        allow read, write: if isAdmin();
+    }
+
+    // Fallback security rule - deny all other access
     match /{document=**} {
-      allow read, write: if true;
+      allow read, write: if false;
     }
   }
 }

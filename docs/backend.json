@@ -161,10 +161,22 @@
           }
         },
         "required": ["name", "email", "phone", "zip", "project", "submittedAt"]
+    },
+    "roles_admin": {
+      "title": "Admin Role",
+      "description": "A document indicating that a user has admin privileges.",
+      "type": "object",
+      "properties": {
+        "isAdmin": {
+          "type": "boolean",
+          "description": "Should always be true."
+        }
+      },
+      "required": ["isAdmin"]
     }
   },
   "auth": {
-    "providers": []
+    "providers": ["email"]
   },
   "firestore": {
     "structure": [
