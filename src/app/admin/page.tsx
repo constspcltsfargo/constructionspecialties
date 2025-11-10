@@ -1,15 +1,59 @@
 
 'use client';
 
-import { useUser, useAuth } from '@/firebase';
+import { useUser, useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { signOut } from 'firebase/auth';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { collection, query, orderBy, limit } from 'firebase/firestore';
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { format } from 'date-fns';
+import { Users, FileText, Activity } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+
+// Sample data for site visitors
+const visitorData = [
+  { name: 'Jan', visitors: 4000 },
+  { name: 'Feb', visitors: 3000 },
+  { name: 'Mar', visitors: 5000 },
+  { name: 'Apr', visitors: 4500 },
+  { name: 'May', visitors: 6000 },
+  { name: 'Jun', visitors: 7000 },
+];
+
+interface EstimateRequest {
+    id: string;
+    name: string;
+    submittedAt: { toDate: () => Date };
+    status: 'new' | 'contacted' | 'closed';
+}
 
 export default function AdminPage() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
+  const firestore = useFirestore();
   const router = useRouter();
+
+  const requestsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'estimateRequests'), orderBy('submittedAt', 'desc'));
+  }, [firestore]);
+
+  const recentRequestsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'estimateRequests'), orderBy('submittedAt', 'desc'), limit(5));
+  }, [firestore]);
+
+  const { data: requests, isLoading: isLoadingRequests } = useCollection<EstimateRequest>(requestsQuery);
+  const { data: recentRequests, isLoading: isLoadingRecent } = useCollection<EstimateRequest>(recentRequestsQuery);
+
+  const stats = {
+    total: requests?.length || 0,
+    new: requests?.filter(r => r.status === 'new').length || 0,
+  };
 
   const handleSignOut = async () => {
     if (auth) {
@@ -19,16 +63,119 @@ export default function AdminPage() {
   };
 
   if (isUserLoading) {
-    return <div>Loading...</div>;
+    return (
+        <div className="p-4 space-y-4">
+            <div className="flex justify-between items-center mb-4">
+                <Skeleton className="h-8 w-64" />
+                <Skeleton className="h-10 w-24" />
+            </div>
+             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <Skeleton className="h-32 w-full" />
+                <Skeleton className="h-32 w-full" />
+                <Skeleton className="h-32 w-full" />
+                <Skeleton className="h-32 w-full" />
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+                <Skeleton className="h-80 w-full col-span-4" />
+                <Skeleton className="h-80 w-full col-span-3" />
+            </div>
+        </div>
+    );
   }
 
   return (
-    <div>
+    <div className="space-y-4">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-        {user && <Button onClick={handleSignOut}>Log Out</Button>}
+        <h1 className="text-2xl font-bold">Dashboard</h1>
+        {user && <Button onClick={handleSignOut} variant="outline">Log Out</Button>}
       </div>
-      <p>Welcome, {user ? user.email : 'Admin'}! This is your admin dashboard. You can manage pages and media from here.</p>
+      
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Estimates</CardTitle>
+            <FileText className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            {isLoadingRequests ? <Skeleton className="h-8 w-1/2" /> : <div className="text-2xl font-bold">{stats.total}</div>}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">New Estimates</CardTitle>
+             <FileText className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            {isLoadingRequests ? <Skeleton className="h-8 w-1/2" /> : <div className="text-2xl font-bold">{stats.new}</div>}
+          </CardContent>
+        </Card>
+         <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Site Visitors (Sample)</CardTitle>
+            <Activity className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">29,750</div>
+            <p className="text-xs text-muted-foreground">+20.1% from last month</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <Card className="lg:col-span-4">
+          <CardHeader>
+            <CardTitle>Site Visitors Overview (Sample)</CardTitle>
+          </CardHeader>
+          <CardContent className="pl-2">
+             <ResponsiveContainer width="100%" height={350}>
+                <BarChart data={visitorData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                    <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value / 1000}K`}/>
+                    <Tooltip cursor={{fill: 'hsl(var(--muted))'}} contentStyle={{backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))'}}/>
+                    <Bar dataKey="visitors" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        <Card className="lg:col-span-3">
+          <CardHeader>
+            <CardTitle>Recent Estimate Requests</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoadingRecent ? (
+                <div className="space-y-4">
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-10 w-full" />
+                </div>
+            ) : (
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                        <TableHead>Customer</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Status</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {recentRequests?.map(req => (
+                        <TableRow key={req.id}>
+                            <TableCell>{req.name}</TableCell>
+                            <TableCell>{req.submittedAt ? format(req.submittedAt.toDate(), 'MMM d, yyyy') : 'N/A'}</TableCell>
+                            <TableCell><Badge>{req.status}</Badge></TableCell>
+                        </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            )}
+             {recentRequests && recentRequests.length === 0 && !isLoadingRecent && (
+                <p className="text-sm text-muted-foreground text-center py-4">No recent requests.</p>
+             )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
