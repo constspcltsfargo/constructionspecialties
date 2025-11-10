@@ -2,6 +2,8 @@
 'use server';
 
 import * as admin from 'firebase-admin';
+import { getAuth } from 'firebase-admin/auth';
+import { getFirestore } from 'firebase-admin/firestore';
 
 /**
  * Initializes and returns the Firebase Admin app instance, ensuring it's a singleton.
@@ -10,10 +12,11 @@ import * as admin from 'firebase-admin';
  *
  * @returns The initialized Firebase Admin app instance.
  */
-export async function initializeFirebaseAdmin(): Promise<admin.app.App> {
+export async function initializeFirebaseAdmin() {
   // Check if an app is already initialized
   if (admin.apps.length > 0 && admin.apps[0]) {
-    return admin.apps[0];
+    const app = admin.apps[0];
+    return { app, auth: getAuth(app), firestore: getFirestore(app) };
   }
   
   // This is the critical part. We read the environment variables *inside* the function
@@ -41,7 +44,7 @@ export async function initializeFirebaseAdmin(): Promise<admin.app.App> {
       }),
     });
     
-    return app;
+    return { app, auth: getAuth(app), firestore: getFirestore(app) };
 
   } catch (error) {
     console.error('Firebase Admin SDK initialization failed:', error);

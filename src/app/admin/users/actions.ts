@@ -15,9 +15,7 @@ const newUserSchema = z.object({
 
 export async function createUser(values: z.infer<typeof newUserSchema>) {
   try {
-    const app = await initializeFirebaseAdmin();
-    const auth = getAuth(app);
-    const firestore = getFirestore(app);
+    const { auth, firestore } = await initializeFirebaseAdmin();
 
     // Check if username is already taken. The 'username' is not part of the form, 
     // so we'll create a default one from the email.
@@ -65,9 +63,7 @@ const editUserSchema = z.object({
 
 export async function updateUser(values: z.infer<typeof editUserSchema>) {
     try {
-        const app = await initializeFirebaseAdmin();
-        const auth = getAuth(app);
-        const firestore = getFirestore(app);
+        const { auth, firestore } = await initializeFirebaseAdmin();
 
         // Update Firebase Auth
         await auth.updateUser(values.uid, {
@@ -92,9 +88,7 @@ export async function updateUser(values: z.infer<typeof editUserSchema>) {
 
 export async function deleteUser(uid: string) {
     try {
-        const app = await initializeFirebaseAdmin();
-        const auth = getAuth(app);
-        const firestore = getFirestore(app);
+        const { auth, firestore } = await initializeFirebaseAdmin();
 
         // Delete from Firebase Auth
         await auth.deleteUser(uid);
