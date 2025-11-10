@@ -1,3 +1,4 @@
+
 import { ContactForm } from "@/components/contact-form";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -21,7 +22,7 @@ export function Contact() {
               <div className="space-y-4">
                  <div className="flex items-start gap-4">
                   <MapPin className="h-5 w-5 text-primary mt-1" />
-                  <span className="text-muted-foreground">405 11th Ave NW<br/>West Fargo, ND 58078</span>
+                  <span className="text-muted-foreground">1124 5th Ave NE<br/>West Fargo, ND 58078</span>
                 </div>
                 <div className="flex items-center gap-4">
                   <Mail className="h-5 w-5 text-primary" />

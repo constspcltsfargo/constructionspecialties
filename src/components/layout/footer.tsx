@@ -56,7 +56,7 @@ export function Footer() {
              <div>
               <h4 className="font-semibold text-white mb-4">Contact Info</h4>
                <ul className="space-y-2 text-sm text-muted-foreground">
-                 <li>405 11th Ave NW<br/>West Fargo, ND 58078</li>
+                 <li>1124 5th Ave NE<br/>West Fargo, ND 58078</li>
                  <li>constspcltsfargo@gmail.com</li>
                  <li className="mt-2"><b>Fargo:</b> 701-277-1633</li>
                  <li><b>Minot:</b> 701-852-1633</li>
@@ -76,3 +76,4 @@ export function Footer() {
     
 
     
+
