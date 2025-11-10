@@ -20,7 +20,28 @@ export function initializeFirebaseAdmin(): FirebaseAdminServices {
 
   // If no app is initialized, initialize one.
   // On the server, we must use the explicit config from environment variables.
-  const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY as string);
+  const serviceAccountString = process.env.FIREBASE_SERVICE_ACCOUNT_KEY as string;
+  if (!serviceAccountString) {
+    throw new Error('FIREBASE_SERVICE_ACCOUNT_KEY environment variable is not set.');
+  }
+
+  let serviceAccount;
+  try {
+    // The key might be a JSON string or a base64 encoded string.
+    // First, try to parse it as JSON directly.
+    serviceAccount = JSON.parse(serviceAccountString);
+  } catch (e) {
+    // If that fails, assume it might be a malformed string that needs escaping,
+    // or it's just not valid JSON. A common issue is unescaped newlines.
+    try {
+        const correctlyEscapedString = serviceAccountString.replace(/\\n/g, '\\n');
+        serviceAccount = JSON.parse(correctlyEscapedString);
+    } catch (finalError) {
+        console.error("Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY. Ensure it's a valid JSON string.", finalError);
+        throw new Error("The Firebase service account key is not a valid JSON object.");
+    }
+  }
+
 
   const app = initializeApp({
     credential: cert(serviceAccount),
