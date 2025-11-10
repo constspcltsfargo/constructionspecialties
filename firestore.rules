@@ -3,30 +3,28 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Helper functions
-    function isAdmin() {
-      return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
-    }
-
-    function isOwner(userId) {
-      return request.auth.uid == userId;
-    }
-
-    // Rules for user profiles
+    // For this prototype, we are allowing open access to the users collection
+    // to enable the custom login flow. In a real production app, you would
+    // implement server-side validation and secure these rules significantly.
     match /users/{userId} {
-      allow read: if true;
-      allow create, update: if isOwner(userId);
+      allow read, write: if true;
     }
     
-    // Rules for admin roles
+    // Admin roles are not managed via secure tokens anymore.
+    // This is open for the prototype.
     match /roles_admin/{userId} {
-      allow read: if true;
-      // Allow create only if the user is authenticated, the roles_admin collection is empty, and the user is creating their own document.
-      allow create: if request.auth != null && !exists(/databases/$(database)/documents/roles_admin) && isOwner(userId);
-      allow write: if isAdmin();
+      allow read, write: if true;
     }
     
-    // Rules for pages and page elements
+    // Pages and media are publicly readable, but only writable by admins.
+    // The definition of "admin" will need to be re-established for this new auth system.
+    function isAdmin() {
+      // THIS IS INSECURE FOR PRODUCTION
+      // This is a placeholder. In a real app, you'd check a custom claim
+      // or a role field on a user document that can only be set by a trusted server.
+      return true;
+    }
+    
     match /pages/{pageId} {
       allow read: if true;
       allow write: if isAdmin();
@@ -37,16 +35,15 @@ service cloud.firestore {
         allow write: if isAdmin();
     }
 
-    // Rules for media
     match /media/{mediaId} {
         allow read: if true;
         allow write: if isAdmin();
     }
 
-    // Rules for estimate requests
+    // Estimate requests can be created by anyone, but only read by admins.
     match /estimateRequests/{requestId} {
+        allow create: if true;
         allow read, write: if isAdmin();
-        allow create: if request.auth == null || request.auth != null;
     }
   }
 }

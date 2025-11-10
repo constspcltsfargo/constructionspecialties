@@ -15,6 +15,10 @@
           "format": "email",
           "description": "The user's email address."
         },
+        "password": {
+          "type": "string",
+          "description": "The user's password. This should be hashed in a real application."
+        },
         "photoURL": {
             "type": "string",
             "format": "uri",
@@ -26,7 +30,7 @@
           "enum": ["admin", "user"]
         }
       },
-      "required": ["displayName", "email"]
+      "required": ["displayName", "email", "password"]
     },
     "Page": {
       "title": "Page",
@@ -160,10 +164,7 @@
     }
   },
   "auth": {
-    "providers": [
-      "password",
-      "anonymous"
-    ]
+    "providers": []
   },
   "firestore": {
     "structure": [

@@ -1,122 +1,70 @@
+
 'use client';
 
 import { useState } from 'react';
-import { useAuth, useFirestore, errorEmitter } from '@/firebase';
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signInAnonymously,
-  AuthError,
-} from 'firebase/auth';
-import { doc, setDoc }from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
-import { FirestorePermissionError } from '@/firebase/errors';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const auth = useAuth();
   const firestore = useFirestore();
   const router = useRouter();
 
-  const handleAuth = async (isSignUp: boolean) => {
+  const handleLogin = async () => {
     setError(null);
-    if (!auth || !firestore) {
-      setError('Authentication services are not available.');
+    if (!firestore) {
+      setError('Firestore is not available.');
       return;
     }
+
     try {
-      const userCredential = isSignUp
-        ? await createUserWithEmailAndPassword(auth, email, password)
-        : await signInWithEmailAndPassword(auth, email, password);
+      const usersRef = collection(firestore, 'users');
+      const q = query(usersRef, where('email', '==', email));
+      const querySnapshot = await getDocs(q);
 
-      const user = userCredential.user;
+      if (querySnapshot.empty) {
+        setError('No user found with this email.');
+        return;
+      }
 
-      if (isSignUp) {
-        // Create user profile in 'users' collection
-        const userProfileRef = doc(firestore, 'users', user.uid);
-        const userProfileData = {
-          displayName: user.email?.split('@')[0] || 'New User',
-          email: user.email,
-          role: 'user', // Default role
-        };
-        setDoc(userProfileRef, userProfileData, { merge: true }).catch((serverError) => {
-            const permissionError = new FirestorePermissionError({
-                path: userProfileRef.path,
-                operation: 'create',
-                requestResourceData: userProfileData,
-            });
-            errorEmitter.emit('permission-error', permissionError);
-        });
+      const userDoc = querySnapshot.docs[0];
+      const userData = userDoc.data();
 
-        // Attempt to create first admin role
-        const adminRoleRef = doc(firestore, 'roles_admin', user.uid);
-        const roleData = { role: 'admin' };
-        
-        setDoc(adminRoleRef, roleData)
-            .then(() => {
-                // If successful, update the user profile role to admin
-                setDoc(userProfileRef, { role: 'admin' }, { merge: true });
-            })
-            .catch((serverError) => {
-                const permissionError = new FirestorePermissionError({
-                    path: adminRoleRef.path,
-                    operation: 'create',
-                    requestResourceData: roleData,
-                });
-                errorEmitter.emit('permission-error', permissionError);
-            });
+      // IMPORTANT: This is an insecure password check for prototyping only.
+      // In a real application, you must hash passwords on a server.
+      if (userData.password !== password) {
+        setError('Incorrect password.');
+        return;
       }
       
-      // Optimistically navigate
+      // In a real app, you would set a session cookie here.
+      // For now, we'll just redirect. The middleware will need to be updated.
+      // We will set a simple cookie to simulate a session for the middleware.
+      const userId = userDoc.id;
+      document.cookie = `mockSession=${JSON.stringify({ uid: userId, email: userData.email, role: userData.role })}; path=/; max-age=3600`;
+
       router.push('/admin');
 
-    } catch (e) {
-      const authError = e as AuthError;
-      setError(authError.message);
+    } catch (e: any) {
+      setError(e.message || 'An error occurred during login.');
       console.error(e);
     }
   };
 
-  const handleAnonymousAuth = async () => {
-    setError(null);
-    if (!auth || !firestore) {
-      setError('Authentication services are not available.');
-      return;
-    }
-    try {
-      const userCredential = await signInAnonymously(auth);
-      const user = userCredential.user;
-      const adminRoleRef = doc(firestore, 'roles_admin', user.uid);
-      const roleData = { role: 'admin' };
-      
-      // Non-blocking write with custom error handling
-      setDoc(adminRoleRef, roleData)
-        .catch((serverError) => {
-          const permissionError = new FirestorePermissionError({
-            path: adminRoleRef.path,
-            operation: 'create',
-            requestResourceData: roleData,
-          });
-          errorEmitter.emit('permission-error', permissionError);
-          setError('Failed to set admin role due to permissions.');
-        });
-        
-      router.push('/admin');
-
-    } catch (e) {
-      const authError = e as AuthError;
-      setError(authError.message);
-      console.error(e);
-    }
-  };
+  const handleSignUp = async () => {
+     setError(null);
+     alert("Sign-up is not implemented in this prototype. Please use the existing user credentials.");
+     // In a real application, this would involve creating a new user document
+     // in the 'users' collection with a securely hashed password.
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -154,7 +102,7 @@ export default function LoginPage() {
                   />
                 </div>
                 {error && <p className="text-red-500 text-sm">{error}</p>}
-                <Button onClick={() => handleAuth(false)} className="w-full">
+                <Button onClick={handleLogin} className="w-full">
                   Login
                 </Button>
               </CardContent>
@@ -163,18 +111,17 @@ export default function LoginPage() {
               <CardHeader>
                 <CardTitle>Sign Up</CardTitle>
                 <CardDescription>
-                  Create an account to get started. The first user will become an admin.
+                  Sign-up is disabled for this prototype.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
+                 <div className="space-y-2">
                   <Label htmlFor="signup-email">Email</Label>
                   <Input
                     id="signup-email"
                     type="email"
                     placeholder="m@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    disabled
                   />
                 </div>
                 <div className="space-y-2">
@@ -182,30 +129,15 @@ export default function LoginPage() {
                   <Input
                     id="signup-password"
                     type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    disabled
                   />
                 </div>
-                {error && <p className="text-red-500 text-sm">{error}</p>}
-                <Button onClick={() => handleAuth(true)} className="w-full">
+                <Button onClick={handleSignUp} className="w-full" disabled>
                   Sign Up
                 </Button>
               </CardContent>
             </TabsContent>
         </Tabs>
-        <div className="px-6 pb-6">
-            <div className="relative">
-                <Separator />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                    <span className="bg-background px-2 text-sm text-muted-foreground">
-                        OR
-                    </span>
-                </div>
-            </div>
-            <Button variant="outline" onClick={handleAnonymousAuth} className="w-full mt-4">
-                Sign in Anonymously
-            </Button>
-        </div>
       </Card>
     </div>
   );

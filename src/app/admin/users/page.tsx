@@ -11,6 +11,7 @@ import { PlusCircle } from 'lucide-react';
 import { AddUserDialog } from './_components/add-user-dialog';
 
 interface UserProfile {
+    id: string;
     displayName: string;
     email: string;
     photoURL?: string;

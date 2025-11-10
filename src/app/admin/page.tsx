@@ -1,10 +1,9 @@
 
 'use client';
 
-import { useUser, useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { signOut } from 'firebase/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
@@ -32,8 +31,7 @@ interface EstimateRequest {
 }
 
 export default function AdminPage() {
-  const { user, isUserLoading } = useUser();
-  const auth = useAuth();
+  const { isUserLoading } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
 
@@ -56,10 +54,9 @@ export default function AdminPage() {
   };
 
   const handleSignOut = async () => {
-    if (auth) {
-      await signOut(auth);
-      router.push('/login');
-    }
+    // Remove the mock session cookie and redirect to login
+    document.cookie = 'mockSession=; path=/; max-age=-1';
+    router.push('/login');
   };
 
   if (isUserLoading) {
@@ -87,7 +84,7 @@ export default function AdminPage() {
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        {user && <Button onClick={handleSignOut} variant="outline">Log Out</Button>}
+        <Button onClick={handleSignOut} variant="outline">Log Out</Button>
       </div>
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
