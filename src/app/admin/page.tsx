@@ -1,16 +1,14 @@
 
 'use client';
 
-import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+import { useFirestore, useMemoFirebase } from '@/firebase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { format } from 'date-fns';
-import { Users, FileText, Activity } from 'lucide-react';
+import { FileText, Activity } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCollection } from '@/firebase/firestore/use-collection';
 

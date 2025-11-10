@@ -16,10 +16,8 @@ import {
 import { Home, Users, FileText, Mailbox, ImageIcon, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useAuth, useUser } from '@/firebase';
-import { signOut } from 'firebase/auth';
+import { useSession, signOut } from 'next-auth/react';
 import { useEffect } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
 
 export default function AdminLayout({
   children,
@@ -28,30 +26,26 @@ export default function AdminLayout({
 }) {
     const pathname = usePathname();
     const router = useRouter();
-    const auth = useAuth();
-    const { user, isUserLoading } = useUser();
+    const { data: session, status } = useSession();
 
     useEffect(() => {
         // If loading is finished and there's no user, redirect to login
-        if (!isUserLoading && !user) {
+        if (status === 'unauthenticated') {
             router.push('/login');
         }
-    }, [isUserLoading, user, router]);
+    }, [status, router]);
 
 
     const handleSignOut = async () => {
       try {
-        if (auth) {
-            await signOut(auth);
-        }
-        // Redirecting to login will be handled by the effect hook above
+        await signOut({ redirect: false });
         router.push('/login');
       } catch (error) {
         console.error("Sign out error", error);
       }
     };
 
-  if (isUserLoading || !user) {
+  if (status === 'loading' || status === 'unauthenticated') {
     return (
         <div className="flex items-center justify-center h-screen">
             <div className="space-y-4 text-center">

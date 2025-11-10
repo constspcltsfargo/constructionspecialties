@@ -10,7 +10,9 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { getFunctions, httpsCallable } from 'firebase/functions';
+import { createUser } from '../../actions/users';
+import { UserProfile } from '../page';
+
 
 const newUserSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -25,9 +27,10 @@ type NewUserFormValues = z.infer<typeof newUserSchema>;
 interface AddUserDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onUserAdded: (user: UserProfile) => void;
 }
 
-export function AddUserDialog({ open, onOpenChange }: AddUserDialogProps) {
+export function AddUserDialog({ open, onOpenChange, onUserAdded }: AddUserDialogProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<NewUserFormValues>({
@@ -43,15 +46,24 @@ export function AddUserDialog({ open, onOpenChange }: AddUserDialogProps) {
 
   const onSubmit = async (values: NewUserFormValues) => {
     setIsSubmitting(true);
+    const formData = new FormData();
+    Object.entries(values).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+
     try {
-        const functions = getFunctions();
-        const createUserFn = httpsCallable(functions, 'createUser');
-        const result = await createUserFn(values);
+        const result = await createUser(formData);
         
+        if (result.error) {
+            throw new Error(result.error);
+        }
+
         toast({
             title: 'User Created',
             description: `User ${values.name} has been created successfully.`,
         });
+        
+        onUserAdded(result.user as UserProfile);
         form.reset();
         onOpenChange(false);
     } catch (e: any) {

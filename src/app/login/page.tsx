@@ -9,9 +9,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { useAuth } from '@/firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
+import { signIn } from 'next-auth/react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -19,7 +18,6 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const router = useRouter();
-  const auth = useAuth();
   const { toast } = useToast();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -28,14 +26,19 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      // Step 1: Sign in with Firebase Authentication. onAuthStateChanged will handle the rest.
-      await signInWithEmailAndPassword(auth, email, password);
-      
-      toast({ title: 'Login successful! Redirecting...' });
+      const result = await signIn('credentials', {
+        redirect: false,
+        email,
+        password,
+      });
 
-      // The redirection will be handled by the auth state listener in the provider
-      // or a dedicated layout component. For now, we can push directly.
+      if (result?.error) {
+        throw new Error(result.error);
+      }
+
+      toast({ title: 'Login successful! Redirecting...' });
       router.push('/admin');
+      router.refresh(); // Refresh the page to update session state
 
     } catch (err: any) {
       setError(err.message || 'An error occurred during login.');
@@ -63,6 +66,7 @@ export default function LoginPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       disabled={isLoggingIn}
+                      required
                     />
                 </div>
                 <div className="space-y-2">
@@ -73,6 +77,7 @@ export default function LoginPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       disabled={isLoggingIn}
+                      required
                     />
                 </div>
                 {error && <p className="text-red-500 text-sm">{error}</p>}

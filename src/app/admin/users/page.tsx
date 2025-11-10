@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
-import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { collection } from 'firebase/firestore';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, doc, deleteDoc } from 'firebase/firestore';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -13,7 +13,8 @@ import { AddUserDialog } from './_components/add-user-dialog';
 import { EditUserDialog } from './_components/edit-user-dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { getFunctions, httpsCallable } from 'firebase/functions';
+import { useSession } from 'next-auth/react';
+import { deleteUser } from '../actions/users';
 
 export interface UserProfile {
     id: string;
@@ -26,7 +27,7 @@ export interface UserProfile {
 
 export default function UserManagementPage() {
   const firestore = useFirestore();
-  const { user: currentUser } = useUser();
+  const { data: session } = useSession();
   const { toast } = useToast();
 
   const [isAddUserOpen, setAddUserOpen] = useState(false);
@@ -39,19 +40,29 @@ export default function UserManagementPage() {
     return collection(firestore, 'users');
   }, [firestore]);
 
-  const { data: users, isLoading, error } = useCollection<UserProfile>(usersCollectionRef);
+  // We need to refetch data after mutations
+  const { data: users, isLoading, error, setData: setUsers } = useCollection<UserProfile>(usersCollectionRef);
 
   const handleEditClick = (user: UserProfile) => {
     setSelectedUser(user);
     setEditUserOpen(true);
   };
+  
+  const onUserAdded = (newUser: UserProfile) => {
+    setUsers(currentUsers => [...(currentUsers || []), newUser]);
+  }
+  
+  const onUserUpdated = (updatedUser: UserProfile) => {
+    setUsers(currentUsers => (currentUsers || []).map(u => u.id === updatedUser.id ? updatedUser : u));
+  }
+
 
   const handleDelete = async (userId: string) => {
+    if (!firestore) return;
     setIsDeleting(userId);
     try {
-        const functions = getFunctions();
-        const deleteUserFn = httpsCallable(functions, 'deleteUser');
-        await deleteUserFn({ uid: userId });
+        await deleteUser(userId);
+        setUsers(currentUsers => (currentUsers || []).filter(u => u.id !== userId));
         toast({
             title: 'User Deleted',
             description: 'The user has been successfully deleted.',
@@ -71,8 +82,8 @@ export default function UserManagementPage() {
 
   return (
      <>
-        <AddUserDialog open={isAddUserOpen} onOpenChange={setAddUserOpen} />
-        {selectedUser && <EditUserDialog user={selectedUser} open={isEditUserOpen} onOpenChange={setEditUserOpen} />}
+        <AddUserDialog open={isAddUserOpen} onOpenChange={setAddUserOpen} onUserAdded={onUserAdded} />
+        {selectedUser && <EditUserDialog user={selectedUser} open={isEditUserOpen} onOpenChange={setEditUserOpen} onUserUpdated={onUserUpdated} />}
         <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
@@ -130,7 +141,7 @@ export default function UserManagementPage() {
                                 </Button>
                                 <AlertDialog>
                                     <AlertDialogTrigger asChild>
-                                        <Button variant="destructive" size="icon" disabled={isDeleting === user.id || user.id === currentUser?.uid}>
+                                        <Button variant="destructive" size="icon" disabled={isDeleting === user.id || user.id === session?.user?.id}>
                                             <Trash2 className="h-4 w-4" />
                                             <span className="sr-only">Delete User</span>
                                         </Button>
@@ -139,7 +150,7 @@ export default function UserManagementPage() {
                                         <AlertDialogHeader>
                                             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                                             <AlertDialogDescription>
-                                                This action cannot be undone. This will permanently delete the user account and all associated data.
+                                                This action cannot be undone. This will permanently delete the user account.
                                             </AlertDialogDescription>
                                         </AlertDialogHeader>
                                         <AlertDialogFooter>
