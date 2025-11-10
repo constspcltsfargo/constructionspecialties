@@ -44,14 +44,14 @@ export function Gallery() {
              {duplicatedImages.map((image, index) => {
                 if (!image) return null;
                 return (
-                   <li key={`${image.id}-${index}`} className="group relative overflow-hidden rounded-lg">
+                   <li key={`${image.id}-${index}`} className="relative h-64 w-96 flex-shrink-0">
                        <Image
                         src={image.imageUrl}
                         alt={image.description}
-                        width={600}
-                        height={400}
-                        className="object-cover aspect-[4/3] w-full max-w-sm"
+                        fill
+                        className="object-cover rounded-lg"
                         data-ai-hint={image.imageHint}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                   </li>
                 );
@@ -61,14 +61,14 @@ export function Gallery() {
              {duplicatedImages.map((image, index) => {
                 if (!image) return null;
                 return (
-                   <li key={`${image.id}-duplicate-${index}`} className="group relative overflow-hidden rounded-lg">
+                   <li key={`${image.id}-duplicate-${index}`} className="relative h-64 w-96 flex-shrink-0">
                        <Image
                         src={image.imageUrl}
                         alt={image.description}
-                        width={600}
-                        height={400}
-                        className="object-cover aspect-[4/3] w-full max-w-sm"
+                        fill
+                        className="object-cover rounded-lg"
                         data-ai-hint={image.imageHint}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                   </li>
                 );
@@ -85,4 +85,3 @@ export function Gallery() {
     </section>
   );
 }
-
