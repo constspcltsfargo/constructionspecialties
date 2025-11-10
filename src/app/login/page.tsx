@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useFirestore } from '@/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ensureAdminUser } from '@/app/admin/users/actions';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -16,6 +17,12 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const firestore = useFirestore();
   const router = useRouter();
+
+  useEffect(() => {
+    // This will run when the component mounts on the client-side
+    // to ensure a default admin exists.
+    ensureAdminUser().catch(console.error);
+  }, []);
 
   const handleLogin = async () => {
     setError(null);
@@ -44,9 +51,6 @@ export default function LoginPage() {
         return;
       }
       
-      // In a real app, you would set a session cookie here.
-      // For now, we'll just redirect. The middleware will need to be updated.
-      // We will set a simple cookie to simulate a session for the middleware.
       const userId = userDoc.id;
       document.cookie = `mockSession=${JSON.stringify({ uid: userId, email: userData.email, role: userData.role })}; path=/; max-age=3600`;
 
@@ -65,6 +69,8 @@ export default function LoginPage() {
           <CardTitle>Login</CardTitle>
           <CardDescription>
             Enter your credentials to access the admin dashboard.
+            <br />
+            Use <b>admin@example.com</b> and <b>password</b> for the first login.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

@@ -2,7 +2,7 @@
 'use server';
 
 import { getAuth } from 'firebase-admin/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, collection, getDocs, limit, query } from 'firebase/firestore';
 import { initializeFirebaseAdmin } from '@/firebase/admin-init';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
@@ -43,6 +43,7 @@ export async function createUser(userData: NewUser): Promise<{ success: boolean;
       displayName: userData.displayName,
       email: userData.email,
       role: userData.role,
+      password: userData.password, // Storing password for Firestore-based login
     });
     
     revalidatePath('/admin/users');
@@ -52,4 +53,28 @@ export async function createUser(userData: NewUser): Promise<{ success: boolean;
     console.error('Error creating user:', error);
     return { success: false, error: error.message || 'An unknown error occurred.' };
   }
+}
+
+export async function ensureAdminUser(): Promise<{ success: boolean; message: string; }> {
+    try {
+        const { firestore } = initializeFirebaseAdmin();
+        const usersCollection = collection(firestore, 'users');
+        const q = query(usersCollection, limit(1));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            // No users exist, create the default admin
+            await createUser({
+                displayName: 'Admin User',
+                email: 'admin@example.com',
+                password: 'password', // Using an insecure password for prototype
+                role: 'admin',
+            });
+            return { success: true, message: 'Default admin user created.' };
+        }
+        return { success: true, message: 'Users already exist.' };
+    } catch (error: any) {
+        console.error('Error ensuring admin user:', error);
+        return { success: false, message: error.message || 'An unknown error occurred.' };
+    }
 }
