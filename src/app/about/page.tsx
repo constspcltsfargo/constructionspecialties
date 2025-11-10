@@ -25,12 +25,9 @@ const OurStory = () => {
             <div className="container">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <div>
-                        <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Story</h2>
-                        <p className="text-muted-foreground text-lg mb-4">
-                            Founded in 2003, Construction Specialties & Roofing began with a simple mission: to provide homeowners and businesses in Central Florida with reliable, high-quality roofing and construction services. As a local, family-owned business, we understand the importance of trust and integrity.
-                        </p>
+                        <h2 className="text-3xl md:text-4xl font-bold mb-4">Construction Specialties LLC Roofing Professionals</h2>
                         <p className="text-muted-foreground text-lg">
-                            Over the years, we've grown into a leading contractor known for our craftsmanship, attention to detail, and unwavering commitment to customer satisfaction. We treat every project as if it were our own home, ensuring durability and beauty that lasts.
+                            Construction Specialties LLC Roofing Professionals is a trusted and experienced roofing contractor with over 20 years of dedicated service in ND, SD, and MN. Our commitment to quality craftsmanship and customer satisfaction sets us apart. We take pride in offering professional roofing services for commercial, residential, agricultural, and industrial properties. Our expertise includes repairs, maintenance, and retrofits. As a certified Mule Hide installer, we ensure high-quality materials backed by full manufacturer warranty. Our specialization in flat and EPDM (rubber) roofing, metal roofing, sheet metal fabrication, storm damage, and seamless gutters makes us a reliable choice for all roofing needs. At Construction Specialties LLC, we are dedicated to providing free estimates and delivering exceptional results.
                         </p>
                     </div>
                     <div className="relative h-80 lg:h-96 rounded-lg overflow-hidden shadow-lg">
