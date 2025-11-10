@@ -1,10 +1,9 @@
-
 'use client';
 
 import { useState, useRef, ChangeEvent } from 'react';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, addDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
+import { collection } from 'firebase/firestore';
+import { uploadMedia, deleteMedia } from '../actions/media';
 
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -34,16 +33,10 @@ interface Media {
     uploadDate: { toDate: () => Date };
 }
 
-interface UploadProgress {
-    filename: string;
-    progress: number;
-}
-
 export default function MediaPage() {
     const firestore = useFirestore();
     const { toast } = useToast();
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [uploadProgress, setUploadProgress] = useState<UploadProgress[]>([]);
     const [isUploading, setIsUploading] = useState(false);
     const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
 
@@ -64,61 +57,27 @@ export default function MediaPage() {
     const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (files) {
-            handleUpload(Array.from(files));
+            handleUpload(files);
         }
     };
 
-    const handleUpload = async (files: File[]) => {
-        if (!firestore) return;
+    const handleUpload = async (files: FileList) => {
         setIsUploading(true);
-        setUploadProgress(files.map(file => ({ filename: file.name, progress: 0 })));
-
-        const storage = getStorage();
-
-        const uploadPromises = files.map(file => {
-            return new Promise<void>((resolve, reject) => {
-                const storageRef = ref(storage, `uploads/${Date.now()}_${file.name}`);
-                const uploadTask = uploadBytesResumable(storageRef, file);
-
-                uploadTask.on('state_changed',
-                    (snapshot) => {
-                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        setUploadProgress(prev => prev.map(p => 
-                            p.filename === file.name ? { ...p, progress } : p
-                        ));
-                    },
-                    (error) => {
-                        console.error(`Upload failed for ${file.name}:`, error);
-                        reject(error);
-                    },
-                    async () => {
-                        try {
-                            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                            await addDoc(collection(firestore, 'media'), {
-                                filename: file.name,
-                                url: downloadURL,
-                                mimeType: file.type,
-                                size: file.size,
-                                uploadDate: serverTimestamp(),
-                            });
-                            resolve();
-                        } catch (dbError) {
-                            console.error(`Firestore save failed for ${file.name}:`, dbError);
-                            reject(dbError);
-                        }
-                    }
-                );
-            });
+        const formData = new FormData();
+        Array.from(files).forEach(file => {
+            formData.append('files', file);
         });
 
         try {
-            await Promise.all(uploadPromises);
-            toast({ title: "Upload complete", description: `${files.length} file(s) uploaded successfully.` });
-        } catch (error) {
-            toast({ variant: 'destructive', title: "Upload failed", description: "Something went wrong during upload." });
+            const result = await uploadMedia(formData);
+            if (result.error) {
+                throw new Error(result.error);
+            }
+            toast({ title: "Upload complete", description: `${result.count} file(s) uploaded successfully.` });
+        } catch (error: any) {
+            toast({ variant: 'destructive', title: "Upload failed", description: error.message || "Something went wrong during upload." });
         } finally {
             setIsUploading(false);
-            setUploadProgress([]);
             if (fileInputRef.current) {
                 fileInputRef.current.value = '';
             }
@@ -126,25 +85,15 @@ export default function MediaPage() {
     };
 
     const handleDelete = async (mediaItem: Media) => {
-        if (!firestore) return;
-        const storage = getStorage();
-        const fileRef = ref(storage, mediaItem.url);
-
         try {
-            // Delete from Storage
-            await deleteObject(fileRef);
-            // Delete from Firestore
-            await deleteDoc(doc(firestore, 'media', mediaItem.id));
+            const result = await deleteMedia(mediaItem.id, mediaItem.url);
+            if (result.error) {
+                throw new Error(result.error);
+            }
             toast({ title: 'Media deleted' });
         } catch (error: any) {
             console.error("Deletion error:", error);
-            // Handle cases where file might not exist in storage but doc exists in Firestore
-            if (error.code === 'storage/object-not-found') {
-                 await deleteDoc(doc(firestore, 'media', mediaItem.id));
-                 toast({ title: 'Media metadata deleted', description: 'File was not found in storage.'});
-            } else {
-                toast({ variant: 'destructive', title: 'Deletion failed', description: error.message });
-            }
+            toast({ variant: 'destructive', title: 'Deletion failed', description: error.message });
         }
     };
 
@@ -158,8 +107,7 @@ export default function MediaPage() {
                         <CardDescription>Upload, view, and manage your image assets.</CardDescription>
                     </div>
                     <Button onClick={() => fileInputRef.current?.click()} disabled={isUploading}>
-                        <Upload className="mr-2 h-4 w-4" />
-                        Upload Image(s)
+                        {isUploading ? <><span className="animate-spin mr-2">...</span> Uploading...</> : <><Upload className="mr-2 h-4 w-4" /> Upload Image(s)</>}
                     </Button>
                     <input
                         type="file"
@@ -168,21 +116,11 @@ export default function MediaPage() {
                         multiple
                         className="hidden"
                         accept="image/*"
+                        disabled={isUploading}
                     />
                 </div>
             </CardHeader>
             <CardContent>
-                {isUploading && (
-                    <div className="space-y-4 mb-6">
-                        <h3 className="font-semibold">Uploading...</h3>
-                        {uploadProgress.map(p => (
-                            <div key={p.filename} className="space-y-1">
-                                <p className="text-sm text-muted-foreground truncate">{p.filename}</p>
-                                <Progress value={p.progress} />
-                            </div>
-                        ))}
-                    </div>
-                )}
                 {isLoading && (
                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                         {[...Array(6)].map((_, i) => <Skeleton key={i} className="aspect-square w-full" />)}
