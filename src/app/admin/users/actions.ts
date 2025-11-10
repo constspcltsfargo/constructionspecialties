@@ -17,9 +17,9 @@ type NewUser = z.infer<typeof newUserSchema>;
 
 export async function ensureAdminUser(): Promise<{ success: boolean; created?: boolean, message?: string }> {
   try {
-    initializeFirebaseAdmin();
-    const firestore = admin.firestore();
-    const auth = admin.auth();
+    const app = initializeFirebaseAdmin();
+    const firestore = admin.firestore(app);
+    const auth = admin.auth(app);
 
     const usersCollection = firestore.collection('users');
     const q = usersCollection.limit(1);
@@ -64,9 +64,9 @@ export async function ensureAdminUser(): Promise<{ success: boolean; created?: b
 
 export async function createUser(userData: NewUser): Promise<{ success: boolean; error?: string }> {
   try {
-    initializeFirebaseAdmin();
-    const auth = admin.auth();
-    const firestore = admin.firestore();
+    const app = initializeFirebaseAdmin();
+    const auth = admin.auth(app);
+    const firestore = admin.firestore(app);
 
     // Create user in Firebase Auth
     const userRecord = await auth.createUser({

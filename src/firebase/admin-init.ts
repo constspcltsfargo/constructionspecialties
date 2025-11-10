@@ -1,17 +1,11 @@
 
 import * as admin from 'firebase-admin';
 
-interface FirebaseAdminServices {
-  app: admin.app.App;
-}
-
 // This function initializes Firebase Admin on the server-side.
 // It's designed to be called within Server Actions or Route Handlers.
-export function initializeFirebaseAdmin(): FirebaseAdminServices {
-    if (admin.apps.length > 0) {
-        return {
-            app: admin.app(),
-        };
+export function initializeFirebaseAdmin(): admin.app.App {
+    if (admin.apps.length > 0 && admin.apps[0]) {
+        return admin.apps[0];
     }
 
     // In a managed environment like App Hosting, the SDK is automatically
@@ -19,9 +13,7 @@ export function initializeFirebaseAdmin(): FirebaseAdminServices {
     // We will attempt that first.
     try {
         const app = admin.initializeApp();
-        return {
-            app: app,
-        };
+        return app;
     } catch (e) {
         console.warn("Automatic Firebase Admin initialization failed, attempting manual init with service account key.", e);
     }
@@ -40,9 +32,7 @@ export function initializeFirebaseAdmin(): FirebaseAdminServices {
         const app = admin.initializeApp({
             credential: admin.credential.cert(serviceAccount),
         });
-        return {
-            app: app,
-        };
+        return app;
     } catch (e: any) {
         console.error("Failed to parse or use FIREBASE_SERVICE_ACCOUNT_KEY. Ensure it's a valid Base64-encoded JSON.", e);
         // Throw a more specific error to aid debugging.
