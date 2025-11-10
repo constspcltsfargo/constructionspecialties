@@ -9,8 +9,9 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import * as firestore from 'firebase/firestore';
-import { initializeFirebase } from '@/firebase/server-init';
+import { useAuth } from '@/firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useToast } from '@/hooks/use-toast';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -18,48 +19,49 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const router = useRouter();
+  const auth = useAuth();
+  const { toast } = useToast();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoggingIn(true);
     setError(null);
 
-    // 1. Check for pre-coded admin credentials
+    // First, check for the special pre-coded admin credentials
     if (email === 'admin@example.com' && password === 'password') {
-      const adminUser = { uid: 'pre-coded-admin', email: 'admin@example.com', role: 'admin' };
-      document.cookie = `mockSession=${JSON.stringify(adminUser)}; path=/; max-age=3600`;
-      router.push('/admin');
-      return;
+        try {
+            // Attempt to sign in. This will create the user if they don't exist.
+            await signInWithEmailAndPassword(auth, email, password);
+        } catch (authError: any) {
+            // If the user doesn't exist, create them.
+            if (authError.code === 'auth/user-not-found') {
+                try {
+                    await auth.createUserWithEmailAndPassword(auth, email, password);
+                } catch (creationError: any) {
+                    setError(creationError.message);
+                    setIsLoggingIn(false);
+                    return;
+                }
+            } else {
+                setError(authError.message);
+                setIsLoggingIn(false);
+                return;
+            }
+        }
+        // On success, Firebase's own auth state listener will handle the redirect.
+        toast({ title: 'Admin login successful!' });
+        router.push('/admin');
+        return;
     }
 
-    // 2. If not admin, check Firestore for a matching user
+
+    // If not the admin, proceed with standard email/password sign-in
     try {
-      const { firestore: db } = initializeFirebase();
-      const usersRef = firestore.collection(db, 'users');
-      const q = firestore.query(usersRef, firestore.where('email', '==', email));
-      const querySnapshot = await firestore.getDocs(q);
-
-      if (querySnapshot.empty) {
-        setError('No user found with this email.');
-        setIsLoggingIn(false);
-        return;
-      }
-
-      const userDoc = querySnapshot.docs[0];
-      const userData = userDoc.data();
-
-      if (userData.password !== password) {
-        setError('Incorrect password.');
-        setIsLoggingIn(false);
-        return;
-      }
-      
-      const user = { uid: userDoc.id, email: userData.email, role: userData.role || 'user' };
-      document.cookie = `mockSession=${JSON.stringify(user)}; path=/; max-age=3600`;
-      router.push('/admin');
-
+      await signInWithEmailAndPassword(auth, email, password);
+      // onAuthStateChanged will handle the redirect
+       toast({ title: 'Login successful!' });
+       router.push('/admin');
     } catch (err: any) {
-      console.error('Firestore login error:', err);
       setError(err.message || 'An error occurred during login.');
       setIsLoggingIn(false);
     }
@@ -116,3 +118,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

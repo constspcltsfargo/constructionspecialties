@@ -19,7 +19,8 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-
+import { useAuth } from '@/firebase';
+import { signOut } from 'firebase/auth';
 
 export default function AdminLayout({
   children,
@@ -28,11 +29,17 @@ export default function AdminLayout({
 }) {
     const pathname = usePathname();
     const router = useRouter();
+    const auth = useAuth();
 
     const handleSignOut = async () => {
-      // Remove the mock session cookie and redirect to login
-      document.cookie = 'mockSession=; path=/; max-age=-1';
-      router.push('/login');
+      try {
+        await signOut(auth);
+        // Clear session cookie
+        document.cookie = 'session=; path=/; max-age=-1';
+        router.push('/login');
+      } catch (error) {
+        console.error("Sign out error", error);
+      }
     };
 
   return (

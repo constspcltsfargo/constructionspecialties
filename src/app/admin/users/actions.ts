@@ -17,25 +17,30 @@ type NewUser = z.infer<typeof newUserSchema>;
 
 export async function createUser(userData: NewUser): Promise<{ success: boolean; error?: string }> {
   try {
-    const app = initializeFirebaseAdmin();
+    const app = await initializeFirebaseAdmin();
+    const auth = admin.auth(app);
     const firestore = admin.firestore(app);
 
-    // Create user profile in Firestore. We will use the email as the document ID for simplicity.
-    const userRef = firestore.collection('users').doc(userData.email);
+    // Create user in Firebase Authentication
+    const userRecord = await auth.createUser({
+        email: userData.email,
+        password: userData.password,
+        displayName: userData.displayName,
+    });
 
-    // Check if user already exists
-    const userDoc = await userRef.get();
-    if (userDoc.exists) {
-        return { success: false, error: "A user with this email already exists." };
-    }
-
+    // Create user profile in Firestore, using the UID from Auth as the document ID
+    const userRef = firestore.collection('users').doc(userRecord.uid);
     await userRef.set({
-      name: userData.displayName, // Match the updated schema
-      username: userData.email, // Use email as username for admin-created users for simplicity
+      name: userData.displayName,
+      username: userData.email, // Using email as username for simplicity
       email: userData.email,
       role: userData.role,
-      password: userData.password, // Storing password for Firestore-based login
     });
+
+    // If admin, set custom claim
+    if (userData.role === 'admin') {
+        await auth.setCustomUserClaims(userRecord.uid, { admin: true });
+    }
     
     revalidatePath('/admin/users');
 
