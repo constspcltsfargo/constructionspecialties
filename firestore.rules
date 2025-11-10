@@ -45,6 +45,7 @@ service cloud.firestore {
     // Rules for estimate requests
     match /estimateRequests/{requestId} {
         allow read, write: if isAdmin();
+        allow create: if request.auth == null || request.auth != null;
     }
   }
 }
