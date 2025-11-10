@@ -37,23 +37,42 @@ export default function LoginPage() {
         ? await createUserWithEmailAndPassword(auth, email, password)
         : await signInWithEmailAndPassword(auth, email, password);
 
+      const user = userCredential.user;
+
       if (isSignUp) {
-        const user = userCredential.user;
+        // Create user profile in 'users' collection
+        const userProfileRef = doc(firestore, 'users', user.uid);
+        const userProfileData = {
+          displayName: user.email?.split('@')[0] || 'New User',
+          email: user.email,
+          role: 'user', // Default role
+        };
+        setDoc(userProfileRef, userProfileData, { merge: true }).catch((serverError) => {
+            const permissionError = new FirestorePermissionError({
+                path: userProfileRef.path,
+                operation: 'create',
+                requestResourceData: userProfileData,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        });
+
+        // Attempt to create first admin role
         const adminRoleRef = doc(firestore, 'roles_admin', user.uid);
         const roleData = { role: 'admin' };
         
-        // Non-blocking write with custom error handling
         setDoc(adminRoleRef, roleData)
-          .catch((serverError) => {
-            const permissionError = new FirestorePermissionError({
-              path: adminRoleRef.path,
-              operation: 'create',
-              requestResourceData: roleData,
+            .then(() => {
+                // If successful, update the user profile role to admin
+                setDoc(userProfileRef, { role: 'admin' }, { merge: true });
+            })
+            .catch((serverError) => {
+                const permissionError = new FirestorePermissionError({
+                    path: adminRoleRef.path,
+                    operation: 'create',
+                    requestResourceData: roleData,
+                });
+                errorEmitter.emit('permission-error', permissionError);
             });
-            errorEmitter.emit('permission-error', permissionError);
-            // We can also set a user-facing error if needed, but the listener will throw for dev
-            setError('Failed to set admin role due to permissions.');
-          });
       }
       
       // Optimistically navigate
