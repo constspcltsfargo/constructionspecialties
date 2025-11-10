@@ -4,14 +4,21 @@
 import { useState } from 'react';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy, doc, updateDoc } from 'firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Mail, Phone, MapPin } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -28,6 +35,7 @@ interface EstimateRequest {
     summary: string;
     status: 'new' | 'contacted' | 'closed';
     nearbyBranches?: string[];
+    howDidYouHear?: string;
 }
 
 const statusColors = {
@@ -40,6 +48,7 @@ export default function EstimateRequestsPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [selectedRequest, setSelectedRequest] = useState<EstimateRequest | null>(null);
   
   const requestsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -70,9 +79,11 @@ export default function EstimateRequestsPage() {
   }
 
   return (
+    <>
     <Card>
       <CardHeader>
         <CardTitle>Estimate Requests</CardTitle>
+        <CardDescription>Click on a row to view the full request details.</CardDescription>
       </CardHeader>
       <CardContent>
         {isLoading && (
@@ -91,13 +102,12 @@ export default function EstimateRequestsPage() {
                 <TableHead>Date</TableHead>
                 <TableHead>Contact</TableHead>
                 <TableHead>Summary</TableHead>
-                <TableHead>AI Suggestions</TableHead>
                 <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {requests.map(req => (
-                <TableRow key={req.id}>
+                <TableRow key={req.id} onClick={() => setSelectedRequest(req)} className="cursor-pointer">
                   <TableCell className="whitespace-nowrap">
                     {req.submittedAt ? format(req.submittedAt.toDate(), 'MMM d, yyyy') : 'N/A'}
                   </TableCell>
@@ -106,21 +116,12 @@ export default function EstimateRequestsPage() {
                     <div className="text-sm text-muted-foreground">{req.email}</div>
                     <div className="text-sm text-muted-foreground">{req.phone} ({req.zip})</div>
                   </TableCell>
-                  <TableCell>
-                    <p className="max-w-xs truncate" title={req.summary}>{req.summary}</p>
-                    <p className="text-sm text-muted-foreground max-w-xs truncate" title={req.project}>
-                        Project: {req.project}
+                   <TableCell>
+                    <p className="max-w-xs truncate" title={req.project}>
+                        {req.project}
                     </p>
                   </TableCell>
-                  <TableCell>
-                    <div><Badge variant="secondary">{req.suggestedTeam}</Badge></div>
-                    {req.nearbyBranches && req.nearbyBranches.length > 0 && (
-                        <div className="text-xs text-muted-foreground mt-2">
-                            Branches: {req.nearbyBranches.join(', ')}
-                        </div>
-                    )}
-                  </TableCell>
-                  <TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
                      <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button
@@ -161,5 +162,61 @@ export default function EstimateRequestsPage() {
         )}
       </CardContent>
     </Card>
+
+    <Dialog open={!!selectedRequest} onOpenChange={(isOpen) => !isOpen && setSelectedRequest(null)}>
+        <DialogContent className="sm:max-w-lg">
+          {selectedRequest && (
+            <>
+              <DialogHeader>
+                <DialogTitle>Estimate Request from {selectedRequest.name}</DialogTitle>
+                <DialogDescription>
+                  Submitted on {selectedRequest.submittedAt ? format(selectedRequest.submittedAt.toDate(), 'MMMM d, yyyy, h:mm a') : 'N/A'}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="space-y-4 text-sm">
+                    <div className="flex items-start gap-3">
+                        <Mail className="h-4 w-4 text-muted-foreground mt-0.5"/>
+                        <div className="flex-1">
+                            <p className="font-semibold">Email</p>
+                            <p className="text-muted-foreground">{selectedRequest.email}</p>
+                        </div>
+                    </div>
+                     <div className="flex items-start gap-3">
+                        <Phone className="h-4 w-4 text-muted-foreground mt-0.5"/>
+                         <div className="flex-1">
+                            <p className="font-semibold">Phone</p>
+                            <p className="text-muted-foreground">{selectedRequest.phone}</p>
+                        </div>
+                    </div>
+                     <div className="flex items-start gap-3">
+                        <MapPin className="h-4 w-4 text-muted-foreground mt-0.5"/>
+                         <div className="flex-1">
+                            <p className="font-semibold">Zip Code</p>
+                            <p className="text-muted-foreground">{selectedRequest.zip}</p>
+                        </div>
+                    </div>
+                    {selectedRequest.howDidYouHear && (
+                         <div className="flex items-start gap-3">
+                            <div className="w-4 h-4" />
+                            <div className="flex-1">
+                                <p className="font-semibold">How did you hear about us?</p>
+                                <p className="text-muted-foreground">{selectedRequest.howDidYouHear}</p>
+                            </div>
+                        </div>
+                    )}
+                </div>
+                <div>
+                  <h4 className="font-semibold mb-2">Project Details</h4>
+                  <p className="text-sm text-muted-foreground bg-secondary p-3 rounded-md max-h-60 overflow-y-auto">
+                    {selectedRequest.project}
+                  </p>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+    </Dialog>
+    </>
   );
 }
