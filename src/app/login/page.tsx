@@ -10,7 +10,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
-import { signIn } from 'next-auth/react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -25,25 +24,20 @@ export default function LoginPage() {
     setIsLoggingIn(true);
     setError(null);
 
-    try {
-      const result = await signIn('credentials', {
-        redirect: false,
-        email,
-        password,
-      });
+    // Placeholder for new login logic
+    console.log("Logging in with:", email, password);
+    // You would typically call a server action here
+    
+    // Simulate API call
+    setTimeout(() => {
+        // Mock success
+        toast({ title: 'Login successful! Redirecting...' });
+        router.push('/admin');
 
-      if (result?.error) {
-        throw new Error(result.error);
-      }
-
-      toast({ title: 'Login successful! Redirecting...' });
-      router.push('/admin');
-      router.refresh(); // Refresh the page to update session state
-
-    } catch (err: any) {
-      setError(err.message || 'An error occurred during login.');
-      setIsLoggingIn(false);
-    } 
+        // Mock error
+        // setError('Invalid email or password.');
+        // setIsLoggingIn(false);
+    }, 1000);
   };
 
   return (
