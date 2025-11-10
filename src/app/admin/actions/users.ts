@@ -2,11 +2,11 @@
 'use server';
 
 import { initializeFirebase } from "@/firebase/server-init";
-import { collection, query, where, getDocs, addDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, addDoc, doc, updateDoc, deleteDoc, setDoc } from "firebase/firestore";
 import * as bcrypt from 'bcryptjs';
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { setRoleClaim } from "./claims";
+import { setRoleClaim } from "../../actions/claims";
 import { initializeFirebaseAdmin } from "@/firebase/admin-init";
 
 const UserSchema = z.object({
@@ -114,8 +114,8 @@ export async function updateUser(formData: FormData) {
         
         await updateDoc(userRef, updateData);
         
-        const updatedDoc = await getDocs(query(collection(firestore, 'users'), where('__name__', '==', id)));
-        const user = {id: updatedDoc.docs[0].id, ...updatedDoc.docs[0].data()}
+        const updatedDocSnapshot = await getDoc(userRef);
+        const user = {id: updatedDocSnapshot.id, ...updatedDocSnapshot.data()}
 
         revalidatePath('/admin/users');
         return { user };
