@@ -31,8 +31,8 @@ service cloud.firestore {
     
     // Rules for 'media' collection
     match /media/{mediaId} {
-      // Any authenticated user can read media files (for the gallery and admin UI).
-      allow get, list: if request.auth != null;
+      // Publicly readable for the gallery.
+      allow get, list: if true;
       // Only admins can create, update, or delete media files.
       allow create, update, delete: if isAdmin();
     }
