@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useRef, ChangeEvent, useMemo } from 'react';
+import { useState, useRef, ChangeEvent, useMemo, useEffect } from 'react';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { uploadMedia, deleteMedia } from '../actions/media';
@@ -55,6 +55,7 @@ export default function MediaPage() {
     const [selectedFolder, setSelectedFolder] = useState<string>(UNCATEGORIZED_VALUE);
     const [isCreatingFolder, setIsCreatingFolder] = useState(false);
     const [newFolderName, setNewFolderName] = useState('');
+    const [allFolders, setAllFolders] = useState<string[]>([]);
 
     const mediaCollectionRef = useMemoFirebase(() => {
         if (!firestore) return null;
@@ -63,8 +64,8 @@ export default function MediaPage() {
 
     const { data: media, isLoading, error } = useCollection<Media>(mediaCollectionRef);
 
-    const { folders, groupedMedia } = useMemo(() => {
-        if (!media) return { folders: [], groupedMedia: {} };
+    const { dbFolders, groupedMedia } = useMemo(() => {
+        if (!media) return { dbFolders: [], groupedMedia: {} };
         const folderSet = new Set<string>();
         const groups: { [key: string]: Media[] } = { [UNCATEGORIZED_VALUE]: [] };
 
@@ -81,10 +82,17 @@ export default function MediaPage() {
         });
         
         return {
-            folders: Array.from(folderSet).sort(),
+            dbFolders: Array.from(folderSet).sort(),
             groupedMedia: groups
         };
     }, [media]);
+
+    useEffect(() => {
+      // Combine folders from DB and newly created folders
+      const combined = new Set([...dbFolders, ...allFolders]);
+      setAllFolders(Array.from(combined).sort());
+    }, [dbFolders]);
+
 
     const handleCopyUrl = (url: string) => {
         navigator.clipboard.writeText(url);
@@ -142,11 +150,12 @@ export default function MediaPage() {
 
     const handleCreateFolder = () => {
         const trimmedName = newFolderName.trim();
-        if (trimmedName && !folders.includes(trimmedName) && trimmedName !== UNCATEGORIZED_VALUE) {
+        if (trimmedName && !allFolders.includes(trimmedName) && trimmedName !== UNCATEGORIZED_VALUE) {
+            setAllFolders(prev => [...prev, trimmedName].sort());
             setSelectedFolder(trimmedName);
             setIsCreatingFolder(false);
             setNewFolderName('');
-        } else if (folders.includes(trimmedName)) {
+        } else if (allFolders.includes(trimmedName)) {
             toast({ variant: 'destructive', title: 'Folder exists', description: 'A folder with this name already exists.' });
         }
     }
@@ -181,7 +190,7 @@ export default function MediaPage() {
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value={UNCATEGORIZED_VALUE}>Uncategorized</SelectItem>
-                                            {folders.map(folder => (
+                                            {allFolders.map(folder => (
                                                 <SelectItem key={folder} value={folder}>{folder}</SelectItem>
                                             ))}
                                         </SelectContent>
@@ -216,8 +225,8 @@ export default function MediaPage() {
                 )}
                 {error && <p className="text-destructive text-center">Error: {error.message}</p>}
                 
-                {media && media.length > 0 && (
-                     <Accordion type="multiple" defaultValue={["__uncategorized__", ...folders]} className="w-full">
+                {media && (groupedMedia[UNCATEGORIZED_VALUE] || allFolders.length > 0) && (
+                     <Accordion type="multiple" defaultValue={["__uncategorized__", ...allFolders]} className="w-full">
                         {Object.entries(groupedMedia).map(([folderName, items]) => {
                             if (items.length === 0) return null;
                             const displayFolderName = folderName === UNCATEGORIZED_VALUE ? 'Uncategorized' : folderName;
@@ -274,7 +283,7 @@ export default function MediaPage() {
                         })}
                      </Accordion>
                 )}
-                {media && media.length === 0 && !isLoading && !isUploading && (
+                {media && media.length === 0 && !isLoading && !isUploading && allFolders.length === 0 && (
                      <div className="text-center py-12 border-2 border-dashed rounded-lg">
                         <h3 className="text-lg font-semibold">No media found</h3>
                         <p className="text-muted-foreground mt-2">Click "Upload" to get started.</p>
@@ -292,5 +301,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
+    
 
     
