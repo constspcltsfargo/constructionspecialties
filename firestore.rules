@@ -3,8 +3,64 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+  
+    // Helper functions
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      return request.auth.token.role == 'admin';
+    }
+
+    // Rules for 'users' collection
+    match /users/{userId} {
+      // Admins can read/write any user profile
+      // Users can only read/write their own profile
+      allow read, write: if isAdmin() || isOwner(userId);
+    }
+    
+    // Rules for 'pages' collection
+    match /pages/{pageId} {
+      // Anyone can read pages
+      allow read: if true;
+      // Only admins can create, update, or delete pages
+      allow write: if isAdmin();
+    }
+    
+    // Rules for 'pageElements' subcollection
+    match /pages/{pageId}/pageElements/{elementId} {
+      // Anyone can read page elements
+      allow read: if true;
+      // Only admins can write to page elements
+      allow write: if isAdmin();
+    }
+    
+    // Rules for 'media' collection
+    match /media/{mediaId} {
+      // Anyone can read media files (for the gallery)
+      allow get, list: if true;
+      // Only admins can create, update, or delete media files
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // Rules for 'folders' collection
+    match /folders/{folderId} {
+      // Logged-in users (likely admins in the UI) can read folder lists
+      allow read: if request.auth != null;
+       // Only admins can create, update, or delete media files
+      allow write: if isAdmin();
+    }
+    
+    // Rules for 'estimateRequests' collection
+    match /estimateRequests/{requestId} {
+      // Only admins can read or write estimate requests
+      allow read, write: if isAdmin();
+    }
+    
+    // Default deny all other paths
     match /{document=**} {
-      allow read, write: if true;
+      allow read, write: if false;
     }
   }
 }
