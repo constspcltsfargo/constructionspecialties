@@ -28,33 +28,19 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      // Step 1: Sign in with Firebase Authentication
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      // Step 1: Sign in with Firebase Authentication. onAuthStateChanged will handle the rest.
+      await signInWithEmailAndPassword(auth, email, password);
       
-      // Step 2: Get the ID token from the user
-      const idToken = await userCredential.user.getIdToken();
+      toast({ title: 'Login successful! Redirecting...' });
 
-      // Step 3: Send the ID token to the session creation API route
-      const response = await fetch('/api/auth/session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create session.');
-      }
-      
-      toast({ title: 'Login successful!' });
-
-      // Step 4: Redirect to the admin dashboard
+      // The redirection will be handled by the auth state listener in the provider
+      // or a dedicated layout component. For now, we can push directly.
       router.push('/admin');
 
     } catch (err: any) {
       setError(err.message || 'An error occurred during login.');
       setIsLoggingIn(false);
     } 
-    // No finally block to set isLoggingIn to false, because on success, we navigate away.
   };
 
   return (

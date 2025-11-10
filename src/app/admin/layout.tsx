@@ -13,14 +13,13 @@ import {
   SidebarInset,
   SidebarFooter,
 } from '@/components/ui/sidebar';
-import { Home, Users, FileText, LayoutTemplate, ChevronDown, Mailbox, Image as ImageIcon, LogOut } from 'lucide-react';
+import { Home, Users, FileText, Mailbox, ImageIcon, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { useAuth } from '@/firebase';
+import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
+import { useEffect } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function AdminLayout({
   children,
@@ -30,17 +29,44 @@ export default function AdminLayout({
     const pathname = usePathname();
     const router = useRouter();
     const auth = useAuth();
+    const { user, isUserLoading } = useUser();
+
+    useEffect(() => {
+        // If loading is finished and there's no user, redirect to login
+        if (!isUserLoading && !user) {
+            router.push('/login');
+        }
+    }, [isUserLoading, user, router]);
+
 
     const handleSignOut = async () => {
       try {
-        await signOut(auth);
-        // Clear session cookie
-        document.cookie = 'session=; path=/; max-age=-1';
+        if (auth) {
+            await signOut(auth);
+        }
+        // Redirecting to login will be handled by the effect hook above
         router.push('/login');
       } catch (error) {
         console.error("Sign out error", error);
       }
     };
+
+  if (isUserLoading || !user) {
+    return (
+        <div className="flex items-center justify-center h-screen">
+            <div className="space-y-4 text-center">
+                <p className="text-muted-foreground">Authenticating...</p>
+                 <div className="flex items-center justify-center h-screen">
+                    <div className="relative">
+                        <div className="h-24 w-24 rounded-full border-t-8 border-b-8 border-gray-200"></div>
+                        <div className="absolute top-0 left-0 h-24 w-24 rounded-full border-t-8 border-b-8 border-primary animate-spin">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+  }
 
   return (
     <SidebarProvider>
