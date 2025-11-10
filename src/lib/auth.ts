@@ -1,3 +1,4 @@
+
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { initializeFirebase } from "@/firebase/server-init";
@@ -24,7 +25,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
-          throw new Error("No user found with this email.");
+          // Instead of throwing, return null to indicate failure
+          console.error("No user found with this email.");
+          return null;
         }
 
         const userDoc = querySnapshot.docs[0];
@@ -36,9 +39,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         );
 
         if (!passwordsMatch) {
-          throw new Error("Incorrect password.");
+          // Instead of throwing, return null to indicate failure
+          console.error("Incorrect password.");
+          return null;
         }
 
+        // Return user object if successful
         return {
           id: userDoc.id,
           name: user.name,
