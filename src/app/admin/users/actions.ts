@@ -1,7 +1,6 @@
 
 'use server';
 
-import { getAuth } from 'firebase-admin/auth';
 import * as admin from 'firebase-admin';
 import { initializeFirebaseAdmin } from '@/firebase/admin-init';
 import { z } from 'zod';
@@ -18,9 +17,9 @@ type NewUser = z.infer<typeof newUserSchema>;
 
 export async function ensureAdminUser(): Promise<{ success: boolean; created?: boolean, message?: string }> {
   try {
-    const { app } = initializeFirebaseAdmin();
+    initializeFirebaseAdmin();
     const firestore = admin.firestore();
-    const auth = getAuth(app);
+    const auth = admin.auth();
 
     const usersCollection = firestore.collection('users');
     const q = usersCollection.limit(1);
@@ -65,8 +64,8 @@ export async function ensureAdminUser(): Promise<{ success: boolean; created?: b
 
 export async function createUser(userData: NewUser): Promise<{ success: boolean; error?: string }> {
   try {
-    const { app } = initializeFirebaseAdmin();
-    const auth = getAuth(app);
+    initializeFirebaseAdmin();
+    const auth = admin.auth();
     const firestore = admin.firestore();
 
     // Create user in Firebase Auth
