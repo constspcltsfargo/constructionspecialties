@@ -71,8 +71,10 @@ export default function MediaPage() {
         return query(collection(firestore, 'folders'), orderBy('name', 'asc'));
     }, [firestore]);
 
-    const { data: media, isLoading: isLoadingMedia } = useCollection<Media>(mediaCollectionRef);
-    const { data: folders, isLoading: isLoadingFolders } = useCollection<FolderData>(foldersCollectionRef);
+    const { data: media, isLoading: isLoadingMedia, error: mediaError } = useCollection<Media>(mediaCollectionRef);
+    const { data: folders, isLoading: isLoadingFolders, error: foldersError } = useCollection<FolderData>(foldersCollectionRef);
+    
+    const error = mediaError || foldersError;
 
     const allFolders = useMemo(() => folders?.map(f => f.name) || [], [folders]);
 
