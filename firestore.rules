@@ -1,56 +1,9 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-  
-    // Helper functions
-    function isOwner(userId) {
-      return request.auth.uid == userId;
-    }
-    
-    function isAdmin() {
-      // Check if the user has the 'admin' role in their custom claims.
-      return request.auth != null && request.auth.token.role == 'admin';
-    }
-
-    // Rules for 'users' collection
-    match /users/{userId} {
-      // Admins can read/write any user profile.
-      // Users can only read/write their own profile.
-      allow read, write: if isAdmin() || isOwner(userId);
-    }
-    
-    // Rules for 'pages' collection and its subcollections
-    match /pages/{pageId}/{documents=**} {
-        // Anyone can read pages and their subcollections (like pageElements).
-        allow read: if true;
-        // Only admins can create, update, or delete pages and their elements.
-        allow write: if isAdmin();
-    }
-    
-    // Rules for 'media' collection
-    match /media/{mediaId} {
-      // Publicly readable for the gallery.
-      allow get, list: if true;
-      // Only admins can create, update, or delete media files.
-      allow create, update, delete: if isAdmin();
-    }
-    
-    // Rules for 'folders' collection
-    match /folders/{folderId} {
-      // Logged-in users (admins in the UI) can read folder lists.
-      allow read: if request.auth != null;
-       // Only admins can create, update, or delete folders.
-      allow write: if isAdmin();
-    }
-    
-    // Rules for 'estimateRequests' collection
-    match /estimateRequests/{requestId} {
-      // Admins can read and write.
-      allow read, write: if isAdmin();
-      // Unauthenticated users (from the public form) can create new requests.
-      allow create: if request.auth == null;
+    match /{document=**} {
+      allow read, write: if true;
     }
   }
 }
