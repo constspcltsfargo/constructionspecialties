@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -15,16 +16,30 @@ import {
 import { Home, Users, Mailbox, GalleryHorizontal, LogOut, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useUser } from '@/firebase'; // Import the new useUser hook
+import { useUser, useAuth } from '@/firebase'; // Import useUser and useAuth
+import { signOut } from 'firebase/auth'; // Import signOut
 import { useEffect } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const router = useRouter();
+    const auth = useAuth(); // Get auth instance
+    const { toast } = useToast();
 
     const handleSignOut = async () => {
-        // For a custom auth system, we redirect to login, which should clear any session state.
-        router.push('/login');
+        try {
+            await signOut(auth); // Sign out from Firebase
+            toast({ title: 'Logged out successfully.' });
+            router.push('/login'); // Redirect to login page
+        } catch (error) {
+            console.error('Sign out error:', error);
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Failed to log out. Please try again.',
+            });
+        }
     };
 
     return (
