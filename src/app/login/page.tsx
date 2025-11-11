@@ -10,13 +10,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Loader2, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
-import { loginUser } from '@/app/actions/auth';
+import { useAuth } from '@/firebase';
+import { signInWithEmailAndPassword, getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const auth = useAuth();
+  const firestore = useFirestore();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -24,18 +29,44 @@ export default function LoginPage() {
     setError(null);
     
     const formData = new FormData(e.currentTarget);
+    const identifier = formData.get('identifier') as string;
+    const password = formData.get('password') as string;
+    
+    let email = identifier;
 
     try {
-        const result = await loginUser(formData);
-        if (result.error) {
-            throw new Error(result.error);
-        }
+      // If identifier is not an email, it could be a username.
+      // We need to fetch the email associated with the username from Firestore.
+      if (!identifier.includes('@') && firestore) {
+          const usersCollection = collection(firestore, 'users');
+          const userQuery = query(usersCollection, where('username', '==', identifier));
+          const querySnapshot = await getDocs(userQuery);
 
-        toast({ title: 'Login successful! Redirecting...' });
-        router.push('/admin');
+          if (querySnapshot.empty) {
+              throw new Error("Invalid username.");
+          }
+          const userDoc = querySnapshot.docs[0];
+          email = userDoc.data().email;
+      }
+
+      await signInWithEmailAndPassword(auth, email, password);
+
+      toast({ title: 'Login successful! Redirecting...' });
+      router.push('/admin');
 
     } catch (err: any) {
-        setError(err.message || 'An unexpected error occurred.');
+        let errorMessage = 'An unexpected error occurred.';
+        switch (err.code) {
+            case 'auth/user-not-found':
+            case 'auth/wrong-password':
+            case 'auth/invalid-credential':
+                errorMessage = 'Invalid email or password.';
+                break;
+            default:
+                errorMessage = err.message;
+                break;
+        }
+        setError(errorMessage);
         setIsLoggingIn(false);
     }
   };

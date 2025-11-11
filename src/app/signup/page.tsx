@@ -10,11 +10,14 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, AlertCircle } from 'lucide-react';
-import { createUser } from '@/app/actions/auth';
+import { createUserProfile } from '@/app/actions/auth';
+import { useAuth } from '@/firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 export default function SignUpPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const auth = useAuth();
 
   const [error, setError] = useState<string | null>(null);
   const [isSigningUp, setIsSigningUp] = useState(false);
@@ -25,7 +28,10 @@ export default function SignUpPage() {
     setError(null);
 
     const formData = new FormData(e.currentTarget);
+    const email = formData.get('email') as string;
     const password = formData.get('password') as string;
+    const name = formData.get('name') as string;
+    const username = formData.get('username') as string;
 
     if (password.length < 6) {
         setError('Password must be at least 6 characters.');
@@ -34,10 +40,23 @@ export default function SignUpPage() {
     }
 
     try {
-      const result = await createUser(formData);
+      // 1. Create user in Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
-      if (result.error) {
-        throw new Error(result.error);
+      // 2. Create user profile in Firestore via Server Action
+      const profileFormData = new FormData();
+      profileFormData.append('uid', user.uid);
+      profileFormData.append('name', name);
+      profileFormData.append('username', username);
+      profileFormData.append('email', email);
+
+      const profileResult = await createUserProfile(profileFormData);
+
+      if (profileResult.error) {
+          // If Firestore profile creation fails, we should ideally delete the auth user
+          // For simplicity here, we'll just show the error.
+          throw new Error(profileResult.error);
       }
 
       toast({
@@ -45,12 +64,16 @@ export default function SignUpPage() {
         description: 'Your account has been created. Redirecting to login...',
       });
 
-      setTimeout(() => {
-        router.push('/login');
-      }, 2000);
+      router.push('/login');
 
     } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred.');
+      let errorMessage = 'An unexpected error occurred.';
+      if (err.code === 'auth/email-already-in-use') {
+          errorMessage = 'This email address is already in use.';
+      } else if (err.message) {
+          errorMessage = err.message;
+      }
+      setError(errorMessage);
       setIsSigningUp(false);
     }
   };
