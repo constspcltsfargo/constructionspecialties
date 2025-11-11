@@ -5,6 +5,8 @@ import { initializeFirebase } from "@/firebase/server-init";
 import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
 import * as bcrypt from 'bcryptjs';
 import { z } from "zod";
+import { setRoleClaim } from "./claims";
+import { initializeFirebaseAdmin } from "@/firebase/admin-init";
 
 const UserSchema = z.object({
     name: z.string().min(1, { message: "Name is required." }),
@@ -81,6 +83,7 @@ export async function loginUser(formData: FormData) {
 
     try {
         const { firestore } = initializeFirebase();
+        const { auth } = initializeFirebaseAdmin();
         const usersCollection = collection(firestore, 'users');
 
         const userQuery = isEmail 
@@ -102,14 +105,23 @@ export async function loginUser(formData: FormData) {
             return { error: "Invalid credentials" };
         }
         
-        // TODO: Implement session creation logic (e.g., JWT, cookies)
-        // For now, we just return success.
+        // After successful password validation, check for role and set custom claims.
+        // This is crucial for security rules.
+        const userAuthRecord = await auth.getUserByEmail(user.email);
+        if (user.role) {
+            const currentClaims = userAuthRecord.customClaims || {};
+            // Only set claim if it's different to avoid unnecessary updates
+            if (currentClaims.role !== user.role) {
+                await setRoleClaim(userAuthRecord.uid, user.role);
+            }
+        }
         
         const { password: _, ...userWithoutPassword } = user;
 
         return { user: { id: userDoc.id, ...userWithoutPassword } };
 
-    } catch (error) {
-        return { error: 'An unexpected error occurred during login.' };
+    } catch (error: any) {
+        console.error("Login error:", error);
+        return { error: error.message || 'An unexpected error occurred during login.' };
     }
 }
