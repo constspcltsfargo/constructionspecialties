@@ -34,19 +34,27 @@ const OurStory = () => {
             </div>
             <div className="container relative">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-                    <div className="lg:col-start-2">
+                    <div className="flex flex-col items-center justify-center gap-8">
+                        <Image
+                            src="https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/CS%20LLC%20New%20logo%20PNG.png?alt=media&token=c1de30c8-b019-4f96-bcbc-14371b3c3dd2"
+                            alt="Construction Specialties LLC Logo"
+                            width={300}
+                            height={100}
+                            className="w-64 h-auto invert brightness-0"
+                            data-ai-hint="company logo"
+                        />
+                         <Image
+                            src="https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/mule-hide%20(2).jpg?alt=media&token=a0b27fab-4727-4f25-a073-1e9b7e83c05c"
+                            alt="Mule-Hide certified installer logo"
+                            width={200}
+                            height={200}
+                            className="object-contain rounded-full bg-white p-2 shadow-md"
+                            data-ai-hint="company logo"
+                        />
+                    </div>
+                    <div>
                          <Card className="bg-background/90 backdrop-blur-sm p-6 lg:p-8 shadow-2xl rounded-xl">
-                            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-primary">Our Story</h2>
-                            <div className="flex justify-center mb-6">
-                                <Image
-                                    src="https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/mule-hide%20(2).jpg?alt=media&token=a0b27fab-4727-4f25-a073-1e9b7e83c05c"
-                                    alt="Mule-Hide certified installer logo"
-                                    width={150}
-                                    height={150}
-                                    className="object-contain rounded-full bg-white p-2 shadow-md"
-                                    data-ai-hint="company logo"
-                                />
-                            </div>
+                            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-primary text-center">Our Story</h2>
                             <div className="text-muted-foreground text-base md:text-lg space-y-4">
                                 <p className="indent-8">
                                     Construction Specialties LLC Roofing Professionals is a trusted and experienced roofing contractor with over 20 years of dedicated service in ND, SD, and MN. Our commitment to quality craftsmanship and customer satisfaction sets us apart. We take pride in offering professional roofing services for commercial, residential, agricultural, and industrial properties.
