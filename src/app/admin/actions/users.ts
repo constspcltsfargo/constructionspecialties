@@ -36,7 +36,7 @@ export async function createUser(formData: FormData) {
         };
     }
 
-    const { auth, firestore } = initializeFirebaseAdmin();
+    const { auth, firestore } = await initializeFirebaseAdmin();
     const usersCollection = firestore.collection('users');
     const { name, username, email, password, role } = validatedFields.data;
 
@@ -93,7 +93,7 @@ export async function updateUser(formData: FormData) {
         };
     }
 
-    const { auth, firestore } = initializeFirebaseAdmin();
+    const { auth, firestore } = await initializeFirebaseAdmin();
     const { id, password, role, ...userData } = validatedFields.data;
     const userRef = firestore.collection('users').doc(id);
 
@@ -125,7 +125,7 @@ export async function updateUser(formData: FormData) {
 }
 
 export async function deleteUser(userId: string) {
-    const { auth, firestore } = initializeFirebaseAdmin();
+    const { auth, firestore } = await initializeFirebaseAdmin();
     const userRef = firestore.collection('users').doc(userId);
 
     try {

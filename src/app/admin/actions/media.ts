@@ -5,6 +5,7 @@ config();
 
 import { initializeFirebaseAdmin } from '@/firebase/admin-init';
 import { revalidatePath } from 'next/cache';
+import { FieldValue } from 'firebase-admin/firestore';
 
 export async function createFolder(folderName: string) {
     if (!folderName || folderName.trim().length === 0) {
@@ -24,7 +25,7 @@ export async function createFolder(folderName: string) {
 
         const newFolder = {
             name: folderName.trim(),
-            createdAt: firestore.FieldValue.serverTimestamp(),
+            createdAt: FieldValue.serverTimestamp(),
         };
         const docRef = await foldersCollection.add(newFolder);
         revalidatePath('/admin/media');
@@ -73,7 +74,7 @@ export async function uploadMedia(formData: FormData) {
                 url: publicUrl,
                 mimeType: file.type,
                 size: file.size,
-                uploadDate: firestore.FieldValue.serverTimestamp(),
+                uploadDate: FieldValue.serverTimestamp(),
                 folder: folderPath === '__uncategorized__' ? '' : folderPath,
             });
         });
