@@ -6,7 +6,7 @@ service firebase.storage {
     // Allow anyone to read files. This is safe for public assets like gallery images.
     match /{allPaths=**} {
       allow read: if true;
-      // Only authenticated users (admins in the UI) can write.
+      // Only authenticated users with an admin role can write.
       allow write: if request.auth != null && request.auth.token.role == 'admin';
     }
   }

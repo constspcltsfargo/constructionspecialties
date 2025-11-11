@@ -11,7 +11,7 @@ export async function createFolder(folderName: string) {
         return { error: 'Folder name cannot be empty.' };
     }
 
-    const { firestore } = initializeFirebaseAdmin();
+    const { firestore } = await initializeFirebaseAdmin();
     const foldersCollection = firestore.collection('folders');
 
     try {
@@ -45,7 +45,7 @@ export async function uploadMedia(formData: FormData) {
         return { error: 'No files provided.' };
     }
 
-    const { storage, firestore } = initializeFirebaseAdmin();
+    const { storage, firestore } = await initializeFirebaseAdmin();
     const bucket = storage.bucket();
 
     try {
@@ -89,7 +89,7 @@ export async function uploadMedia(formData: FormData) {
 
 
 export async function deleteMedia(mediaId: string, fileUrl: string) {
-    const { storage, firestore } = initializeFirebaseAdmin();
+    const { storage, firestore } = await initializeFirebaseAdmin();
     const bucket = storage.bucket();
 
     try {
