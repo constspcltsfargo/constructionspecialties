@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -23,7 +22,7 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-
+import { Separator } from '@/components/ui/separator';
 
 interface EstimateRequest {
     id: string;
@@ -54,11 +53,6 @@ export default function EstimateRequestsPage() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [filter, setFilter] = useState<FilterType>('all');
   
-  // Set the initial date on the client to prevent hydration mismatch
-  useEffect(() => {
-    // Default to all, no date selected initially.
-  }, []);
-
   const requestsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
     return query(collection(firestore, 'estimateRequests'), orderBy('submittedAt', 'desc'));
@@ -109,7 +103,16 @@ export default function EstimateRequestsPage() {
     setSelectedDate(date);
     if (date) {
         setFilter('custom');
+    } else {
+        setFilter('all');
     }
+  }
+  
+  const handleFilterChange = (newFilter: FilterType) => {
+      setFilter(newFilter);
+      if (newFilter !== 'custom') {
+          setSelectedDate(undefined);
+      }
   }
 
   const getFilterButtonText = () => {
@@ -131,29 +134,31 @@ export default function EstimateRequestsPage() {
                 <CardDescription>Click on a row to view the full request details.</CardDescription>
             </div>
             <div className="flex items-center gap-2">
-                <Button variant={filter === 'all' ? 'default' : 'outline'} onClick={() => setFilter('all')}>All</Button>
-                <Button variant={filter === 'this_week' ? 'default' : 'outline'} onClick={() => setFilter('this_week')}>This Week</Button>
-                <Button variant={filter === 'this_month' ? 'default' : 'outline'} onClick={() => setFilter('this_month')}>This Month</Button>
                  <Popover>
                     <PopoverTrigger asChild>
                     <Button
-                        variant={filter === 'custom' ? 'default' : 'outline'}
+                        variant={'outline'}
                         className={cn(
-                        "w-[240px] justify-start text-left font-normal",
-                        filter !== 'custom' && "text-muted-foreground"
+                          "w-[240px] justify-start text-left font-normal",
+                          !selectedDate && filter === 'all' && "text-muted-foreground"
                         )}
                     >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {filter === 'custom' && selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                        {getFilterButtonText()}
                     </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="end">
-                    <Calendar
-                        mode="single"
-                        selected={selectedDate}
-                        onSelect={handleDateSelect}
-                        initialFocus
-                    />
+                    <PopoverContent className="flex w-auto p-0" align="end">
+                        <div className="flex flex-col space-y-1 p-2 border-r">
+                           <Button variant={filter === 'all' ? 'secondary' : 'ghost'} className="justify-start" onClick={() => handleFilterChange('all')}>All</Button>
+                           <Button variant={filter === 'this_week' ? 'secondary' : 'ghost'} className="justify-start" onClick={() => handleFilterChange('this_week')}>This Week</Button>
+                           <Button variant={filter === 'this_month' ? 'secondary' : 'ghost'} className="justify-start" onClick={() => handleFilterChange('this_month')}>This Month</Button>
+                        </div>
+                        <Calendar
+                            mode="single"
+                            selected={selectedDate}
+                            onSelect={handleDateSelect}
+                            initialFocus
+                        />
                     </PopoverContent>
                 </Popover>
             </div>
@@ -296,5 +301,3 @@ export default function EstimateRequestsPage() {
     </>
   );
 }
-
-    
