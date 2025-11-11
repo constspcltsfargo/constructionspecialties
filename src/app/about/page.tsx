@@ -137,7 +137,7 @@ const MeetTheTeam = () => (
             <Card key={member.name} className="text-center">
               <CardContent className="p-6">
                 <Avatar className="h-32 w-32 mx-auto mb-4">
-                  {avatar && <AvatarImage src={avatar.imageUrl} alt={member.name} data-ai-hint={avatar.imageHint} />}
+                  {avatar && <AvatarImage src={avatar.imageUrl} alt={member.name} data-ai-hint={avatar.imageHint} className="object-cover" />}
                   <AvatarFallback>{member.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                 </Avatar>
                 <h3 className="text-xl font-semibold">{member.name}</h3>
