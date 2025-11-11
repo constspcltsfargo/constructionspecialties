@@ -25,8 +25,8 @@ service cloud.firestore {
     match /estimateRequests/{requestId} {
       // Allow anyone to create an estimate request
       allow create: if true;
-      // Admins can read and write all estimate requests
-      allow read, write: if request.auth != null && request.auth.token.role == 'admin';
+      // Admins can read, list and write all estimate requests
+      allow read, write, list: if request.auth != null && request.auth.token.role == 'admin';
     }
 
     match /folders/{folderId} {
