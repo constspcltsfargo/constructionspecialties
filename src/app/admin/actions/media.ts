@@ -5,7 +5,7 @@ config();
 
 import { initializeFirebaseAdmin } from '@/firebase/admin-init';
 import { getStorage } from 'firebase-admin/storage';
-import { getFirestore, collection, addDoc, serverTimestamp, deleteDoc, doc, where, query, getDocs } from 'firebase-admin/firestore';
+import * as firestore from 'firebase-admin/firestore';
 import { revalidatePath } from 'next/cache';
 
 export async function createFolder(folderName: string) {
@@ -14,22 +14,22 @@ export async function createFolder(folderName: string) {
     }
 
     const { firebaseApp } = initializeFirebaseAdmin();
-    const firestore = getFirestore(firebaseApp);
-    const foldersCollection = collection(firestore, 'folders');
+    const db = firestore.getFirestore(firebaseApp);
+    const foldersCollection = firestore.collection(db, 'folders');
 
     try {
         // Check if folder already exists
-        const q = query(foldersCollection, where('name', '==', folderName.trim()));
-        const querySnapshot = await getDocs(q);
+        const q = firestore.query(foldersCollection, firestore.where('name', '==', folderName.trim()));
+        const querySnapshot = await firestore.getDocs(q);
         if (!querySnapshot.empty) {
             return { error: 'Folder with this name already exists.' };
         }
 
         const newFolder = {
             name: folderName.trim(),
-            createdAt: serverTimestamp(),
+            createdAt: firestore.serverTimestamp(),
         };
-        const docRef = await addDoc(foldersCollection, newFolder);
+        const docRef = await firestore.addDoc(foldersCollection, newFolder);
         revalidatePath('/admin/media');
         // Return the created folder with its new ID
         return { success: true, folder: { id: docRef.id, name: newFolder.name, createdAt: new Date() } };
@@ -51,7 +51,7 @@ export async function uploadMedia(formData: FormData) {
     const { firebaseApp } = initializeFirebaseAdmin();
     const storage = getStorage(firebaseApp);
     const bucket = storage.bucket();
-    const firestore = getFirestore(firebaseApp);
+    const db = firestore.getFirestore(firebaseApp);
 
     try {
         const uploadPromises = files.map(async (file) => {
@@ -73,12 +73,12 @@ export async function uploadMedia(formData: FormData) {
             // Use the public URL
             const publicUrl = `https://storage.googleapis.com/${bucket.name}/${path}`;
 
-            await addDoc(collection(firestore, 'media'), {
+            await firestore.addDoc(firestore.collection(db, 'media'), {
                 filename: file.name,
                 url: publicUrl,
                 mimeType: file.type,
                 size: file.size,
-                uploadDate: serverTimestamp(),
+                uploadDate: firestore.serverTimestamp(),
                 folder: folderPath === '__uncategorized__' ? '' : folderPath,
             });
         });
@@ -97,7 +97,7 @@ export async function deleteMedia(mediaId: string, fileUrl: string) {
     const { firebaseApp } = initializeFirebaseAdmin();
     const storage = getStorage(firebaseApp);
     const bucket = storage.bucket();
-    const firestore = getFirestore(firebaseApp);
+    const db = firestore.getFirestore(firebaseApp);
 
     try {
         // Extract the file path from the public URL
@@ -118,7 +118,7 @@ export async function deleteMedia(mediaId: string, fileUrl: string) {
     }
     
     try {
-        await deleteDoc(doc(firestore, 'media', mediaId));
+        await firestore.deleteDoc(firestore.doc(db, 'media', mediaId));
         revalidatePath('/admin/media');
         return { success: true };
     } catch (error: any) {
