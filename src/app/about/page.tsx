@@ -47,9 +47,14 @@ const OurStory = () => {
                                     data-ai-hint="company logo"
                                 />
                             </div>
-                            <p className="text-muted-foreground text-base md:text-lg space-y-4">
-                                Construction Specialties LLC Roofing Professionals is a trusted and experienced roofing contractor with over 20 years of dedicated service in ND, SD, and MN. Our commitment to quality craftsmanship and customer satisfaction sets us apart. We take pride in offering professional roofing services for commercial, residential, agricultural, and industrial properties. Our expertise includes repairs, maintenance, and retrofits. As a certified Mule Hide installer, we ensure high-quality materials backed by full manufacturer warranty. Our specialization in flat and EPDM (rubber) roofing, metal roofing, sheet metal fabrication, storm damage, and seamless gutters makes us a reliable choice for all roofing needs. At Construction Specialties LLC, we are dedicated to providing free estimates and delivering exceptional results.
-                            </p>
+                            <div className="text-muted-foreground text-base md:text-lg space-y-4">
+                                <p className="indent-8">
+                                    Construction Specialties LLC Roofing Professionals is a trusted and experienced roofing contractor with over 20 years of dedicated service in ND, SD, and MN. Our commitment to quality craftsmanship and customer satisfaction sets us apart. We take pride in offering professional roofing services for commercial, residential, agricultural, and industrial properties.
+                                </p>
+                                <p className="indent-8">
+                                    Our expertise includes repairs, maintenance, and retrofits. As a certified Mule Hide installer, we ensure high-quality materials backed by full manufacturer warranty. Our specialization in flat and EPDM (rubber) roofing, metal roofing, sheet metal fabrication, storm damage, and seamless gutters makes us a reliable choice for all roofing needs. At Construction Specialties LLC, we are dedicated to providing free estimates and delivering exceptional results.
+                                </p>
+                            </div>
                         </Card>
                     </div>
                 </div>
