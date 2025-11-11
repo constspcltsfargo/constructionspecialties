@@ -1,4 +1,5 @@
 
+'use client';
 import Image from 'next/image';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
@@ -20,25 +21,36 @@ const PageHeader = () => (
 
 const OurStory = () => {
     return(
-        <section className="py-12 md:py-24">
-            <div className="container">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                    <div>
-                        <h2 className="text-3xl md:text-4xl font-bold mb-4">Construction Specialties LLC Roofing Professionals</h2>
-                        <p className="text-muted-foreground text-lg">
-                            Construction Specialties LLC Roofing Professionals is a trusted and experienced roofing contractor with over 20 years of dedicated service in ND, SD, and MN. Our commitment to quality craftsmanship and customer satisfaction sets us apart. We take pride in offering professional roofing services for commercial, residential, agricultural, and industrial properties. Our expertise includes repairs, maintenance, and retrofits. As a certified Mule Hide installer, we ensure high-quality materials backed by full manufacturer warranty. Our specialization in flat and EPDM (rubber) roofing, metal roofing, sheet metal fabrication, storm damage, and seamless gutters makes us a reliable choice for all roofing needs. At Construction Specialties LLC, we are dedicated to providing free estimates and delivering exceptional results.
-                        </p>
-                    </div>
-                    <div className="relative h-80 lg:h-96 rounded-lg overflow-hidden shadow-lg">
-                        
-                            <Image
-                                src="https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/mule-hide%20(2).jpg?alt=media&token=a0b27fab-4727-4f25-a073-1e9b7e83c05c"
-                                alt="Mule-Hide certified installer"
-                                fill
-                                className="object-contain"
-                                data-ai-hint="company logo"
-                            />
-                        
+        <section className="relative py-12 md:py-24 lg:py-32">
+             <div className="absolute inset-0">
+                <Image
+                    src="https://images.unsplash.com/photo-1512434227999-0cf72464f7a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxyb29mJTIwY29uc3RydWN0aW9ufGVufDB8fHx8MTc2MjExNDgwMnww&ixlib=rb-4.1.0&q=80&w=1080"
+                    alt="Roof construction background"
+                    fill
+                    className="object-cover"
+                    data-ai-hint="roof construction"
+                />
+                <div className="absolute inset-0 bg-black/50" />
+            </div>
+            <div className="container relative">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+                    <div className="lg:col-start-2">
+                         <Card className="bg-background/90 backdrop-blur-sm p-6 lg:p-8 shadow-2xl rounded-xl">
+                            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-primary">Our Story</h2>
+                            <div className="flex justify-center mb-6">
+                                <Image
+                                    src="https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/mule-hide%20(2).jpg?alt=media&token=a0b27fab-4727-4f25-a073-1e9b7e83c05c"
+                                    alt="Mule-Hide certified installer logo"
+                                    width={150}
+                                    height={150}
+                                    className="object-contain rounded-full bg-white p-2 shadow-md"
+                                    data-ai-hint="company logo"
+                                />
+                            </div>
+                            <p className="text-muted-foreground text-base md:text-lg space-y-4">
+                                Construction Specialties LLC Roofing Professionals is a trusted and experienced roofing contractor with over 20 years of dedicated service in ND, SD, and MN. Our commitment to quality craftsmanship and customer satisfaction sets us apart. We take pride in offering professional roofing services for commercial, residential, agricultural, and industrial properties. Our expertise includes repairs, maintenance, and retrofits. As a certified Mule Hide installer, we ensure high-quality materials backed by full manufacturer warranty. Our specialization in flat and EPDM (rubber) roofing, metal roofing, sheet metal fabrication, storm damage, and seamless gutters makes us a reliable choice for all roofing needs. At Construction Specialties LLC, we are dedicated to providing free estimates and delivering exceptional results.
+                            </p>
+                        </Card>
                     </div>
                 </div>
             </div>
