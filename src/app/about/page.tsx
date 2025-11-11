@@ -19,7 +19,6 @@ const PageHeader = () => (
 );
 
 const OurStory = () => {
-    const aboutImage = PlaceHolderImages.find((img) => img.id === 'why-us-image');
     return(
         <section className="py-12 md:py-24">
             <div className="container">
@@ -31,15 +30,15 @@ const OurStory = () => {
                         </p>
                     </div>
                     <div className="relative h-80 lg:h-96 rounded-lg overflow-hidden shadow-lg">
-                        {aboutImage && (
+                        
                             <Image
-                                src={aboutImage.imageUrl}
-                                alt="Construction team working together"
+                                src="https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/mule-hide%20(2).jpg?alt=media&token=a0b27fab-4727-4f25-a073-1e9b7e83c05c"
+                                alt="Mule-Hide certified installer"
                                 fill
-                                className="object-cover"
-                                data-ai-hint={aboutImage.imageHint}
+                                className="object-contain"
+                                data-ai-hint="company logo"
                             />
-                        )}
+                        
                     </div>
                 </div>
             </div>
