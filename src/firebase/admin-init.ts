@@ -1,3 +1,4 @@
+
 'use server';
 // Load environment variables from .env.local
 import { config } from 'dotenv';
@@ -16,7 +17,7 @@ let storage: Storage;
 
 // This function initializes the Firebase Admin SDK.
 // It's designed to be a singleton, so it only initializes the app once.
-export function initializeFirebaseAdmin() {
+export async function initializeFirebaseAdmin() {
   if (getApps().length > 0) {
     app = getApp();
   } else {
