@@ -3,10 +3,11 @@
 
 import { initializeFirebase } from "@/firebase/server-init";
 import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
-import * as bcrypt from 'bcryptjs';
 import { z } from "zod";
 import { setRoleClaim } from "./claims";
 import { initializeFirebaseAdmin } from "@/firebase/admin-init";
+
+const bcrypt = require('bcryptjs');
 
 const UserSchema = z.object({
     name: z.string().min(1, { message: "Name is required." }),
