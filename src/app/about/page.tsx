@@ -24,7 +24,7 @@ const OurStory = () => {
         <section className="relative py-12 md:py-24 lg:py-32">
              <div className="absolute inset-0">
                 <Image
-                    src="https://images.unsplash.com/photo-1512434227999-0cf72464f7a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxyb29mJTIwY29uc3RydWN0aW9ufGVufDB8fHx8MTc2MjExNDgwMnww&ixlib=rb-4.1.0&q=80&w=1080"
+                    src="https://images.unsplash.com/photo-1512434227999-0cf72464f7a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxyb29mJTIwY29uc3RydWN0aW9ufGVufDB8fHx8MTc2MjExNDgwMnww&ixlib=rb-4.0.3&q=80&w=1080"
                     alt="Roof construction background"
                     fill
                     className="object-cover"
