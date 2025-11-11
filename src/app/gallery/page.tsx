@@ -4,32 +4,41 @@
 import Image from 'next/image';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
-import { PlaceHolderImages, ImagePlaceholder } from '@/lib/placeholder-images';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, query, orderBy, Timestamp } from 'firebase/firestore';
+
+interface Media {
+    id: string;
+    filename: string;
+    url: string;
+    uploadDate: Timestamp;
+}
 
 export default function GalleryPage() {
-  const [isLoading, setIsLoading] = useState(true);
+  const firestore = useFirestore();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
-  const galleryImages = PlaceHolderImages.filter(img => img.id.startsWith('gallery-'));
-  const selectedImage = selectedIndex !== null ? galleryImages[selectedIndex] : null;
+  const mediaCollectionRef = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'media'), orderBy('uploadDate', 'desc'));
+  }, [firestore]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 300);
-    return () => clearTimeout(timer);
-  }, []);
+  const { data: galleryImages, isLoading } = useCollection<Media>(mediaCollectionRef);
+
+  const selectedImage = selectedIndex !== null && galleryImages ? galleryImages[selectedIndex] : null;
 
   const handleNext = () => {
-    if (selectedIndex === null) return;
+    if (selectedIndex === null || !galleryImages) return;
     setSelectedIndex((prevIndex) => (prevIndex! + 1) % galleryImages.length);
   };
 
   const handlePrevious = () => {
-    if (selectedIndex === null) return;
+    if (selectedIndex === null || !galleryImages) return;
     setSelectedIndex((prevIndex) => (prevIndex! - 1 + galleryImages.length) % galleryImages.length);
   };
 
@@ -49,7 +58,7 @@ export default function GalleryPage() {
           <section className="py-12 md:py-24">
             <div className="container">
               {isLoading && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
                   {[...Array(9)].map((_, i) => (
                     <Skeleton key={i} className="aspect-square w-full rounded-lg" />
                   ))}
@@ -64,12 +73,11 @@ export default function GalleryPage() {
                       onClick={() => setSelectedIndex(index)}
                     >
                       <Image
-                        src={image.imageUrl}
-                        alt={image.description}
+                        src={image.url}
+                        alt={image.filename}
                         fill
                         sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
-                        className="max-w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
-                        data-ai-hint={image.imageHint}
+                        className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
                       />
                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
@@ -77,7 +85,10 @@ export default function GalleryPage() {
                 </div>
               )}
               {!isLoading && galleryImages && galleryImages.length === 0 && (
-                <p className="text-center text-muted-foreground">No gallery images have been uploaded yet.</p>
+                <div className="text-center py-12 border-2 border-dashed rounded-lg">
+                    <h3 className="text-lg font-semibold">The Gallery is Empty</h3>
+                    <p className="text-muted-foreground mt-2">Check back later, or upload photos in the admin dashboard to populate the gallery.</p>
+                </div>
               )}
             </div>
           </section>
@@ -89,11 +100,11 @@ export default function GalleryPage() {
         <DialogContent className="max-w-4xl p-0 border-0 bg-transparent shadow-none">
             {selectedImage && (
                 <>
-                    <DialogTitle className="sr-only">{selectedImage.description}</DialogTitle>
+                    <DialogTitle className="sr-only">{selectedImage.filename}</DialogTitle>
                     <div className="relative aspect-video">
                         <Image
-                            src={selectedImage.imageUrl}
-                            alt={selectedImage.description}
+                            src={selectedImage.url}
+                            alt={selectedImage.filename}
                             fill
                             sizes="100vw"
                             className="object-contain rounded-lg"
