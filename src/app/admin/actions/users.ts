@@ -3,13 +3,12 @@
 import { config } from 'dotenv';
 config();
 
-import { initializeFirebase } from "@/firebase/server-init";
-import { collection, query, where, getDocs, addDoc, doc, updateDoc, deleteDoc, setDoc } from "firebase/firestore";
+import { initializeFirebaseAdmin } from "@/firebase/admin-init";
+import { getFirestore, collection, query, where, getDocs, doc, updateDoc, deleteDoc, setDoc } from "firebase-admin/firestore";
 import * as bcrypt from 'bcryptjs';
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { setRoleClaim } from "../../actions/claims";
-import { initializeFirebaseAdmin } from "@/firebase/admin-init";
 
 const UserSchema = z.object({
     name: z.string().min(1, { message: "Name is required." }),
@@ -37,8 +36,9 @@ export async function createUser(formData: FormData) {
         };
     }
 
-    const { auth } = initializeFirebaseAdmin();
-    const { firestore } = initializeFirebase();
+    const { firebaseApp } = initializeFirebaseAdmin();
+    const auth = firebaseApp.auth();
+    const firestore = getFirestore(firebaseApp);
     const usersCollection = collection(firestore, 'users');
     const { name, username, email, password, role } = validatedFields.data;
 
@@ -95,7 +95,8 @@ export async function updateUser(formData: FormData) {
         };
     }
 
-    const { firestore } = initializeFirebase();
+    const { firebaseApp } = initializeFirebaseAdmin();
+    const firestore = getFirestore(firebaseApp);
     const { id, password, role, ...userData } = validatedFields.data;
     const userRef = doc(firestore, 'users', id);
 
@@ -116,8 +117,8 @@ export async function updateUser(formData: FormData) {
         
         await updateDoc(userRef, updateData);
         
-        const updatedDocSnapshot = await getDoc(userRef);
-        const user = {id: updatedDocSnapshot.id, ...updatedDocSnapshot.data()}
+        const updatedDocSnapshot = await getDocs(doc(firestore, userRef.path));
+        const user = {id: updatedDocSnapshot.docs[0].id, ...updatedDocSnapshot.docs[0].data()}
 
         revalidatePath('/admin/users');
         return { user };
@@ -128,8 +129,9 @@ export async function updateUser(formData: FormData) {
 }
 
 export async function deleteUser(userId: string) {
-    const { auth } = initializeFirebaseAdmin();
-    const { firestore } = initializeFirebase();
+    const { firebaseApp } = initializeFirebaseAdmin();
+    const auth = firebaseApp.auth();
+    const firestore = getFirestore(firebaseApp);
     const userRef = doc(firestore, 'users', userId);
 
     try {
