@@ -20,14 +20,17 @@ import { useUser, useAuth } from '@/firebase'; // Import useUser and useAuth
 import { signOut } from 'firebase/auth'; // Import signOut
 import { useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { UserNav } from './users/_components/user-nav';
 
 function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const router = useRouter();
     const auth = useAuth(); // Get auth instance
     const { toast } = useToast();
+    const { user } = useUser();
 
     const handleSignOut = async () => {
+        if (!auth) return;
         try {
             await signOut(auth); // Sign out from Firebase
             toast({ title: 'Logged out successfully.' });
@@ -96,9 +99,14 @@ function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
               </SidebarFooter>
           </Sidebar>
           <SidebarInset>
-              <div className="p-4 sm:p-6 lg:p-8">
+              <header className="flex items-center justify-between p-4 sm:p-6 lg:p-8 border-b">
+                 <SidebarTrigger className="lg:hidden" />
+                 <div className="flex-1"></div>
+                 {user && <UserNav user={user} onSignOut={handleSignOut}/>}
+              </header>
+              <main className="p-4 sm:p-6 lg:p-8">
                    {children}
-              </div>
+              </main>
           </SidebarInset>
       </SidebarProvider>
     );
