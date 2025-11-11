@@ -84,7 +84,7 @@ export async function loginUser(formData: FormData) {
 
     try {
         const { firestore } = initializeFirebase();
-        const { auth } = initializeFirebaseAdmin();
+        const { auth } = await initializeFirebaseAdmin();
         const usersCollection = collection(firestore, 'users');
 
         const userQuery = isEmail 
