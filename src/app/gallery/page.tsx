@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -6,7 +7,7 @@ import { Footer } from '@/components/layout/footer';
 import { PlaceHolderImages, ImagePlaceholder } from '@/lib/placeholder-images';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 
 export default function GalleryPage() {
   const [isLoading, setIsLoading] = useState(true);
@@ -75,15 +76,18 @@ export default function GalleryPage() {
       <Dialog open={!!selectedImage} onOpenChange={(isOpen) => !isOpen && setSelectedImage(null)}>
         <DialogContent className="max-w-4xl p-2">
             {selectedImage && (
-                <div className="relative aspect-video">
-                    <Image
-                        src={selectedImage.imageUrl}
-                        alt={selectedImage.description}
-                        fill
-                        sizes="100vw"
-                        className="object-contain"
-                    />
-                </div>
+                <>
+                    <DialogTitle className="sr-only">{selectedImage.description}</DialogTitle>
+                    <div className="relative aspect-video">
+                        <Image
+                            src={selectedImage.imageUrl}
+                            alt={selectedImage.description}
+                            fill
+                            sizes="100vw"
+                            className="object-contain"
+                        />
+                    </div>
+                </>
             )}
         </DialogContent>
       </Dialog>
