@@ -134,12 +134,26 @@ const MeetTheTeam = () => (
         {teamMembers.map((member) => {
           const avatar = PlaceHolderImages.find((img) => img.id === member.avatarId);
           return (
-            <Card key={member.name} className="text-center">
+            <Card key={member.name} className="text-center overflow-hidden">
+                {avatar ? (
+                    <div className="relative aspect-[4/5] w-full">
+                        <Image
+                            src={avatar.imageUrl}
+                            alt={member.name}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                            data-ai-hint={avatar.imageHint}
+                        />
+                    </div>
+                ) : (
+                    <div className="relative aspect-[4/5] w-full bg-secondary flex items-center justify-center">
+                        <span className="text-2xl font-semibold text-muted-foreground">
+                            {member.name.split(' ').map(n => n[0]).join('')}
+                        </span>
+                    </div>
+                )}
               <CardContent className="p-6">
-                <Avatar className="h-32 w-32 mx-auto mb-4">
-                  {avatar && <AvatarImage src={avatar.imageUrl} alt={member.name} data-ai-hint={avatar.imageHint} className="object-cover" />}
-                  <AvatarFallback>{member.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                </Avatar>
                 <h3 className="text-xl font-semibold">{member.name}</h3>
                 <p className="text-primary">{member.role}</p>
               </CardContent>
