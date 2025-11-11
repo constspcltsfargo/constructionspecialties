@@ -55,28 +55,16 @@
       "imageHint": "construction workers"
     },
     {
-      "id": "team-member-1",
-      "description": "Portrait of a male construction manager.",
-      "imageUrl": "https://images.unsplash.com/photo-1556157382-97eda2d62296?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtYWxlJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYyMDAyMzYxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "id": "team-member-keith",
+      "description": "Portrait of Keith Hilde, Owner",
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/KHH.png?alt=media&token=18658c7e-918d-4a57-94e1-285a7062b9b0",
       "imageHint": "male portrait"
     },
     {
-      "id": "team-member-2",
-      "description": "Portrait of a female architect.",
-      "imageUrl": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmZW1hbGUlMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjIwMDIzNjF8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "female portrait"
-    },
-    {
-      "id": "team-member-3",
-      "description": "Portrait of a construction worker.",
-      "imageUrl": "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjb25zdHJ1Y3Rpb24lMjB3b3JrZXJ8ZW58MHx8fHwxNzYyMDAyMzYxfDA&ixlibrb-4.1.0&q=80&w=1080",
-      "imageHint": "construction worker"
-    },
-    {
-      "id": "team-member-4",
-      "description": "Portrait of a female customer service representative.",
-      "imageUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxmZW1hbGUlMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjIwMDIzNjF8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "female portrait"
+      "id": "team-member-dave",
+      "description": "Portrait of a construction professional.",
+      "imageUrl": "https://images.unsplash.com/photo-1556157382-97eda2d62296?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtYWxlJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYyMDAyMzYxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "male portrait"
     }
   ]
 }

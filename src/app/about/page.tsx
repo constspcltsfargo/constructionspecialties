@@ -110,24 +110,14 @@ const OurMission = () => (
 
 const teamMembers = [
   {
-    name: 'John Doe',
-    role: 'Founder & CEO',
-    avatarId: 'team-member-1',
+    name: 'Keith Hilde',
+    role: 'Owner',
+    avatarId: 'team-member-keith',
   },
   {
-    name: 'Jane Smith',
-    role: 'Head of Operations',
-    avatarId: 'team-member-2',
-  },
-  {
-    name: 'Mike Johnson',
-    role: 'Lead Project Manager',
-    avatarId: 'team-member-3',
-  },
-   {
-    name: 'Emily Davis',
-    role: 'Customer Relations',
-    avatarId: 'team-member-4',
+    name: 'Dave Baum',
+    role: 'Senior Roofing Specialist',
+    avatarId: 'team-member-dave',
   },
 ];
 
@@ -140,7 +130,7 @@ const MeetTheTeam = () => (
           The passionate professionals dedicated to bringing your vision to life.
         </p>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 justify-center">
         {teamMembers.map((member) => {
           const avatar = PlaceHolderImages.find((img) => img.id === member.avatarId);
           return (
