@@ -21,17 +21,7 @@ const PageHeader = () => (
 
 const OurStory = () => {
     return(
-        <section className="relative py-12 md:py-24 lg:py-32">
-             <div className="absolute inset-0">
-                <Image
-                    src="https://images.unsplash.com/photo-1512434227999-0cf72464f7a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxyb29mJTIwY29uc3RydWN0aW9ufGVufDB8fHx8MTc2MjExNDgwMnww&ixlib=rb-4.0.3&q=80&w=1080"
-                    alt="Roof construction background"
-                    fill
-                    className="object-cover"
-                    data-ai-hint="roof construction"
-                />
-                <div className="absolute inset-0 bg-black/50" />
-            </div>
+        <section className="relative py-12 md:py-24 lg:py-32 bg-background">
             <div className="container relative">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
                     <div className="flex flex-col items-center justify-center gap-8">
@@ -40,7 +30,7 @@ const OurStory = () => {
                             alt="Construction Specialties LLC Logo"
                             width={300}
                             height={100}
-                            className="w-64 h-auto invert brightness-0"
+                            className="w-64 h-auto"
                             data-ai-hint="company logo"
                         />
                          <Image
@@ -53,7 +43,7 @@ const OurStory = () => {
                         />
                     </div>
                     <div>
-                         <Card className="bg-background/90 backdrop-blur-sm p-6 lg:p-8 shadow-2xl rounded-xl">
+                         <Card className="bg-secondary/50 p-6 lg:p-8 shadow-lg rounded-xl">
                             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-primary text-center">Our Story</h2>
                             <div className="text-muted-foreground text-base md:text-lg space-y-4">
                                 <p className="indent-8">
