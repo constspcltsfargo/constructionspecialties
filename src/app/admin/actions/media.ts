@@ -4,8 +4,6 @@ import { config } from 'dotenv';
 config();
 
 import { initializeFirebaseAdmin } from '@/firebase/admin-init';
-import { getStorage } from 'firebase-admin/storage';
-import * as firestore from 'firebase-admin/firestore';
 import { revalidatePath } from 'next/cache';
 
 export async function createFolder(folderName: string) {
@@ -13,23 +11,22 @@ export async function createFolder(folderName: string) {
         return { error: 'Folder name cannot be empty.' };
     }
 
-    const { firebaseApp } = initializeFirebaseAdmin();
-    const db = firestore.getFirestore(firebaseApp);
-    const foldersCollection = firestore.collection(db, 'folders');
+    const { firestore } = initializeFirebaseAdmin();
+    const foldersCollection = firestore.collection('folders');
 
     try {
         // Check if folder already exists
-        const q = firestore.query(foldersCollection, firestore.where('name', '==', folderName.trim()));
-        const querySnapshot = await firestore.getDocs(q);
+        const q = foldersCollection.where('name', '==', folderName.trim());
+        const querySnapshot = await q.get();
         if (!querySnapshot.empty) {
             return { error: 'Folder with this name already exists.' };
         }
 
         const newFolder = {
             name: folderName.trim(),
-            createdAt: firestore.serverTimestamp(),
+            createdAt: firestore.FieldValue.serverTimestamp(),
         };
-        const docRef = await firestore.addDoc(foldersCollection, newFolder);
+        const docRef = await foldersCollection.add(newFolder);
         revalidatePath('/admin/media');
         // Return the created folder with its new ID
         return { success: true, folder: { id: docRef.id, name: newFolder.name, createdAt: new Date() } };
@@ -48,10 +45,8 @@ export async function uploadMedia(formData: FormData) {
         return { error: 'No files provided.' };
     }
 
-    const { firebaseApp } = initializeFirebaseAdmin();
-    const storage = getStorage(firebaseApp);
+    const { storage, firestore } = initializeFirebaseAdmin();
     const bucket = storage.bucket();
-    const db = firestore.getFirestore(firebaseApp);
 
     try {
         const uploadPromises = files.map(async (file) => {
@@ -73,12 +68,12 @@ export async function uploadMedia(formData: FormData) {
             // Use the public URL
             const publicUrl = `https://storage.googleapis.com/${bucket.name}/${path}`;
 
-            await firestore.addDoc(firestore.collection(db, 'media'), {
+            await firestore.collection('media').add({
                 filename: file.name,
                 url: publicUrl,
                 mimeType: file.type,
                 size: file.size,
-                uploadDate: firestore.serverTimestamp(),
+                uploadDate: firestore.FieldValue.serverTimestamp(),
                 folder: folderPath === '__uncategorized__' ? '' : folderPath,
             });
         });
@@ -94,10 +89,8 @@ export async function uploadMedia(formData: FormData) {
 
 
 export async function deleteMedia(mediaId: string, fileUrl: string) {
-    const { firebaseApp } = initializeFirebaseAdmin();
-    const storage = getStorage(firebaseApp);
+    const { storage, firestore } = initializeFirebaseAdmin();
     const bucket = storage.bucket();
-    const db = firestore.getFirestore(firebaseApp);
 
     try {
         // Extract the file path from the public URL
@@ -118,7 +111,7 @@ export async function deleteMedia(mediaId: string, fileUrl: string) {
     }
     
     try {
-        await firestore.deleteDoc(firestore.doc(db, 'media', mediaId));
+        await firestore.collection('media').doc(mediaId).delete();
         revalidatePath('/admin/media');
         return { success: true };
     } catch (error: any) {

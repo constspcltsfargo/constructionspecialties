@@ -4,7 +4,6 @@ import { config } from 'dotenv';
 config();
 
 import { initializeFirebaseAdmin } from "@/firebase/admin-init";
-import { getFirestore, collection, query, where, getDocs, doc, updateDoc, deleteDoc, setDoc } from "firebase-admin/firestore";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { setRoleClaim } from "../../actions/claims";
@@ -37,19 +36,17 @@ export async function createUser(formData: FormData) {
         };
     }
 
-    const { firebaseApp } = initializeFirebaseAdmin();
-    const auth = firebaseApp.auth();
-    const firestore = getFirestore(firebaseApp);
-    const usersCollection = collection(firestore, 'users');
+    const { auth, firestore } = initializeFirebaseAdmin();
+    const usersCollection = firestore.collection('users');
     const { name, username, email, password, role } = validatedFields.data;
 
     // Check if email or username already exists in Firestore
-    const emailQuery = query(usersCollection, where('email', '==', email));
-    const usernameQuery = query(usersCollection, where('username', '==', username));
+    const emailQuery = usersCollection.where('email', '==', email);
+    const usernameQuery = usersCollection.where('username', '==', username);
 
     const [emailSnapshot, usernameSnapshot] = await Promise.all([
-        getDocs(emailQuery),
-        getDocs(usernameQuery),
+        emailQuery.get(),
+        usernameQuery.get(),
     ]);
 
     if (!emailSnapshot.empty) return { error: 'Email already exists in Firestore.' };
@@ -70,8 +67,8 @@ export async function createUser(formData: FormData) {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Add user to Firestore with the Auth UID as the document ID
-        const userRef = doc(firestore, 'users', userRecord.uid);
-        await setDoc(userRef, { name, username, email, password: hashedPassword, role });
+        const userRef = firestore.collection('users').doc(userRecord.uid);
+        await userRef.set({ name, username, email, password: hashedPassword, role });
         
         const newUser = { id: userRecord.uid, name, username, email, role };
         revalidatePath('/admin/users');
@@ -96,16 +93,14 @@ export async function updateUser(formData: FormData) {
         };
     }
 
-    const { firebaseApp } = initializeFirebaseAdmin();
-    const firestore = getFirestore(firebaseApp);
+    const { auth, firestore } = initializeFirebaseAdmin();
     const { id, password, role, ...userData } = validatedFields.data;
-    const userRef = doc(firestore, 'users', id);
+    const userRef = firestore.collection('users').doc(id);
 
     try {
         const updateData: any = { ...userData };
         if (password && password.length >= 6) {
             updateData.password = await bcrypt.hash(password, 10);
-            const { auth } = initializeFirebaseAdmin();
             await auth.updateUser(id, { password: password });
         } else if (password) {
             return { error: "Password must be at least 6 characters."}
@@ -116,10 +111,10 @@ export async function updateUser(formData: FormData) {
             updateData.role = role;
         }
         
-        await updateDoc(userRef, updateData);
+        await userRef.update(updateData);
         
-        const updatedDocSnapshot = await getDocs(doc(firestore, userRef.path));
-        const user = {id: updatedDocSnapshot.docs[0].id, ...updatedDocSnapshot.docs[0].data()}
+        const updatedDocSnapshot = await userRef.get();
+        const user = {id: updatedDocSnapshot.id, ...updatedDocSnapshot.data()}
 
         revalidatePath('/admin/users');
         return { user };
@@ -130,16 +125,14 @@ export async function updateUser(formData: FormData) {
 }
 
 export async function deleteUser(userId: string) {
-    const { firebaseApp } = initializeFirebaseAdmin();
-    const auth = firebaseApp.auth();
-    const firestore = getFirestore(firebaseApp);
-    const userRef = doc(firestore, 'users', userId);
+    const { auth, firestore } = initializeFirebaseAdmin();
+    const userRef = firestore.collection('users').doc(userId);
 
     try {
         // Delete from Auth first
         await auth.deleteUser(userId);
         // Then delete from Firestore
-        await deleteDoc(userRef);
+        await userRef.delete();
         revalidatePath('/admin/users');
         return { success: true };
     } catch (error: any) {
@@ -147,7 +140,7 @@ export async function deleteUser(userId: string) {
         // If user is already deleted from auth, we might get an error, but still want to delete from firestore
         if (error.code === 'auth/user-not-found') {
             try {
-                await deleteDoc(userRef);
+                await userRef.delete();
                 revalidatePath('/admin/users');
                 return { success: true };
             } catch (fsError: any) {
