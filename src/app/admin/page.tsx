@@ -7,11 +7,12 @@ import { collection, query, orderBy, limit } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { format } from 'date-fns';
-import { FileText, Activity, Link2Off } from 'lucide-react';
+import { FileText, Activity, Link as LinkIcon } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import Image from 'next/image';
 
 
 interface EstimateRequest {
@@ -46,7 +47,16 @@ export default function AdminPage() {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <div className="flex items-center gap-4">
+            <Image 
+                src="https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/CS%20LLC%20New%20logo%20PNG.png?alt=media&token=c1de30c8-b019-4f96-bcbc-14371b3c3dd2"
+                alt="Construction Specialties, LLC Logo"
+                width={150}
+                height={50}
+                className="h-12 w-auto"
+           />
+           <h1 className="text-2xl font-bold">Dashboard</h1>
+        </div>
       </div>
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -74,11 +84,11 @@ export default function AdminPage() {
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold flex items-center gap-2">
-                <Link2Off className="h-6 w-6 text-muted-foreground" />
-                Not Connected
+             <div className="text-2xl font-bold flex items-center gap-2">
+                <LinkIcon className="h-6 w-6 text-green-500" />
+                Active
             </div>
-            <p className="text-xs text-muted-foreground">Enable Google Analytics to see visitor data.</p>
+            <p className="text-xs text-muted-foreground">Data is now being collected by Google Analytics.</p>
           </CardContent>
         </Card>
       </div>
