@@ -36,32 +36,6 @@
       },
       "required": ["name", "username", "email", "password"]
     },
-    "Page": {
-      "title": "Page",
-      "type": "object",
-      "description": "Represents a page on the website, allowing for CMS-style editing. Can be a simple page with a slug and HTML content, or a structured page like the homepage.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Page entity. For the homepage, this is 'home'."
-        },
-        "title": {
-          "type": "string",
-          "description": "The title of the page (for simple pages)."
-        },
-        "slug": {
-          "type": "string",
-          "description": "The URL-friendly slug for the page (e.g., 'about-us')."
-        },
-        "content": {
-          "type": "string",
-          "description": "The HTML or JSON content of the page. For the homepage, this will be a JSON object with structured content."
-        }
-      },
-      "required": [
-        "id"
-      ]
-    },
     "Media": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Media",
@@ -125,46 +99,6 @@
         },
         "required": ["name", "createdAt"]
     },
-    "PageElement": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "PageElement",
-      "type": "object",
-      "description": "Represents a reusable element that can be dragged and dropped onto a page.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the PageElement entity."
-        },
-        "name": {
-          "type": "string",
-          "description": "The name of the element (e.g., 'Hero Section', 'Contact Form')."
-        },
-        "type": {
-          "type": "string",
-          "description": "The type of element (e.g., 'text', 'image', 'video', 'form')."
-        },
-        "content": {
-          "type": "string",
-          "description": "The content of the element, which could be HTML or JSON data."
-        },
-        "pageId": {
-          "type": "string",
-          "description": "Reference to Page. (Relationship: Page 1:N PageElement)"
-        },
-        "order": {
-          "type": "number",
-          "description": "The order in which the element appears on the page."
-        }
-      },
-      "required": [
-        "id",
-        "name",
-        "type",
-        "content",
-        "pageId",
-        "order"
-      ]
-    },
     "EstimateRequest": {
         "title": "Estimate Request",
         "description": "Represents a submission from the contact/estimate form.",
@@ -203,27 +137,6 @@
         }
       },
       {
-        "path": "/pages/{pageId}",
-        "definition": {
-          "entityName": "Page",
-          "schema": { "$ref": "#/backend/entities/Page" },
-          "description": "Stores page content for the website. Accessible and editable only by admins.",
-          "params": [{ "name": "pageId", "description": "The unique identifier for the page." }]
-        }
-      },
-      {
-        "path": "/pages/{pageId}/pageElements/{pageElementId}",
-        "definition": {
-          "entityName": "PageElement",
-          "schema": { "$ref": "#/backend/entities/PageElement" },
-          "description": "Stores reusable elements associated with a specific page. Accessible and editable only by admins.",
-          "params": [
-            { "name": "pageId", "description": "The unique identifier for the page." },
-            { "name": "pageElementId", "description": "The unique identifier for the page element." }
-          ]
-        }
-      },
-      {
         "path": "/media/{mediaId}",
         "definition": {
           "entityName": "Media",
@@ -251,6 +164,6 @@
         }
       }
     ],
-    "reasoning": "This design prioritizes security and scalability. The `estimateRequests` collection is added to store form submissions and is restricted to admin access only, ensuring customer data privacy. A `folders` collection is added to persist folder names for the media library."
+    "reasoning": "This design prioritizes security and scalability. The `estimateRequests` collection is added to store form submissions and is restricted to admin access only, ensuring customer data privacy. A `folders` collection is added to persist folder names for the media library. Page and PageElement entities and collections have been removed to simplify the app."
   }
 }

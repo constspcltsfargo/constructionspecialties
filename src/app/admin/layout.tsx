@@ -63,14 +63,6 @@ export default function AdminLayout({
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                        <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/pages')}>
-                           <Link href="/admin/pages">
-                                <FileText />
-                                <span>Pages</span>
-                           </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
                         <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/media')}>
                            <Link href="/admin/media">
                                 <GalleryHorizontal />

@@ -29,10 +29,17 @@ const fallbackImages: HeroImage[] = [
     { id: 'hero-8', url: 'https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Slider%20Images%2Fbottineau-county-sheriffs-office.jpg?alt=media&token=af5da1dc-8a4b-4134-a5b6-0bf733399cfc', alt: 'Bottineau County Sheriffs Office roofing' },
 ];
 
+const defaultContent = {
+    title: "Your Trusted Orlando <span class=\"text-primary [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)]\">Roofing Company.</span>",
+    subtitle: "Providing quality roof services to Central Florida homeowners and businesses since 2003. We are a local, family-owned roofing company dedicated to providing our customers with the best roofing services possible.",
+    images: fallbackImages,
+}
 
-export function Hero({ content }: { content?: HeroContent }) {
+
+export function Hero({ content: contentFromProps }: { content?: HeroContent }) {
     
-    const imagesToDisplay = (content?.images && content.images.length > 0) ? content.images : fallbackImages;
+    const content = contentFromProps || defaultContent;
+    const imagesToDisplay = (content.images && content.images.length > 0) ? content.images : [];
     const hasImages = imagesToDisplay.length > 0;
 
     return (
@@ -79,10 +86,10 @@ export function Hero({ content }: { content?: HeroContent }) {
                 <div className="space-y-6 max-w-3xl mx-auto">
                     <h1 
                         className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl"
-                        dangerouslySetInnerHTML={{ __html: content?.title || "Your Trusted Orlando <span class=\"text-primary [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)]\">Roofing Company.</span>" }}
+                        dangerouslySetInnerHTML={{ __html: content.title }}
                     />
                     <p className="text-lg md:text-xl text-gray-200">
-                        {content?.subtitle || "Providing quality roof services to Central Florida homeowners and businesses since 2003. We are a local, family-owned roofing company dedicated to providing our customers with the best roofing services possible."}
+                        {content.subtitle}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
                         <Button asChild size="lg">
@@ -97,5 +104,3 @@ export function Hero({ content }: { content?: HeroContent }) {
         </section>
     );
 }
-
-    
