@@ -3,25 +3,16 @@
 
 import { useFirestore, useMemoFirebase } from '@/firebase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { format } from 'date-fns';
-import { FileText, Activity } from 'lucide-react';
+import { FileText, Activity, Link2Off } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCollection } from '@/firebase/firestore/use-collection';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
-
-// Sample data for site visitors
-const visitorData = [
-  { name: 'Jan', visitors: 4000 },
-  { name: 'Feb', visitors: 3000 },
-  { name: 'Mar', visitors: 5000 },
-  { name: 'Apr', visitors: 4500 },
-  { name: 'May', visitors: 6000 },
-  { name: 'Jun', visitors: 7000 },
-];
 
 interface EstimateRequest {
     id: string;
@@ -79,35 +70,21 @@ export default function AdminPage() {
         </Card>
          <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Site Visitors (Sample)</CardTitle>
+            <CardTitle className="text-sm font-medium">Site Analytics</CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">29,750</div>
-            <p className="text-xs text-muted-foreground">+20.1% from last month</p>
+            <div className="text-2xl font-bold flex items-center gap-2">
+                <Link2Off className="h-6 w-6 text-muted-foreground" />
+                Not Connected
+            </div>
+            <p className="text-xs text-muted-foreground">Enable Google Analytics to see visitor data.</p>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="lg:col-span-4">
-          <CardHeader>
-            <CardTitle>Site Visitors Overview (Sample)</CardTitle>
-          </CardHeader>
-          <CardContent className="pl-2">
-             <ResponsiveContainer width="100%" height={350}>
-                <BarChart data={visitorData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                    <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value / 1000}K`}/>
-                    <Tooltip cursor={{fill: 'hsl(var(--muted))'}} contentStyle={{backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))'}}/>
-                    <Bar dataKey="visitors" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        <Card className="lg:col-span-3">
+      <div className="grid gap-4">
+        <Card>
           <CardHeader>
             <CardTitle>Recent Estimate Requests</CardTitle>
           </CardHeader>
@@ -141,6 +118,13 @@ export default function AdminPage() {
              {recentRequests && recentRequests.length === 0 && !isLoadingRecent && (
                 <p className="text-sm text-muted-foreground text-center py-4">No recent requests.</p>
              )}
+              {recentRequests && recentRequests.length > 0 && (
+                <div className="mt-4 text-right">
+                    <Button asChild variant="link">
+                        <Link href="/admin/estimates">View All Estimates</Link>
+                    </Button>
+                </div>
+              )}
           </CardContent>
         </Card>
       </div>
