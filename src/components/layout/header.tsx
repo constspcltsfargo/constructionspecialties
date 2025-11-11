@@ -16,10 +16,10 @@ export function Header() {
 
     const navLinks = [
         { href: "/", label: "Home" },
-        { href: "#services", label: "Services" },
-        { href: "#gallery", label: "Gallery" },
+        { href: "/#services", label: "Services" },
+        { href: "/gallery", label: "Gallery" },
         { href: "/about", label: "About Us" },
-        { href: "#contact", label: "Contact" },
+        { href: "/#contact", label: "Contact" },
     ];
     
     return (
@@ -128,6 +128,8 @@ export function Header() {
         </>
     );
 }
+
+    
 
     
 
