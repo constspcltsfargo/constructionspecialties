@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy, doc, updateDoc } from 'firebase/firestore';
+import { collection, query, orderBy, doc, updateDoc, Timestamp } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
   Dialog,
@@ -14,13 +14,15 @@ import {
 } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { format } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { ChevronDown, Mail, Phone, MapPin } from 'lucide-react';
+import { ChevronDown, Mail, Phone, MapPin, Calendar as CalendarIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 
 
 interface EstimateRequest {
@@ -30,7 +32,7 @@ interface EstimateRequest {
     phone: string;
     zip: string;
     project: string;
-    submittedAt: { toDate: () => Date };
+    submittedAt: Timestamp;
     suggestedTeam: string;
     summary: string;
     status: 'new' | 'contacted' | 'closed';
@@ -49,6 +51,7 @@ export default function EstimateRequestsPage() {
   const { toast } = useToast();
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [selectedRequest, setSelectedRequest] = useState<EstimateRequest | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   
   const requestsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -56,6 +59,11 @@ export default function EstimateRequestsPage() {
   }, [firestore]);
 
   const { data: requests, isLoading, error } = useCollection<EstimateRequest>(requestsQuery);
+
+  const filteredRequests = requests?.filter(req => {
+      if (!selectedDate || !req.submittedAt) return true;
+      return isSameDay(req.submittedAt.toDate(), selectedDate);
+  });
 
   const handleStatusChange = async (requestId: string, status: EstimateRequest['status']) => {
     if (!firestore) return;
@@ -82,8 +90,34 @@ export default function EstimateRequestsPage() {
     <>
     <Card>
       <CardHeader>
-        <CardTitle>Estimate Requests</CardTitle>
-        <CardDescription>Click on a row to view the full request details.</CardDescription>
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+            <div>
+                <CardTitle>Estimate Requests</CardTitle>
+                <CardDescription>Click on a row to view the full request details.</CardDescription>
+            </div>
+            <Popover>
+                <PopoverTrigger asChild>
+                <Button
+                    variant={"outline"}
+                    className={cn(
+                    "w-[240px] justify-start text-left font-normal",
+                    !selectedDate && "text-muted-foreground"
+                    )}
+                >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="end">
+                <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={setSelectedDate}
+                    initialFocus
+                />
+                </PopoverContent>
+            </Popover>
+        </div>
       </CardHeader>
       <CardContent>
         {isLoading && (
@@ -95,7 +129,7 @@ export default function EstimateRequestsPage() {
         )}
         {error && <p className="text-red-500">Error: {error.message}</p>}
 
-        {requests && (
+        {filteredRequests && (
           <Table>
             <TableHeader>
               <TableRow>
@@ -106,7 +140,7 @@ export default function EstimateRequestsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {requests.map(req => (
+              {filteredRequests.map(req => (
                 <TableRow key={req.id} onClick={() => setSelectedRequest(req)} className="cursor-pointer">
                   <TableCell className="whitespace-nowrap">
                     {req.submittedAt ? format(req.submittedAt.toDate(), 'MMM d, yyyy') : 'N/A'}
@@ -154,10 +188,12 @@ export default function EstimateRequestsPage() {
             </TableBody>
           </Table>
         )}
-        {requests && requests.length === 0 && !isLoading && (
+        {filteredRequests && filteredRequests.length === 0 && !isLoading && (
             <div className="text-center py-12">
-                <h3 className="text-lg font-semibold">No estimate requests yet</h3>
-                <p className="text-muted-foreground mt-2">New submissions from the contact form will appear here.</p>
+                <h3 className="text-lg font-semibold">No estimate requests for this date</h3>
+                <p className="text-muted-foreground mt-2">
+                    {requests && requests.length > 0 ? 'Try selecting a different date.' : 'New submissions from the contact form will appear here.'}
+                </p>
             </div>
         )}
       </CardContent>
