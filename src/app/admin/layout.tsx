@@ -50,7 +50,7 @@ export default function AdminLayout({
                         <SidebarMenuButton asChild isActive={pathname === '/admin/estimates'}>
                            <Link href="/admin/estimates">
                                 <Mailbox />
-                                - <span>Estimates</span>
+                                <span>Estimates</span>
                            </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
