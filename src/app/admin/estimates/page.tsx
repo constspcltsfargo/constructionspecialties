@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy, doc, updateDoc, Timestamp } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -51,8 +51,13 @@ export default function EstimateRequestsPage() {
   const { toast } = useToast();
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [selectedRequest, setSelectedRequest] = useState<EstimateRequest | null>(null);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   
+  // Set the initial date on the client to prevent hydration mismatch
+  useEffect(() => {
+    setSelectedDate(new Date());
+  }, []);
+
   const requestsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
     return query(collection(firestore, 'estimateRequests'), orderBy('submittedAt', 'desc'));
@@ -62,6 +67,8 @@ export default function EstimateRequestsPage() {
 
   const filteredRequests = requests?.filter(req => {
       if (!selectedDate || !req.submittedAt) return true;
+      // On initial render, show all requests before date is set on client
+      if (selectedDate === undefined) return true;
       return isSameDay(req.submittedAt.toDate(), selectedDate);
   });
 
