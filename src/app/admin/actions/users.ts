@@ -1,5 +1,7 @@
 
 'use server';
+import { config } from 'dotenv';
+config();
 
 import { initializeFirebase } from "@/firebase/server-init";
 import { collection, query, where, getDocs, addDoc, doc, updateDoc, deleteDoc, setDoc } from "firebase/firestore";

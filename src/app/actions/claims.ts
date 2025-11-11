@@ -1,5 +1,7 @@
 
 'use server';
+import { config } from 'dotenv';
+config();
 
 import { initializeFirebaseAdmin } from "@/firebase/admin-init";
 

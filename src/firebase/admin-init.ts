@@ -1,7 +1,7 @@
 
 // Load environment variables from .env.local
 import { config } from 'dotenv';
-
+config();
 
 import { initializeApp, getApps, getApp, App, cert } from 'firebase-admin/app';
 import { ServiceAccount } from 'firebase-admin';
