@@ -79,7 +79,7 @@ export function Hero({ content }: { content?: HeroContent }) {
                 <div className="space-y-6 max-w-3xl mx-auto">
                     <h1 
                         className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl"
-                        dangerouslySetInnerHTML={{ __html: content?.title || "Your Trusted Orlando <span class=\"text-transparent bg-clip-text bg-gradient-to-tr from-pink-700 to-orange-800\">Roofing Company.</span>" }}
+                        dangerouslySetInnerHTML={{ __html: content?.title || "Your Trusted Orlando <span class=\"text-primary [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)]\">Roofing Company.</span>" }}
                     />
                     <p className="text-lg md:text-xl text-gray-200">
                         {content?.subtitle || "Providing quality roof services to Central Florida homeowners and businesses since 2003. We are a local, family-owned roofing company dedicated to providing our customers with the best roofing services possible."}
@@ -97,3 +97,5 @@ export function Hero({ content }: { content?: HeroContent }) {
         </section>
     );
 }
+
+    

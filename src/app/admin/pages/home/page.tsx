@@ -54,7 +54,7 @@ type PageElementsFormValues = z.infer<typeof pageElementsSchema>;
 // Default content for seeding the database
 const defaultElements = [
     { id: 'hero', type: 'hero', order: 1, content: {
-        title: "Your Trusted Orlando <span class=\"text-transparent bg-clip-text bg-gradient-to-tr from-pink-700 to-orange-800\">Roofing Company.</span>",
+        title: "Your Trusted Orlando <span class=\"text-primary [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)]\">Roofing Company.</span>",
         subtitle: "Providing quality roof services to Central Florida homeowners and businesses since 2003. We are a local, family-owned roofing company dedicated to providing our customers with the best roofing services possible.",
         images: [
             { id: 'hero-1', url: 'https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/Slider%20Images%2FAnnex%20IMG_20250630_122752.jpg?alt=media&token=8b921d83-feb4-484f-bf8e-deb54d83444e', alt: 'Commercial building roofing project' },
@@ -313,5 +313,7 @@ export default function EditHomepage() {
     </Form>
   );
 }
+
+    
 
     
