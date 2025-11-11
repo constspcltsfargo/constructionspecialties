@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { format, isSameDay } from 'date-fns';
+import { format, isSameDay, isThisWeek, isThisMonth } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -33,12 +33,12 @@ interface EstimateRequest {
     zip: string;
     project: string;
     submittedAt: Timestamp;
-    suggestedTeam: string;
-    summary: string;
     status: 'new' | 'contacted' | 'closed';
     nearbyBranches?: string[];
     howDidYouHear?: string;
 }
+
+type FilterType = 'all' | 'this_week' | 'this_month' | 'custom';
 
 const statusColors = {
   new: 'bg-blue-500 hover:bg-blue-500/90',
@@ -52,10 +52,11 @@ export default function EstimateRequestsPage() {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [selectedRequest, setSelectedRequest] = useState<EstimateRequest | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [filter, setFilter] = useState<FilterType>('all');
   
   // Set the initial date on the client to prevent hydration mismatch
   useEffect(() => {
-    setSelectedDate(new Date());
+    // Default to all, no date selected initially.
   }, []);
 
   const requestsQuery = useMemoFirebase(() => {
@@ -66,10 +67,21 @@ export default function EstimateRequestsPage() {
   const { data: requests, isLoading, error } = useCollection<EstimateRequest>(requestsQuery);
 
   const filteredRequests = requests?.filter(req => {
-      if (!selectedDate || !req.submittedAt) return true;
-      // On initial render, show all requests before date is set on client
-      if (selectedDate === undefined) return true;
-      return isSameDay(req.submittedAt.toDate(), selectedDate);
+      if (!req.submittedAt) return false;
+      const submittedDate = req.submittedAt.toDate();
+      switch (filter) {
+        case 'all':
+            return true;
+        case 'this_week':
+            return isThisWeek(submittedDate, { weekStartsOn: 1 });
+        case 'this_month':
+            return isThisMonth(submittedDate);
+        case 'custom':
+             if (!selectedDate) return false;
+             return isSameDay(submittedDate, selectedDate);
+        default:
+            return true;
+      }
   });
 
   const handleStatusChange = async (requestId: string, status: EstimateRequest['status']) => {
@@ -92,6 +104,22 @@ export default function EstimateRequestsPage() {
         setUpdatingId(null);
     }
   }
+  
+  const handleDateSelect = (date: Date | undefined) => {
+    setSelectedDate(date);
+    if (date) {
+        setFilter('custom');
+    }
+  }
+
+  const getFilterButtonText = () => {
+    switch (filter) {
+        case 'all': return 'All Requests';
+        case 'this_week': return 'This Week';
+        case 'this_month': return 'This Month';
+        case 'custom': return selectedDate ? format(selectedDate, "PPP") : 'Pick a date';
+    }
+  }
 
   return (
     <>
@@ -102,28 +130,33 @@ export default function EstimateRequestsPage() {
                 <CardTitle>Estimate Requests</CardTitle>
                 <CardDescription>Click on a row to view the full request details.</CardDescription>
             </div>
-            <Popover>
-                <PopoverTrigger asChild>
-                <Button
-                    variant={"outline"}
-                    className={cn(
-                    "w-[240px] justify-start text-left font-normal",
-                    !selectedDate && "text-muted-foreground"
-                    )}
-                >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
-                </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="end">
-                <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={setSelectedDate}
-                    initialFocus
-                />
-                </PopoverContent>
-            </Popover>
+            <div className="flex items-center gap-2">
+                <Button variant={filter === 'all' ? 'default' : 'outline'} onClick={() => setFilter('all')}>All</Button>
+                <Button variant={filter === 'this_week' ? 'default' : 'outline'} onClick={() => setFilter('this_week')}>This Week</Button>
+                <Button variant={filter === 'this_month' ? 'default' : 'outline'} onClick={() => setFilter('this_month')}>This Month</Button>
+                 <Popover>
+                    <PopoverTrigger asChild>
+                    <Button
+                        variant={filter === 'custom' ? 'default' : 'outline'}
+                        className={cn(
+                        "w-[240px] justify-start text-left font-normal",
+                        filter !== 'custom' && "text-muted-foreground"
+                        )}
+                    >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {filter === 'custom' && selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                    </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="end">
+                    <Calendar
+                        mode="single"
+                        selected={selectedDate}
+                        onSelect={handleDateSelect}
+                        initialFocus
+                    />
+                    </PopoverContent>
+                </Popover>
+            </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -197,9 +230,9 @@ export default function EstimateRequestsPage() {
         )}
         {filteredRequests && filteredRequests.length === 0 && !isLoading && (
             <div className="text-center py-12">
-                <h3 className="text-lg font-semibold">No estimate requests for this date</h3>
+                <h3 className="text-lg font-semibold">No estimate requests match your filter</h3>
                 <p className="text-muted-foreground mt-2">
-                    {requests && requests.length > 0 ? 'Try selecting a different date.' : 'New submissions from the contact form will appear here.'}
+                    {requests && requests.length > 0 ? 'Try selecting a different filter.' : 'New submissions from the contact form will appear here.'}
                 </p>
             </div>
         )}
@@ -263,3 +296,5 @@ export default function EstimateRequestsPage() {
     </>
   );
 }
+
+    
