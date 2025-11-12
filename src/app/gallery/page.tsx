@@ -1,12 +1,15 @@
 
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy, Timestamp } from 'firebase/firestore';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface Media {
     id: string;
@@ -17,9 +20,11 @@ interface Media {
 
 export default function GalleryPage() {
   const firestore = useFirestore();
+  const [selectedImage, setSelectedImage] = useState<Media | null>(null);
 
   const mediaCollectionRef = useMemoFirebase(() => {
     if (!firestore) return null;
+    // Query for media specifically in the 'gallery' folder
     return query(collection(firestore, 'media'), orderBy('uploadDate', 'desc'));
   }, [firestore]);
 
@@ -48,28 +53,37 @@ export default function GalleryPage() {
                 </div>
               )}
               {!isLoading && galleryImages && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-                  {galleryImages.map((image) => (
-                    <div
-                      key={image.id}
-                      className="group relative aspect-square overflow-hidden rounded-lg"
-                    >
-                      <Image
-                        src={image.url}
-                        alt={image.filename}
-                        fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
-                        className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
-                      />
-                       <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </div>
-                  ))}
-                </div>
+                <TooltipProvider>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+                    {galleryImages.map((image) => (
+                       <Tooltip key={image.id}>
+                        <TooltipTrigger asChild>
+                          <div
+                            onClick={() => setSelectedImage(image)}
+                            className="group relative aspect-square overflow-hidden rounded-lg cursor-pointer"
+                          >
+                            <Image
+                              src={image.url}
+                              alt={image.filename}
+                              fill
+                              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                              className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Click to enlarge</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    ))}
+                  </div>
+                </TooltipProvider>
               )}
               {!isLoading && galleryImages && galleryImages.length === 0 && (
                 <div className="text-center py-12 border-2 border-dashed rounded-lg">
-                    <h3 className="text-lg font-semibold">The Gallery is Empty</h3>
-                    <p className="text-muted-foreground mt-2">Check back later, or upload photos in the admin dashboard to populate the gallery.</p>
+                  <h3 className="text-lg font-semibold">The Gallery is Empty</h3>
+                  <p className="text-muted-foreground mt-2">Check back later, or upload photos in the admin dashboard to populate the gallery.</p>
                 </div>
               )}
             </div>
@@ -77,6 +91,22 @@ export default function GalleryPage() {
         </main>
         <Footer />
       </div>
+
+      <Dialog open={!!selectedImage} onOpenChange={(isOpen) => !isOpen && setSelectedImage(null)}>
+        <DialogContent className="max-w-4xl p-2">
+          {selectedImage && (
+            <div className="relative aspect-video">
+              <Image
+                src={selectedImage.url}
+                alt={selectedImage.filename}
+                fill
+                className="object-contain"
+                sizes="100vw"
+              />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
