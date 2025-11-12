@@ -4,18 +4,35 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, query, orderBy, limit, Timestamp } from 'firebase/firestore';
+
+interface Media {
+    id: string;
+    filename: string;
+    url: string;
+    uploadDate: Timestamp;
+}
+
 
 export function Gallery() {
-  const imagesToShow = PlaceHolderImages.filter(img => img.id.startsWith('gallery-')).slice(0, 10);
+  const firestore = useFirestore();
 
-  if (imagesToShow.length === 0) {
-    return null; // Don't render if there are no images
+  const mediaCollectionRef = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'media'), orderBy('uploadDate', 'desc'), limit(6));
+  }, [firestore]);
+
+  const { data: imagesToShow, isLoading } = useCollection<Media>(mediaCollectionRef);
+
+  if (isLoading) {
+    // Optional: Show a loading state if desired
+    return null;
   }
 
-  // Duplicate images for a seamless scrolling effect
-  const duplicatedImages = [...imagesToShow, ...imagesToShow];
+  if (!imagesToShow || imagesToShow.length === 0) {
+    return null; // Don't render if there are no images
+  }
 
   return (
     <section id="gallery" className="py-12 md:py-24 bg-secondary">
@@ -27,43 +44,19 @@ export function Gallery() {
           </p>
         </div>
 
-        <div
-          className="w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-200px),transparent_100%)]"
-        >
-          <ul className="flex items-center justify-center md:justify-start [&_li]:mx-4 [&_img]:max-w-none animate-infinite-scroll">
-             {duplicatedImages.map((image, index) => {
-                if (!image) return null;
-                return (
-                   <li key={`${image.id}-${index}`} className="relative h-64 w-96 flex-shrink-0">
-                       <Image
-                        src={image.imageUrl}
-                        alt={image.description}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
+            {imagesToShow.map((image) => (
+                <div key={image.id} className="group relative aspect-video overflow-hidden rounded-lg">
+                    <Image
+                        src={image.url}
+                        alt={image.filename}
                         fill
-                        className="object-cover rounded-lg"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        data-ai-hint={image.imageHint}
-                      />
-                  </li>
-                );
-             })}
-          </ul>
-           <ul className="flex items-center justify-center md:justify-start [&_li]:mx-4 [&_img]:max-w-none animate-infinite-scroll" aria-hidden="true">
-             {duplicatedImages.map((image, index) => {
-                if (!image) return null;
-                return (
-                   <li key={`${image.id}-duplicate-${index}`} className="relative h-64 w-96 flex-shrink-0">
-                       <Image
-                        src={image.imageUrl}
-                        alt={image.description}
-                        fill
-                        className="object-cover rounded-lg"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        data-ai-hint={image.imageHint}
-                      />
-                  </li>
-                );
-             })}
-          </ul>
+                        className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                     <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+            ))}
         </div>
 
         <div className="text-center mt-12">
