@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -251,7 +252,7 @@ export default function EstimateRequestsPage() {
               <DialogHeader>
                 <DialogTitle>Estimate Request from {selectedRequest.name}</DialogTitle>
                 <DialogDescription>
-                  Submitted on {selectedRequest.submittedAt ? format(selectedRequest.submittedAt.toDate(), 'MMMM d, yyyy, h:mm a') : 'N/A'}
+                  Submitted on {selectedRequest.submittedAt ? format(selectedRequest.submittedAt.toDate(), 'MMMM d, yyyy, h:mm a') : 'N/A'}. This dialog shows the full details of the customer's submission.
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">

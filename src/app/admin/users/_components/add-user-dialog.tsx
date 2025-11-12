@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -84,7 +85,7 @@ export function AddUserDialog({ open, onOpenChange, onUserAdded }: AddUserDialog
         <DialogHeader>
           <DialogTitle>Add New User</DialogTitle>
           <DialogDescription>
-            Fill out the form below to create a new user account.
+            Fill out the form below to create a new user account. This will create an entry in Firebase Authentication and a corresponding user profile in Firestore.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

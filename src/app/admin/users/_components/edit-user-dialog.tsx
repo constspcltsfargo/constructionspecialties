@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -94,7 +95,7 @@ export function EditUserDialog({ user, open, onOpenChange, onUserUpdated }: Edit
         <DialogHeader>
           <DialogTitle>Edit User: {user.name}</DialogTitle>
           <DialogDescription>
-            Update the user's details below. Leave the password field blank to keep it unchanged.
+            Update the user's details below. Leave the password field blank to keep it unchanged. Changes will be reflected in both Firestore and Firebase Authentication.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

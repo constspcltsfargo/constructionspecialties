@@ -8,7 +8,7 @@ import { Footer } from '@/components/layout/footer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy, Timestamp } from 'firebase/firestore';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface Media {
@@ -24,7 +24,6 @@ export default function GalleryPage() {
 
   const mediaCollectionRef = useMemoFirebase(() => {
     if (!firestore) return null;
-    // Query for media specifically in the 'gallery' folder
     return query(collection(firestore, 'media'), orderBy('uploadDate', 'desc'));
   }, [firestore]);
 
@@ -94,17 +93,22 @@ export default function GalleryPage() {
 
       <Dialog open={!!selectedImage} onOpenChange={(isOpen) => !isOpen && setSelectedImage(null)}>
         <DialogContent className="max-w-4xl p-2">
-          {selectedImage && (
-            <div className="relative aspect-video">
-              <Image
-                src={selectedImage.url}
-                alt={selectedImage.filename}
-                fill
-                className="object-contain"
-                sizes="100vw"
-              />
-            </div>
-          )}
+            {selectedImage && (
+                <>
+                    <DialogHeader className="sr-only">
+                        <DialogTitle>{selectedImage.filename}</DialogTitle>
+                    </DialogHeader>
+                    <div className="relative aspect-video">
+                        <Image
+                            src={selectedImage.url}
+                            alt={selectedImage.filename}
+                            fill
+                            className="object-contain"
+                            sizes="100vw"
+                        />
+                    </div>
+                </>
+            )}
         </DialogContent>
       </Dialog>
     </>
