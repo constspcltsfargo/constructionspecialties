@@ -6,9 +6,8 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy, limit, Timestamp } from 'firebase/firestore';
-import { Card, CardContent } from "@/components/ui/card";
-import Autoplay from "embla-carousel-autoplay";
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import { cn } from "@/lib/utils";
+
 
 interface Media {
     id: string;
@@ -23,19 +22,22 @@ export function Gallery() {
 
   const mediaCollectionRef = useMemoFirebase(() => {
     if (!firestore) return null;
-    return query(collection(firestore, 'media'), orderBy('uploadDate', 'desc'), limit(6));
+    return query(collection(firestore, 'media'), orderBy('uploadDate', 'desc'), limit(10));
   }, [firestore]);
 
   const { data: imagesToShow, isLoading } = useCollection<Media>(mediaCollectionRef);
 
   if (isLoading) {
-    // Optional: Show a loading state if desired
     return null;
   }
 
   if (!imagesToShow || imagesToShow.length === 0) {
-    return null; // Don't render if there are no images
+    return null; 
   }
+  
+  // Duplicate the images to create a seamless loop
+  const duplicatedImages = [...imagesToShow, ...imagesToShow];
+
 
   return (
     <section id="gallery" className="py-12 md:py-24 bg-secondary">
@@ -47,20 +49,43 @@ export function Gallery() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
-            {imagesToShow.map((image) => (
-                <div key={image.id} className="group relative aspect-video overflow-hidden rounded-lg">
-                    <Image
-                        src={image.url}
-                        alt={image.filename}
-                        fill
-                        className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    />
-                     <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-            ))}
+        <div
+          className="w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]"
+        >
+          <ul className="flex items-center justify-center md:justify-start [&_li]:mx-4 [&_img]:max-w-none animate-infinite-scroll">
+             {duplicatedImages.map((image, index) => (
+                <li key={`${image.id}-${index}`}>
+                    <div className="group relative aspect-video w-72 sm:w-80 md:w-96 overflow-hidden rounded-lg">
+                        <Image
+                            src={image.url}
+                            alt={image.filename}
+                            fill
+                            className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                            sizes="(max-width: 768px) 80vw, 33vw"
+                        />
+                         <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                </li>
+             ))}
+          </ul>
+           <ul className="flex items-center justify-center md:justify-start [&_li]:mx-4 [&_img]:max-w-none animate-infinite-scroll" aria-hidden="true">
+             {duplicatedImages.map((image, index) => (
+                <li key={`${image.id}-${index}-clone`}>
+                    <div className="group relative aspect-video w-72 sm:w-80 md:w-96 overflow-hidden rounded-lg">
+                        <Image
+                            src={image.url}
+                            alt={image.filename}
+                            fill
+                            className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                            sizes="(max-width: 768px) 80vw, 33vw"
+                        />
+                         <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                </li>
+             ))}
+          </ul>
         </div>
+
 
         <div className="text-center mt-12">
             <Button variant="outline" size="lg" asChild>
