@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy, limit, Timestamp } from 'firebase/firestore';
+import { Card, CardContent } from "@/components/ui/card";
+import Autoplay from "embla-carousel-autoplay";
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 
 interface Media {
     id: string;
