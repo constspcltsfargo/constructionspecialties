@@ -56,25 +56,21 @@ export function Hero() {
         </Carousel>
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20" />
         <div className="absolute inset-0 flex items-center justify-center">
-            <div className="container text-center text-white">
-                <Card className="inline-block bg-black/60 backdrop-blur-sm p-6 md:p-10 rounded-xl border-white/20">
-                    <CardContent className="p-0">
-                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight drop-shadow-lg text-white">
-                           {heroContent.title}
-                        </h1>
-                        <p className="mt-4 text-lg md:text-xl max-w-3xl mx-auto text-gray-200 drop-shadow-md">
-                           {heroContent.subtitle}
-                        </p>
-                        <div className="mt-8 flex justify-center gap-4">
-                            <Button size="lg" asChild>
-                                <Link href="#contact">Get Your Free Estimate</Link>
-                            </Button>
-                            <Button size="lg" variant="secondary" asChild>
-                                <Link href="/gallery">View Our Work</Link>
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
+            <div className="container text-center text-white px-6 md:px-10">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight drop-shadow-lg text-white">
+                   {heroContent.title}
+                </h1>
+                <p className="mt-4 text-lg md:text-xl max-w-3xl mx-auto text-gray-200 drop-shadow-md">
+                   {heroContent.subtitle}
+                </p>
+                <div className="mt-8 flex justify-center gap-4">
+                    <Button size="lg" asChild>
+                        <Link href="#contact">Get Your Free Estimate</Link>
+                    </Button>
+                    <Button size="lg" variant="secondary" asChild>
+                        <Link href="/gallery">View Our Work</Link>
+                    </Button>
+                </div>
             </div>
         </div>
     </section>
