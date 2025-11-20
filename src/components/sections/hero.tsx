@@ -1,4 +1,3 @@
-
 "use client";
 import Image from 'next/image';
 import Link from 'next/link';
@@ -60,7 +59,7 @@ export function Hero() {
             <div className="container text-center text-white">
                 <Card className="inline-block bg-black/60 backdrop-blur-sm p-6 md:p-10 rounded-xl border-white/20">
                     <CardContent className="p-0">
-                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight drop-shadow-lg">
+                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight drop-shadow-lg text-white">
                            {heroContent.title}
                         </h1>
                         <p className="mt-4 text-lg md:text-xl max-w-3xl mx-auto text-gray-200 drop-shadow-md">
