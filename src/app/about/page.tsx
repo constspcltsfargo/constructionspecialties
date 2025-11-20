@@ -117,7 +117,7 @@ const teamMembers = [
   {
     name: 'Dave Baum',
     role: 'Senior Roofing Specialist',
-    avatarId: 'team-member-dave',
+    avatarId: 'team-member-dave-blank',
   },
 ];
 
