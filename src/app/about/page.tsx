@@ -67,11 +67,11 @@ const OurMission = () => (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div className="relative h-80 lg:h-96 rounded-lg overflow-hidden shadow-lg lg:order-last">
           <Image
-            src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjb25zdHJ1Y3Rpb24lMjBwbGFuc3xlbnwwfHx8fDE3NjE5Mjk0ODB8MA&ixlib=rb-4.1.0&q=80&w=1080"
-            alt="Blueprint and construction tools"
+            src="https://firebasestorage.googleapis.com/v0/b/studio-6165246273-4d6aa.firebasestorage.app/o/WhatsApp%20Image%202025-11-22%20at%203.50.02%20AM.jpeg?alt=media&token=0d32e946-7809-43ec-8b45-299a80a1e7af"
+            alt="Roofing project in progress"
             fill
             className="object-cover"
-            data-ai-hint="construction plans"
+            data-ai-hint="roofing project"
           />
         </div>
         <div>
@@ -112,7 +112,7 @@ const teamMembers = [
   {
     name: 'Keith Hilde',
     role: 'Owner',
-    avatarId: 'team-member-keith',
+    avatarId: 'team-member-keith-blank',
   },
   {
     name: 'Dave Baum',
