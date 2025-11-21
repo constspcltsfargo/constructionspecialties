@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { createUser } from '../../actions/users';
 import { UserProfile } from '../page';
+import { Eye, EyeOff } from 'lucide-react';
 
 
 const newUserSchema = z.object({
@@ -34,6 +35,7 @@ interface AddUserDialogProps {
 export function AddUserDialog({ open, onOpenChange, onUserAdded }: AddUserDialogProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const form = useForm<NewUserFormValues>({
     resolver: zodResolver(newUserSchema),
     defaultValues: {
@@ -127,9 +129,21 @@ export function AddUserDialog({ open, onOpenChange, onUserAdded }: AddUserDialog
               control={form.control}
               name="password"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="relative">
                   <FormLabel>Password</FormLabel>
-                  <FormControl><Input type="password" {...field} /></FormControl>
+                  <FormControl>
+                    <Input type={showPassword ? 'text' : 'password'} {...field} className="pr-10" />
+                  </FormControl>
+                   <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-1 top-7 h-7 w-7 text-muted-foreground"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      <span className="sr-only">{showPassword ? 'Hide password' : 'Show password'}</span>
+                    </Button>
                   <FormMessage />
                 </FormItem>
               )}

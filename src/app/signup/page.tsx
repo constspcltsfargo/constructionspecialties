@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { createUserProfile } from '@/app/actions/auth';
 import { useAuth } from '@/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
@@ -21,6 +21,7 @@ export default function SignUpPage() {
 
   const [error, setError] = useState<string | null>(null);
   const [isSigningUp, setIsSigningUp] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -99,9 +100,25 @@ export default function SignUpPage() {
               <Label htmlFor="email">Email</Label>
               <Input id="email" name="email" type="email" required/>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 relative">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" name="password" type="password" required/>
+              <Input 
+                id="password" 
+                name="password" 
+                type={showPassword ? 'text' : 'password'} 
+                required
+                className="pr-10"
+              />
+               <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-1 top-7 h-7 w-7 text-muted-foreground"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  <span className="sr-only">{showPassword ? 'Hide password' : 'Show password'}</span>
+                </Button>
             </div>
             {error && (
               <div className="text-destructive text-sm flex items-center gap-2">

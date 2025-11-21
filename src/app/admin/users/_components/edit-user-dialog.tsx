@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { UserProfile } from '../page';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { updateUser } from '../../actions/users';
+import { Eye, EyeOff } from 'lucide-react';
 
 const editUserSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -33,6 +34,7 @@ interface EditUserDialogProps {
 export function EditUserDialog({ user, open, onOpenChange, onUserUpdated }: EditUserDialogProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const form = useForm<EditUserFormValues>({
     resolver: zodResolver(editUserSchema),
     defaultValues: {
@@ -126,9 +128,26 @@ export function EditUserDialog({ user, open, onOpenChange, onUserUpdated }: Edit
               control={form.control}
               name="password"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="relative">
                   <FormLabel>New Password</FormLabel>
-                  <FormControl><Input type="password" {...field} placeholder="Leave blank to keep current password" /></FormControl>
+                  <FormControl>
+                    <Input 
+                      type={showPassword ? 'text' : 'password'} 
+                      {...field} 
+                      placeholder="Leave blank to keep current password"
+                      className="pr-10"
+                    />
+                  </FormControl>
+                  <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-1 top-7 h-7 w-7 text-muted-foreground"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      <span className="sr-only">{showPassword ? 'Hide password' : 'Show password'}</span>
+                    </Button>
                   <FormMessage />
                 </FormItem>
               )}

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/firebase';
@@ -18,6 +18,7 @@ import { useFirestore } from '@/firebase';
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
   const auth = useAuth();
@@ -92,15 +93,26 @@ export default function LoginPage() {
                       required
                     />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2 relative">
                     <Label htmlFor="password">Password</Label>
                     <Input
                       id="password"
                       name="password"
-                      type="password"
+                      type={showPassword ? 'text' : 'password'}
                       disabled={isLoggingIn}
                       required
+                      className="pr-10"
                     />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-1 top-7 h-7 w-7 text-muted-foreground"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      <span className="sr-only">{showPassword ? 'Hide password' : 'Show password'}</span>
+                    </Button>
                 </div>
                  {error && (
                     <div className="text-destructive text-sm flex items-center gap-2">
