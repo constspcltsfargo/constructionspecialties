@@ -112,7 +112,7 @@ const teamMembers = [
   {
     name: 'Keith Hilde',
     role: 'Owner',
-    avatarId: 'team-member-keith-blank',
+    avatarId: 'team-member-keith',
   },
   {
     name: 'Dave Baum',
