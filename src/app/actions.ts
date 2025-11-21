@@ -3,8 +3,8 @@
 
 import { z } from "zod";
 import { analyzeContactForm } from "@/ai/flows/contact-form-analyzer";
-import { getFirestore, addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { initializeFirebase } from "@/firebase/server-init";
+import { FieldValue } from "firebase-admin/firestore";
+import { initializeFirebaseAdmin } from "@/firebase/admin-init";
 
 const contactFormSchema = z.object({
   firstName: z.string().min(1, { message: "First name is required." }),
@@ -62,16 +62,16 @@ export async function handleContactFormSubmission(
     
     // Save to Firestore
     try {
-        const { firestore } = initializeFirebase();
-        const estimateRequestsCollection = collection(firestore, 'estimateRequests');
-        await addDoc(estimateRequestsCollection, {
+        const { firestore } = await initializeFirebaseAdmin();
+        const estimateRequestsCollection = firestore.collection('estimateRequests');
+        await estimateRequestsCollection.add({
             name: `${validatedFields.data.firstName} ${validatedFields.data.lastName}`,
             email: validatedFields.data.email,
             phone: validatedFields.data.phone,
             zip: validatedFields.data.zip,
             project: validatedFields.data.project,
             howDidYouHear: validatedFields.data.howDidYouHear || '',
-            submittedAt: serverTimestamp(),
+            submittedAt: FieldValue.serverTimestamp(),
             suggestedTeam: result.suggestedTeam,
             summary: result.summary,
             nearbyBranches: result.nearbyBranches,
