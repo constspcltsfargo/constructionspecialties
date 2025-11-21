@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy, doc, updateDoc, Timestamp } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -12,18 +12,29 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { format, isSameDay, isThisWeek, isThisMonth } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { ChevronDown, Mail, Phone, MapPin, Calendar as CalendarIcon } from 'lucide-react';
+import { ChevronDown, Mail, Phone, MapPin, Calendar as CalendarIcon, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { Separator } from '@/components/ui/separator';
+import { deleteEstimateRequest } from '../actions/estimates';
 
 interface EstimateRequest {
     id: string;
@@ -50,6 +61,7 @@ export default function EstimateRequestsPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [selectedRequest, setSelectedRequest] = useState<EstimateRequest | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [filter, setFilter] = useState<FilterType>('all');
@@ -59,7 +71,7 @@ export default function EstimateRequestsPage() {
     return query(collection(firestore, 'estimateRequests'), orderBy('submittedAt', 'desc'));
   }, [firestore]);
 
-  const { data: requests, isLoading, error } = useCollection<EstimateRequest>(requestsQuery);
+  const { data: requests, isLoading, error, setData: setRequests } = useCollection<EstimateRequest>(requestsQuery);
 
   const filteredRequests = requests?.filter(req => {
       if (!req.submittedAt) return false;
@@ -98,6 +110,26 @@ export default function EstimateRequestsPage() {
     } finally {
         setUpdatingId(null);
     }
+  }
+
+  const handleDelete = async (requestId: string) => {
+    setDeletingId(requestId);
+    const result = await deleteEstimateRequest(requestId);
+    if (result.error) {
+        toast({
+            variant: 'destructive',
+            title: 'Deletion Failed',
+            description: result.error,
+        });
+    } else {
+        toast({
+            title: 'Request Deleted',
+            description: 'The estimate request has been successfully deleted.',
+        });
+        // Optimistically update the UI
+        setRequests(prevRequests => (prevRequests || []).filter(req => req.id !== requestId));
+    }
+    setDeletingId(null);
   }
   
   const handleDateSelect = (date: Date | undefined) => {
@@ -183,6 +215,7 @@ export default function EstimateRequestsPage() {
                 <TableHead>Contact</TableHead>
                 <TableHead>Summary</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -228,6 +261,30 @@ export default function EstimateRequestsPage() {
                             ))}
                         </DropdownMenuContent>
                     </DropdownMenu>
+                  </TableCell>
+                  <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" size="icon" disabled={deletingId === req.id}>
+                          <Trash2 className="h-4 w-4" />
+                          <span className="sr-only">Delete</span>
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the estimate request.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDelete(req.id)}>
+                            {deletingId === req.id ? 'Deleting...' : 'Delete'}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </TableCell>
                 </TableRow>
               ))}
