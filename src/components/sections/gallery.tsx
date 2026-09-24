@@ -1,97 +1,58 @@
 'use client';
 
-import Image from "next/image";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy, limit, Timestamp } from 'firebase/firestore';
-import { cn } from "@/lib/utils";
-
-
-interface Media {
-    id: string;
-    filename: string;
-    url: string;
-    uploadDate: Timestamp;
-}
-
+import Image from 'next/image';
+import Link from 'next/link';
+import { featuredProjects } from '@/lib/projects';
+import { SectionHeading } from '@/components/section-heading';
+import { ArrowButton } from '@/components/arrow-button';
+import { Marquee } from '@/components/motion/marquee';
+import { Reveal } from '@/components/motion/reveal';
 
 export function Gallery() {
-  const firestore = useFirestore();
-
-  const mediaCollectionRef = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, 'media'), orderBy('uploadDate', 'desc'), limit(10));
-  }, [firestore]);
-
-  const { data: imagesToShow, isLoading } = useCollection<Media>(mediaCollectionRef);
-
-  if (isLoading) {
-    return null;
-  }
-
-  if (!imagesToShow || imagesToShow.length === 0) {
-    return null; 
-  }
-  
-  // Duplicate the images to create a seamless loop
-  const duplicatedImages = [...imagesToShow, ...imagesToShow];
-
-
   return (
-    <section id="gallery" className="py-12 md:py-24 bg-secondary">
-      <div className="container">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold">Our Recent Work</h2>
-          <p className="text-lg text-muted-foreground mt-2 max-w-2xl mx-auto">
-            Take a look at the quality craftsmanship and beautiful results we deliver.
-          </p>
-        </div>
+    <section id="gallery" className="scroll-mt-20 overflow-hidden py-24 md:py-32">
+      <div className="container-x">
+        <SectionHeading
+          index="03"
+          eyebrow="Recent work"
+          title="Our Recent Work"
+          description="Take a look at the quality craftsmanship and beautiful results we deliver."
+        />
+      </div>
 
-        <div
-          className="w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]"
-        >
-          <ul className="flex items-center justify-center md:justify-start [&_li]:mx-4 [&_img]:max-w-none animate-infinite-scroll">
-             {duplicatedImages.map((image, index) => (
-                <li key={`${image.id}-${index}`}>
-                    <div className="group relative aspect-video w-72 sm:w-80 md:w-96 overflow-hidden rounded-lg">
-                        <Image
-                            src={image.url}
-                            alt={image.filename}
-                            fill
-                            className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
-                            sizes="(max-width: 768px) 80vw, 33vw"
-                        />
-                         <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </div>
-                </li>
-             ))}
-          </ul>
-           <ul className="flex items-center justify-center md:justify-start [&_li]:mx-4 [&_img]:max-w-none animate-infinite-scroll" aria-hidden="true">
-             {duplicatedImages.map((image, index) => (
-                <li key={`${image.id}-${index}-clone`}>
-                    <div className="group relative aspect-video w-72 sm:w-80 md:w-96 overflow-hidden rounded-lg">
-                        <Image
-                            src={image.url}
-                            alt={image.filename}
-                            fill
-                            className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
-                            sizes="(max-width: 768px) 80vw, 33vw"
-                        />
-                         <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </div>
-                </li>
-             ))}
-          </ul>
-        </div>
+      <Reveal className="mt-16 lg:mt-20" y={40}>
+        <Marquee duration={90} gap="1.25rem">
+          {featuredProjects.map((project) => (
+            <Link
+              key={project.src}
+              href="/gallery"
+              className="group block w-[78vw] shrink-0 sm:w-[420px]"
+              aria-label={`${project.title} — view gallery`}
+            >
+              <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                <Image
+                  src={project.src}
+                  alt={project.title}
+                  fill
+                  sizes="(min-width: 640px) 420px, 78vw"
+                  className="object-cover transition-transform duration-1000 ease-out-expo group-hover:scale-[1.04]"
+                />
+              </div>
+              <div className="mt-3 flex items-baseline justify-between gap-4">
+                <p className="truncate font-medium">{project.title}</p>
+                <p className="eyebrow shrink-0">{project.category}</p>
+              </div>
+            </Link>
+          ))}
+        </Marquee>
+      </Reveal>
 
-
-        <div className="text-center mt-12">
-            <Button variant="outline" size="lg" asChild>
-                <Link href="/gallery">View Full Gallery <ArrowRight className="ml-2 h-4 w-4"/></Link>
-            </Button>
-        </div>
+      <div className="container-x mt-14">
+        <Reveal>
+          <ArrowButton href="/gallery" variant="outline" diagonal>
+            View Full Gallery
+          </ArrowButton>
+        </Reveal>
       </div>
     </section>
   );

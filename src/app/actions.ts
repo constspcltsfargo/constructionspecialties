@@ -1,96 +1,114 @@
+'use server';
 
-"use server";
-
-import { z } from "zod";
-import { analyzeContactForm } from "@/ai/flows/contact-form-analyzer";
-import { FieldValue } from "firebase-admin/firestore";
-import { initializeFirebaseAdmin } from "@/firebase/admin-init";
+import { z } from 'zod';
+import { Resend } from 'resend';
+import {
+  estimateRequestHtml,
+  estimateRequestSubject,
+  estimateRequestText,
+} from '@/lib/email/estimate-request-email';
 
 const contactFormSchema = z.object({
-  firstName: z.string().min(1, { message: "First name is required." }),
-  lastName: z.string().min(1, { message: "Last name is required." }),
-  email: z.string().email({ message: "Please enter a valid email." }),
-  phone: z.string().min(1, { message: "Phone number is required." }),
-  zip: z.string().min(5, { message: "Please enter a valid zip code." }),
-  project: z.string().min(10, { message: "Message must be at least 10 characters." }),
+  firstName: z.string().trim().min(1, { message: 'First name is required.' }).max(100),
+  lastName: z.string().trim().min(1, { message: 'Last name is required.' }).max(100),
+  email: z.string().trim().email({ message: 'Please enter a valid email.' }),
+  phone: z.string().trim().min(7, { message: 'Please enter a valid phone number.' }).max(30),
+  zip: z.string().trim().min(5, { message: 'Please enter a valid zip code.' }).max(10),
+  project: z
+    .string()
+    .trim()
+    .min(10, { message: 'Message must be at least 10 characters.' })
+    .max(5000, { message: 'Message is too long.' }),
   howDidYouHear: z.string().optional(),
 });
 
+type ContactFields = z.infer<typeof contactFormSchema>;
+
 export type FormState = {
+  status: 'idle' | 'success' | 'error';
   message: string;
-  fields?: Record<string, string>;
-  issues?: string[];
-  data?: {
-    suggestedTeam: string;
-    nearbyBranches: string[];
-    summary: string;
-  };
+  fields?: Partial<Record<keyof ContactFields, string>>;
+  errors?: Partial<Record<keyof ContactFields, string>>;
 };
 
+const TO_EMAIL = process.env.CONTACT_TO_EMAIL || 'constspcltsfargo@gmail.com';
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'Construction Specialties Website <onboarding@resend.dev>';
+
 export async function handleContactFormSubmission(
-  prevState: FormState,
+  _prevState: FormState,
   formData: FormData
 ): Promise<FormState> {
-  const rawData = Object.fromEntries(formData);
-  const validatedFields = contactFormSchema.safeParse(rawData);
+  const raw = Object.fromEntries(formData) as Record<string, string>;
 
-  if (!validatedFields.success) {
+  // Honeypot: real visitors never see or fill this field.
+  if (raw.company) {
+    return { status: 'success', message: 'Your request has been sent.' };
+  }
+
+  const parsed = contactFormSchema.safeParse(raw);
+  const fields = {
+    firstName: raw.firstName,
+    lastName: raw.lastName,
+    email: raw.email,
+    phone: raw.phone,
+    zip: raw.zip,
+    project: raw.project,
+    howDidYouHear: raw.howDidYouHear,
+  };
+
+  if (!parsed.success) {
+    const errors: FormState['errors'] = {};
+    for (const issue of parsed.error.issues) {
+      const key = issue.path[0] as keyof ContactFields;
+      errors[key] ??= issue.message;
+    }
+    return { status: 'error', message: 'Please check the highlighted fields.', fields, errors };
+  }
+
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.error('RESEND_API_KEY is not set — cannot send estimate request email.');
     return {
-      message: "Error: Please check the fields.",
-      fields: {
-        firstName: rawData.firstName as string,
-        lastName: rawData.lastName as string,
-        email: rawData.email as string,
-        phone: rawData.phone as string,
-        zip: rawData.zip as string,
-        project: rawData.project as string,
-        howDidYouHear: rawData.howDidYouHear as string,
-      },
-      issues: validatedFields.error.issues.map((issue) => issue.message),
+      status: 'error',
+      message: 'We couldn’t send your request right now. Please call or email us directly.',
+      fields,
     };
   }
 
+  const data = parsed.data;
+  const submittedAt = new Intl.DateTimeFormat('en-US', {
+    dateStyle: 'full',
+    timeStyle: 'short',
+    timeZone: 'America/Chicago',
+  }).format(new Date());
+
   try {
-    const result = await analyzeContactForm({
-      name: `${validatedFields.data.firstName} ${validatedFields.data.lastName}`,
-      email: validatedFields.data.email,
-      message: validatedFields.data.project,
-      location: validatedFields.data.zip,
-      phone: validatedFields.data.phone,
-      howDidYouHear: validatedFields.data.howDidYouHear,
+    const resend = new Resend(apiKey);
+    const { error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: [TO_EMAIL],
+      replyTo: data.email,
+      subject: estimateRequestSubject(data),
+      html: estimateRequestHtml(data, submittedAt),
+      text: estimateRequestText(data, submittedAt),
     });
-    
-    // Save to Firestore
-    try {
-        const { firestore } = await initializeFirebaseAdmin();
-        const estimateRequestsCollection = firestore.collection('estimateRequests');
-        await estimateRequestsCollection.add({
-            name: `${validatedFields.data.firstName} ${validatedFields.data.lastName}`,
-            email: validatedFields.data.email,
-            phone: validatedFields.data.phone,
-            zip: validatedFields.data.zip,
-            project: validatedFields.data.project,
-            howDidYouHear: validatedFields.data.howDidYouHear || '',
-            submittedAt: FieldValue.serverTimestamp(),
-            suggestedTeam: result.suggestedTeam,
-            summary: result.summary,
-            nearbyBranches: result.nearbyBranches,
-            status: 'new'
-        });
-    } catch (dbError: any) {
-        console.error("Firestore write error:", dbError);
-        // Don't block the user, just log the error for now. The user still gets the success message.
+
+    if (error) {
+      console.error('Resend error:', error);
+      return {
+        status: 'error',
+        message: 'We couldn’t send your request right now. Please try again or call us directly.',
+        fields,
+      };
     }
 
-
+    return { status: 'success', message: 'Your request has been sent.' };
+  } catch (err) {
+    console.error('Estimate request email failed:', err);
     return {
-      message: "Success! Your request has been sent.",
-    };
-  } catch (error) {
-    console.error("AI analysis error:", error);
-    return {
-      message: "Error: AI analysis failed. Please try again later.",
-      fields: validatedFields.data,
+      status: 'error',
+      message: 'We couldn’t send your request right now. Please try again or call us directly.',
+      fields,
     };
   }
 }
