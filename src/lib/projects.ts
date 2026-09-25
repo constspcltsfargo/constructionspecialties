@@ -47,7 +47,7 @@ export const projects: Project[] = [
   p('bottineau-county-sheriffs-office.jpg', "Bottineau County Sheriff's Office", 'Public', 'Bottineau, ND'),
   p('Mi Mexico 20250629_172914.jpg', 'Mi Mexico', 'Commercial'),
   p('South Prairie 20250629_170816.jpg', 'South Prairie School', 'Education'),
-  p('thumbnail (2).jpg', 'Grain Facility', 'Agricultural'),
+  p('thumbnail (2).jpg', 'Burlington Northern', 'Commercial'),
   p('TCCUthumbnail (1).jpg', 'Town & Country Center', 'Commercial'),
   p('Minot City Building 20250629_175434.jpg', 'Minot City Building', 'Public', 'Minot, ND'),
   p('MN DL Office 20250629_174244.jpg', 'Driver License Office', 'Public', 'Minot, ND'),
